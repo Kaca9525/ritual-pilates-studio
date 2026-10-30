@@ -7,7 +7,7 @@
     "instagram": "pilates__ritual"
   },
   "groupCapacity": 5,
-  "bookAheadDays": 14,
+  "bookAheadDays": 90,
   "minutes": 55,
   "cancelHours": 12,
   "validDays": 30,

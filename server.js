@@ -457,7 +457,7 @@ app.post("/api/admin/settings", auth, admin, (req, res) => {
   const b = req.body || {}, c = cfg();
   if (b.studio) for (const k of ["name", "address", "phone", "email", "instagram"]) if (b.studio[k] !== undefined) c.studio[k] = String(b.studio[k]).trim().slice(0, 200);
   if (b.groupCapacity !== undefined) c.groupCapacity = Math.max(1, Math.min(30, parseInt(b.groupCapacity, 10) || c.groupCapacity));
-  if (b.bookAheadDays !== undefined) c.bookAheadDays = Math.max(1, Math.min(60, parseInt(b.bookAheadDays, 10) || c.bookAheadDays));
+  if (b.bookAheadDays !== undefined) c.bookAheadDays = Math.max(1, Math.min(120, parseInt(b.bookAheadDays, 10) || c.bookAheadDays));
   if (b.week) for (const d of ["0","1","2","3","4","5","6"]) if (b.week[d]) {
     const clean = a => [...new Set((Array.isArray(a) ? a : []).map(String).map(s => s.trim()).filter(validTime))].sort();
     c.week[d] = { g: clean(b.week[d].g), p: clean(b.week[d].p) };

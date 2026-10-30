@@ -64,18 +64,18 @@ a { color: var(--olive); text-decoration-color: rgba(92,98,62,.35); text-underli
 header.hero { padding-block: 26px 22px; display: grid; grid-template-columns: 1fr; gap: 18px; position: relative; }
 .hero-clip { overflow: hidden; }
 .hero-wide { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-.hero-wide .leaf { position: absolute; top: 90px; width: min(46vw, 420px); height: auto; opacity: .95; will-change: transform; filter: drop-shadow(0 30px 40px rgba(63,69,43,.18)); }
-.hero-wide .leaf.l { left: calc(50% - min(380px, 50vw) - min(24vw, 260px)); transform: rotate(-6deg); }
-.hero-wide .leaf.r { right: calc(50% - min(380px, 50vw) - min(24vw, 260px)); top: 150px; transform: rotate(8deg) scaleX(-1); }
-.hero-wide .mist { position: absolute; top: 40px; width: min(60vw, 520px); height: min(60vw, 520px); border-radius: 50%; background: radial-gradient(circle, rgba(92,98,62,.35), rgba(92,98,62,0) 65%); filter: blur(30px); }
+.hero-wide .leaf { position: absolute; top: -20px; width: min(44vw, 360px); height: auto; opacity: .96; will-change: transform; transform: translateZ(0); }
+.hero-wide .leaf.l { left: calc(50% - min(380px, 50vw) - min(26vw, 250px)); top: -40px; }
+.hero-wide .leaf.r { right: calc(50% - min(380px, 50vw) - min(22vw, 200px)); top: 120px; width: min(40vw, 300px); transform: scaleX(-1) translateZ(0); }
+.hero-wide .mist { position: absolute; top: 40px; width: min(60vw, 520px); height: min(60vw, 520px); border-radius: 50%; background: radial-gradient(circle, rgba(92,98,62,.28), rgba(92,98,62,0) 62%); will-change: transform; }
 .hero-wide .mist.l { left: calc(50% - min(380px, 50vw) - min(34vw, 320px)); }
 .hero-wide .mist.r { right: calc(50% - min(380px, 50vw) - min(34vw, 320px)); top: 180px; }
 .arch, .hero-top, .tag { position: relative; z-index: 1; }
 .arch { box-shadow: 0 0 0 1px rgba(255,253,246,.9), 0 0 0 10px rgba(255,253,246,.35), 0 30px 70px -30px rgba(63,69,43,.5), 0 0 120px rgba(92,98,62,.18), inset 0 0 90px rgba(255,253,246,.9); }
 @media (max-width: 760px) {
-  .hero-wide .leaf { width: 48vw; top: 60px; }
-  .hero-wide .leaf.l { left: -24vw; }
-  .hero-wide .leaf.r { right: -24vw; top: 140px; }
+  .hero-wide .leaf { width: 46vw; }
+  .hero-wide .leaf.l { left: -20vw; top: -30px; }
+  .hero-wide .leaf.r { right: -18vw; top: 110px; width: 40vw; }
   .hero-wide .mist.l { left: -30vw; } .hero-wide .mist.r { right: -30vw; }
 }
 .hero-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
@@ -84,10 +84,14 @@ header.hero { padding-block: 26px 22px; display: grid; grid-template-columns: 1f
 .account a, .account .link { color: var(--ink); background: none; border: 0; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; padding: 0; text-decoration: none; border-bottom: 1px solid var(--line); }
 .arch { position: relative; border-radius: 999px 999px 28px 28px; overflow: hidden; aspect-ratio: 4 / 5; max-height: 520px; width: 100%; background: var(--bg-deep);
   box-shadow: 0 0 0 1px rgba(255,253,246,.9), 0 0 0 10px rgba(255,253,246,.35), 0 30px 70px -30px rgba(29,28,25,.45), inset 0 0 90px rgba(255,253,246,.9); }
-.arch img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; filter: saturate(.85) brightness(1.03); animation: settle 2.4s ease-out both; will-change: filter, transform; }
+.arch img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; filter: saturate(.85) brightness(1.03); animation: settle 2.4s ease-out both; will-change: transform, opacity; transform: translateZ(0); }
+.arch img.blurred { filter: blur(18px) saturate(.85) brightness(1.03); transform: scale(1.1); opacity: 0; }
+.arch { aspect-ratio: 4 / 5; }
 .motion { padding-block: 10px 0; }
 .motion-panel { margin: 0; position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 16 / 9; background: var(--bg-deep); box-shadow: 0 30px 70px -40px rgba(63,69,43,.6), 0 0 0 1px rgba(255,253,246,.8); }
-.motion-panel img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; display: block; filter: blur(14px) saturate(.85); transform: scale(1.08); will-change: filter, transform; transition: filter .15s linear, transform .15s linear; }
+.motion-panel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; display: block; filter: saturate(.85); will-change: transform, opacity; transform: translateZ(0); }
+.motion-panel img.blurred { filter: blur(16px) saturate(.85); transform: scale(1.1); }
+@media (max-width: 560px) { .motion-panel img { object-position: 55% 40%; } .arch img { object-position: 50% 25%; } }
 .motion-panel figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 26px 22px; font-family: var(--serif); font-style: italic; font-size: clamp(20px, 4.4vw, 28px); color: var(--paper); line-height: 1.25; background: linear-gradient(to top, rgba(35,38,28,.72), transparent); text-wrap: balance; }
 .motion-panel figcaption span { display: block; font-style: normal; font-size: .62em; letter-spacing: .26em; text-transform: uppercase; font-family: var(--sans); color: rgba(248,245,237,.85); margin-bottom: 6px; }
 @media (max-width: 560px) { .motion-panel { aspect-ratio: 4 / 5; border-radius: 22px; } }
@@ -131,15 +135,31 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .seg button[aria-pressed="true"] { background: var(--olive-deep); color: var(--paper); border-color: var(--olive-deep); box-shadow: 0 18px 40px -22px rgba(63,69,43,.7); }
 .seg button[aria-pressed="true"] span { color: rgba(248,245,238,.7); }
 
+/* izbor datuma + mesečni kalendar */
+.datebtn { font: inherit; display: inline-flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; min-width: 0; max-width: 100%; transition: border-color .25s, box-shadow .3s; }
+.datebtn:hover { border-color: var(--olive); box-shadow: 0 12px 30px -20px rgba(63,69,43,.6); }
+.datebtn-ico { color: var(--olive); display: grid; }
+.datebtn-txt { font-family: var(--display); font-size: 22px; font-weight: 500; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.datebtn-chev { font-family: var(--display); font-size: 22px; color: var(--ink-soft); transform: rotate(90deg); }
+.modal-root { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 16px; }
+.modal-bg { position: absolute; inset: 0; background: rgba(35,38,28,.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.modal { position: relative; width: min(100%, 380px); background: var(--paper); border: 1px solid var(--line-soft); border-radius: 26px; padding: 22px; display: grid; gap: 12px; box-shadow: 0 40px 80px -30px rgba(35,38,28,.6); animation: rise .25s ease both; }
+.mcal-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.mcal-head b { font-family: var(--display); font-size: 24px; font-weight: 500; text-transform: capitalize; }
+.mcal-nav { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); display: grid; place-items: center; font-family: var(--display); font-size: 24px; line-height: 1; color: var(--olive); cursor: pointer; }
+.mcal-nav:hover { border-color: var(--olive); }
+.mcal-nav[disabled] { opacity: .3; cursor: not-allowed; }
+.mcal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.mcal-dow { text-align: center; font-size: 9px; font-weight: 500; letter-spacing: .14em; color: var(--ink-soft); padding: 2px 0 6px; }
+.mcal-day { aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; font: inherit; font-family: var(--display); font-size: 18px; font-weight: 500; border: 1px solid transparent; background: transparent; color: var(--ink); cursor: pointer; transition: border-color .15s, background .15s; position: relative; }
+.mcal-day:not([disabled]):hover { border-color: var(--olive); }
+.mcal-day[disabled] { color: var(--ink-mute); opacity: .45; cursor: not-allowed; }
+.mcal-day.today { border-color: var(--line); }
+.mcal-day.on { background: var(--olive-deep); border-color: var(--olive-deep); color: var(--paper); }
+.mcal-day.free::after { content: ""; position: absolute; bottom: 5px; left: 50%; width: 4px; height: 4px; border-radius: 50%; background: var(--olive); transform: translateX(-50%); }
+.mcal-day.on.free::after { background: var(--blush); }
+.mcal-foot { font-size: 12px; color: var(--ink-soft); margin: 0; }
 /* dani kao mali lukovi */
-.days { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
-.days button { flex: none; width: 58px; font: inherit; padding: 12px 0 10px; border-radius: 30px 30px 14px 14px; border: 1px solid var(--line-soft); background: var(--paper); color: var(--ink); cursor: pointer; display: grid; justify-items: center; line-height: 1.15; transition: background .25s, border-color .25s, box-shadow .3s; }
-.days button small { font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); }
-.days button strong { font-family: var(--display); font-size: 26px; font-weight: 500; }
-.days button:hover { border-color: var(--line); }
-.days button[aria-pressed="true"] { background: var(--olive-deep); border-color: var(--olive-deep); color: var(--paper); box-shadow: 0 14px 30px -16px rgba(63,69,43,.8); }
-.days button[aria-pressed="true"] small { color: rgba(248,245,238,.7); }
-.days button:disabled { opacity: .35; cursor: not-allowed; }
 
 /* termini */
 .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
@@ -277,35 +297,16 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
 <div class="hero-clip"><header class="wrap hero">
   <div class="hero-wide" aria-hidden="true">
     <div class="mist l" data-speed="-.08"></div><div class="mist r" data-speed=".06"></div>
-    <div class="leaf l" data-speed=".18"><svg viewBox="0 0 300 420" aria-hidden="true">
-      <defs>
-        <linearGradient id="lga" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b9170"/><stop offset=".55" stop-color="#5c623e"/><stop offset="1" stop-color="#3f452b"/></linearGradient>
-        <linearGradient id="lha" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf5" stop-opacity=".45"/><stop offset="1" stop-color="#fffdf5" stop-opacity="0"/></linearGradient>
-      </defs>
-      <path d="M150 420 C150 320 140 240 120 150" fill="none" stroke="#3f452b" stroke-width="5" stroke-linecap="round" opacity=".9"/>
-      <path d="M120 150 C40 130 -10 70 12 0 C100 10 170 60 190 140 C200 180 165 170 120 150 Z" fill="url(#lga)"/>
-      <path d="M120 150 C70 120 40 70 30 20 C90 40 140 80 165 135 C150 150 135 155 120 150 Z" fill="url(#lha)"/>
-      <path d="M118 148 C100 110 96 70 104 32" fill="none" stroke="#d9b4a6" stroke-width="9" stroke-linecap="round" opacity=".85"/>
-      <path d="M150 300 C210 280 250 230 252 170 C200 190 165 240 150 300 Z" fill="url(#lga)" opacity=".85"/>
-    </svg></div>
-    <div class="leaf r" data-speed=".32"><svg viewBox="0 0 300 420" aria-hidden="true">
-      <defs>
-        <linearGradient id="lgb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b9170"/><stop offset=".55" stop-color="#5c623e"/><stop offset="1" stop-color="#3f452b"/></linearGradient>
-        <linearGradient id="lhb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf5" stop-opacity=".45"/><stop offset="1" stop-color="#fffdf5" stop-opacity="0"/></linearGradient>
-      </defs>
-      <path d="M150 420 C150 320 140 240 120 150" fill="none" stroke="#3f452b" stroke-width="5" stroke-linecap="round" opacity=".9"/>
-      <path d="M120 150 C40 130 -10 70 12 0 C100 10 170 60 190 140 C200 180 165 170 120 150 Z" fill="url(#lgb)"/>
-      <path d="M120 150 C70 120 40 70 30 20 C90 40 140 80 165 135 C150 150 135 155 120 150 Z" fill="url(#lhb)"/>
-      <path d="M118 148 C100 110 96 70 104 32" fill="none" stroke="#d9b4a6" stroke-width="9" stroke-linecap="round" opacity=".85"/>
-      <path d="M150 300 C210 280 250 230 252 170 C200 190 165 240 150 300 Z" fill="url(#lgb)" opacity=".85"/>
-    </svg></div>
+    <img class="leaf l" src="/img/calla-l.webp" alt="" width="700" height="1865" decoding="async" data-speed=".16">
+    <img class="leaf r" src="/img/calla-r.webp" alt="" width="606" height="1525" decoding="async" data-speed=".28">
   </div>
   <div class="hero-top">
     <img class="logo" src="/logo.svg" alt="Ritual Pilates Studio" width="64" height="64">
     <div class="account" id="account"></div>
   </div>
   <div class="arch">
-    <img src="/img/pokret.jpg" alt="Pokret u studiju Ritual" width="1400" height="1871" fetchpriority="high" data-blur="hero">
+    <img src="/img/pokret.jpg" alt="" class="blurred" width="1400" height="1871" aria-hidden="true" decoding="async">
+    <img src="/img/pokret.jpg" alt="Pokret u studiju Ritual" width="1400" height="1871" fetchpriority="high" decoding="async" data-blur="hero">
     <div class="brand">
       <p class="eyebrow">Reformer pilates · Dorćol</p>
       <h1>Ritual<span>Pilates studio</span></h1>
@@ -316,7 +317,8 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
 </header></div>
 <section class="wrap motion" aria-label="Trening u studiju">
   <figure class="motion-panel">
-    <img src="/img/trening.jpg" alt="Vežba na reformeru u studiju Ritual" width="1400" height="1871" loading="lazy" data-blur="focus">
+    <img src="/img/trening.jpg" alt="" class="blurred" width="1400" height="1871" aria-hidden="true" loading="lazy" decoding="async">
+    <img src="/img/trening.jpg" alt="Vežba na reformeru u studiju Ritual" width="1400" height="1871" loading="lazy" decoding="async" data-blur="focus">
     <figcaption><span>Svaki pokret ima svrhu,</span> a svaka žena svoj prostor.</figcaption>
   </figure>
 </section>
@@ -344,7 +346,11 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
     <div class="seg" id="type-seg" role="group" aria-label="Vrsta treninga"></div>
     <div>
       <h3 class="label">Dan</h3>
-      <div class="days" id="days"></div>
+      <button type="button" class="datebtn" id="day-btn" aria-haspopup="dialog">
+        <span class="datebtn-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+        <span class="datebtn-txt" id="day-label">Izaberite dan</span>
+        <span class="datebtn-chev" aria-hidden="true">›</span>
+      </button>
     </div>
     <div>
       <h3 class="label" id="slots-title">Termini</h3>
@@ -485,9 +491,13 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
       <p class="lead">Ko je zakazan po terminima. „Kasno otkazao“ oslobađa mesto, a trening se računa kao iskorišćen. „Otkaži“ vraća trening u paket.</p>
     </div>
     <div class="actions">
-      <button class="btn ghost" type="button" id="adm-prev">‹ Prethodni dan</button>
-      <input type="date" id="adm-date" class="input">
-      <button class="btn ghost" type="button" id="adm-next">Sledeći dan ›</button>
+      <button class="btn ghost" type="button" id="adm-prev" aria-label="Prethodni dan">‹</button>
+      <button type="button" class="datebtn" id="adm-date-btn" aria-haspopup="dialog">
+        <span class="datebtn-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+        <span class="datebtn-txt" id="adm-date-label"></span>
+        <span class="datebtn-chev" aria-hidden="true">›</span>
+      </button>
+      <button class="btn ghost" type="button" id="adm-next" aria-label="Sledeći dan">›</button>
     </div>
     <div id="adm-day" class="list"></div>
     <details class="card" id="adm-override">
@@ -527,6 +537,19 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
 </main>
 
 <footer>it’s pilates time<span>Ritual · Skenderbegova 53 · Beograd</span></footer>
+<div class="modal-root" id="modal-root" hidden>
+  <div class="modal-bg" data-close></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mcal-title">
+    <div class="mcal-head">
+      <button type="button" class="mcal-nav" id="mcal-prev" aria-label="Prethodni mesec">‹</button>
+      <b id="mcal-title"></b>
+      <button type="button" class="mcal-nav" id="mcal-next" aria-label="Sledeći mesec">›</button>
+    </div>
+    <div class="mcal-grid" id="mcal-grid"></div>
+    <p class="mcal-foot" id="mcal-foot"></p>
+    <button type="button" class="btn ghost" data-close style="justify-self:end">Zatvori</button>
+  </div>
+</div>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
@@ -643,12 +666,7 @@ function renderBooking() {
   if (!S.slots || S.slots.type !== S.type) return;
   const open = d => d.slots.some(s => !s.past);
   if (!S.day || !S.slots.days.some(d => d.date === S.day && open(d))) S.day = (S.slots.days.find(open) || {}).date || null;
-  const days = $("#days"); days.replaceChildren();
-  for (const d of S.slots.days) {
-    const dt = parseD(d.date);
-    days.append(el("button", { type: "button", disabled: !open(d), "aria-pressed": String(S.day === d.date), "aria-label": fmtDayLong(d.date), onclick: () => { S.day = d.date; S.selected = null; renderBooking(); } },
-      el("small", {}, DAYS[dt.getDay()]), el("strong", {}, dt.getDate()), el("small", {}, MONTHS[dt.getMonth()])));
-  }
+  $("#day-label").textContent = S.day ? fmtDayLong(S.day) : "Izaberite dan";
   const box = $("#slots"); box.replaceChildren();
   const form = $("#confirm");
   if (!S.day) { box.append(el("div", { class: "empty" }, "Trenutno nema slobodnih termina za ovu vrstu treninga.")); form.hidden = true; return; }
@@ -689,6 +707,44 @@ function activePackage(type, date) {
     .sort((a, b) => a.validUntil.localeCompare(b.validUntil))[0] || null;
 }
 $("#f-trial").addEventListener("change", renderBooking);
+$("#day-btn").addEventListener("click", () => openCalendar({
+  selected: S.day, minDate: dstr(new Date()), months: 3,
+  isFree: date => { const d = S.slots && S.slots.days.find(x => x.date === date); return !!(d && d.slots.some(s => !s.past && s.taken < s.cap)); },
+  isOpen: date => { const d = S.slots && S.slots.days.find(x => x.date === date); return !!(d && d.slots.some(s => !s.past)); },
+  foot: "Tačkica označava dan sa slobodnim terminima. Zakazivanje je moguće do " + (S.pub ? S.pub.bookAheadDays : 90) + " dana unapred.",
+  onPick: date => { S.day = date; S.selected = null; renderBooking(); }
+}));
+
+/* ---------- mesečni kalendar (pop-up) ---------- */
+const MONTHS_LONG = ["januar","februar","mart","april","maj","jun","jul","avgust","septembar","oktobar","novembar","decembar"];
+const CAL = { opts: null, off: 0 };
+function openCalendar(opts) {
+  CAL.opts = opts;
+  const t = new Date(), base = opts.selected ? parseD(opts.selected) : t;
+  CAL.off = (base.getFullYear() - t.getFullYear()) * 12 + base.getMonth() - t.getMonth();
+  CAL.off = Math.max(opts.minOff ?? 0, Math.min(opts.months - 1, CAL.off));
+  renderCalendar(); $("#modal-root").hidden = false; $("#mcal-grid").querySelector(".mcal-day:not([disabled])")?.focus();
+}
+function closeCalendar() { $("#modal-root").hidden = true; }
+function renderCalendar() {
+  const o = CAL.opts, t = new Date(), first = new Date(t.getFullYear(), t.getMonth() + CAL.off, 1);
+  $("#mcal-title").textContent = MONTHS_LONG[first.getMonth()] + " " + first.getFullYear() + ".";
+  $("#mcal-prev").disabled = CAL.off <= (o.minOff ?? 0); $("#mcal-next").disabled = CAL.off >= o.months - 1;
+  $("#mcal-foot").textContent = o.foot || "";
+  const grid = $("#mcal-grid"); grid.replaceChildren(...["PON","UTO","SRE","ČET","PET","SUB","NED"].map(x => el("span", { class: "mcal-dow" }, x)));
+  const lead = (first.getDay() + 6) % 7; for (let i = 0; i < lead; i++) grid.append(el("span"));
+  const todayKey = dstr(t), days = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  for (let d = 1; d <= days; d++) {
+    const key = dstr(new Date(first.getFullYear(), first.getMonth(), d));
+    const ok = (!o.minDate || key >= o.minDate) && (!o.maxDate || key <= o.maxDate) && (!o.isOpen || o.isOpen(key));
+    grid.append(el("button", { type: "button", class: "mcal-day" + (key === todayKey ? " today" : "") + (o.selected === key ? " on" : "") + (ok && o.isFree && o.isFree(key) ? " free" : ""),
+      disabled: !ok, "aria-label": fmtDayLong(key), onclick: () => { closeCalendar(); o.onPick(key); } }, d));
+  }
+}
+$("#mcal-prev").addEventListener("click", () => { CAL.off--; renderCalendar(); });
+$("#mcal-next").addEventListener("click", () => { CAL.off++; renderCalendar(); });
+$("#modal-root").addEventListener("click", e => { if (e.target.closest("[data-close]")) closeCalendar(); });
+addEventListener("keydown", e => { if (e.key === "Escape" && !$("#modal-root").hidden) closeCalendar(); });
 $("#confirm").addEventListener("submit", async e => {
   e.preventDefault();
   if (!S.me || !S.selected) return;
@@ -785,7 +841,7 @@ function renderPublic() {
 
 /* ---------- admin: raspored ---------- */
 async function loadAdminDay() {
-  $("#adm-date").value = S.admDate;
+  $("#adm-date-label").textContent = fmtDayLong(S.admDate) + " " + parseD(S.admDate).getFullYear() + ".";
   let d; try { d = await api("/api/admin/day?date=" + S.admDate); } catch (e) { toast(e.message); return; }
   $("#ov-g").value = d.g.join(", "); $("#ov-p").value = d.p.join(", ");
   const list = $("#adm-day"); list.replaceChildren();
@@ -836,7 +892,7 @@ function addToSlotForm(s) {
     if (await act(() => api("/api/admin/bookings", { email: sel.value, date: S.admDate, start: s.start, type: type.value, force: true }), "Klijent je upisan u termin.")) { S.clients = null; loadAdminDay(); }
   } }, sel, types.length > 1 ? type : null, el("button", { class: "btn ghost", type: "submit" }, "Upiši"));
 }
-$("#adm-date").addEventListener("change", e => { if (e.target.value) { S.admDate = e.target.value; loadAdminDay(); } });
+$("#adm-date-btn").addEventListener("click", () => openCalendar({ selected: S.admDate, months: 4, minOff: -1, foot: "Pregled rasporeda po danima.", onPick: d => { S.admDate = d; loadAdminDay(); } }));
 $("#adm-prev").addEventListener("click", () => { S.admDate = addDays(S.admDate, -1); loadAdminDay(); });
 $("#adm-next").addEventListener("click", () => { S.admDate = addDays(S.admDate, 1); loadAdminDay(); });
 const times = s => s.split(/[,\s]+/).map(x => x.trim()).filter(Boolean).map(x => /^\d:\d\d$/.test(x) ? "0" + x : x);
@@ -987,7 +1043,7 @@ window.addEventListener("hashchange", route);
 /* ---------- lagano pomeranje zelenila pri skrolu ---------- */
 (function () {
   const items = [...document.querySelectorAll("[data-speed]")];
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { document.querySelectorAll("[data-blur]").forEach(i => { i.style.filter = "none"; i.style.transform = "none"; }); return; }
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { document.querySelectorAll("[data-blur]").forEach(i => { i.style.opacity = "1"; i.style.transform = "none"; }); return; }
   const base = items.map(e => getComputedStyle(e).transform === "none" ? "" : getComputedStyle(e).transform);
   let ticking = false;
   const blurs = [...document.querySelectorAll("[data-blur]")];
@@ -997,17 +1053,19 @@ window.addEventListener("hashchange", route);
     items.forEach((e, i) => { e.style.transform = `translate3d(0, ${Math.round(y * parseFloat(e.dataset.speed))}px, 0) ${base[i]}`; });
     for (const img of blurs) {
       const r = img.getBoundingClientRect();
+      // zamućena kopija je unapred izračunata; menja se samo providnost i pomeraj (jeftino za GPU)
+      const blurred = img.previousElementSibling;
       if (img.dataset.blur === "hero") {
-        // hero se zamućuje i lagano uvećava kako odlazi iz vidnog polja
         const p = clamp(-r.top / Math.max(r.height, 1), 0, 1);
-        img.style.filter = `blur(${(p * 16).toFixed(1)}px) saturate(.85) brightness(1.03)`;
-        img.style.transform = `scale(${1 + p * .08}) translateY(${(p * 10).toFixed(1)}%)`;
+        img.style.opacity = (1 - p).toFixed(3);
+        img.style.transform = `translate3d(0, ${(p * 8).toFixed(1)}%, 0) scale(${1 + p * .06})`;
+        if (blurred) { blurred.style.opacity = p.toFixed(3); blurred.style.transform = `translate3d(0, ${(p * 8).toFixed(1)}%, 0) scale(${1.1 + p * .06})`; }
       } else {
-        // slika je oštra kad je u sredini ekrana, zamućena na ivicama
         const center = r.top + r.height / 2, d = Math.abs(center - innerHeight / 2) / (innerHeight / 2);
         const p = clamp((d - .3) / .5, 0, 1);
-        img.style.filter = `blur(${(p * 14).toFixed(1)}px) saturate(.85)`;
-        img.style.transform = `scale(${1.02 + p * .06})`;
+        img.style.opacity = (1 - p).toFixed(3);
+        img.style.transform = `scale(${1.02 + p * .05})`;
+        if (blurred) blurred.style.transform = `scale(${1.1 + p * .05})`;
       }
     }
     ticking = false;
