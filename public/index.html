@@ -16,9 +16,12 @@
 /* Layout: ivory studio ground, backlit arches as the recurring form (hero, days, panes), black reformer
    leather for ink, olive from the logo, blush from the logotype. Serif italic voice, slow light. */
 :root {
-  --bg: #eee8dc;
-  --bg-deep: #e3dccc;
-  --paper: #f8f5ed;
+  --bg: #ebe2d2;
+  --bg-deep: #ded2bd;
+  --paper: #f8f3e8;
+  --sun: #d7a85b;
+  --clay: #b9805f;
+  --earth: #5a4634;
   --glow: #fffdf5;
   --line: rgba(29, 28, 25, 0.12);
   --line-soft: rgba(29, 28, 25, 0.07);
@@ -70,6 +73,29 @@ header.hero { padding-block: 26px 22px; display: grid; grid-template-columns: 1f
 .hero-wide .mist { position: absolute; top: 40px; width: min(60vw, 520px); height: min(60vw, 520px); border-radius: 50%; background: radial-gradient(circle, rgba(92,98,62,.28), rgba(92,98,62,0) 62%); will-change: transform; }
 .hero-wide .mist.l { left: calc(50% - min(380px, 50vw) - min(34vw, 320px)); }
 .hero-wide .mist.r { right: calc(50% - min(380px, 50vw) - min(34vw, 320px)); top: 180px; }
+/* sunce: topli disk iza luka koji lagano „diše“ */
+.hero-wide .sun { position: absolute; left: 50%; top: 150px; width: min(120vw, 820px); aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%;
+  background: radial-gradient(circle, rgba(215,168,91,.55) 0%, rgba(215,168,91,.28) 28%, rgba(215,168,91,0) 62%); animation: breathe 9s ease-in-out infinite alternate; will-change: transform, opacity; }
+@keyframes breathe { from { transform: translateX(-50%) scale(.96); opacity: .85; } to { transform: translateX(-50%) scale(1.04); opacity: 1; } }
+/* senka lišća na zidu: pomera se sporo, kao na vetru */
+.hero-wide .shadow { position: absolute; top: -8%; width: min(90vw, 640px); height: auto; mix-blend-mode: multiply; opacity: .75; animation: sway 14s ease-in-out infinite alternate; will-change: transform; pointer-events: none; }
+.hero-wide .shadow.a { left: calc(50% - 560px); transform-origin: 50% 0; }
+.hero-wide .shadow.b { right: calc(50% - 600px); top: 10%; transform: scaleX(-1); animation-duration: 17s; animation-delay: -6s; }
+@keyframes sway { from { transform: var(--flip, none) rotate(-1.2deg) translate3d(0,0,0); } to { transform: var(--flip, none) rotate(1.4deg) translate3d(14px, 6px, 0); } }
+.hero-wide .shadow.b { --flip: scaleX(-1); }
+@media (max-width: 760px) { .hero-wide .shadow.a { left: -30vw; } .hero-wide .shadow.b { right: -40vw; } .hero-wide .sun { top: 120px; } }
+/* zemlja: tamna, topla traka sa vrednostima studija */
+.earth { padding-block: 26px 0; }
+.earth-panel { border-radius: 28px; padding: clamp(28px, 6vw, 48px) clamp(22px, 5vw, 44px); color: var(--paper); position: relative; overflow: hidden;
+  background: linear-gradient(160deg, #6b5240 0%, var(--earth) 45%, #3f3125 100%); box-shadow: 0 30px 70px -40px rgba(63,49,37,.8); }
+.earth-panel::before { content: ""; position: absolute; right: -18%; top: -55%; width: 70%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(215,168,91,.5), rgba(215,168,91,0) 65%); }
+.earth-panel .eyebrow { color: rgba(215,168,91,.95); }
+.earth-panel h3 { font-family: var(--display); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--paper); font-size: clamp(28px, 6vw, 40px); line-height: 1.1; margin: 8px 0 22px; text-wrap: balance; }
+.earth-panel ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.earth-panel li b { display: block; font-family: var(--display); font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+.earth-panel li span { font-size: 13px; color: rgba(248,243,232,.78); line-height: 1.5; }
+.earth-panel .sunline { width: 44px; height: 1px; background: var(--sun); margin-top: 26px; }
+@media (max-width: 560px) { .earth-panel ul { grid-template-columns: 1fr; gap: 14px; } }
 .arch, .hero-top, .tag { position: relative; z-index: 1; }
 .arch { box-shadow: 0 0 0 1px rgba(255,253,246,.9), 0 0 0 10px rgba(255,253,246,.35), 0 30px 70px -30px rgba(63,69,43,.5), 0 0 120px rgba(92,98,62,.18), inset 0 0 40px rgba(255,253,246,.45); }
 @media (max-width: 760px) {
@@ -101,7 +127,7 @@ header.hero { padding-block: 26px 22px; display: grid; grid-template-columns: 1f
 .brand .eyebrow { font-size: 10px; letter-spacing: .36em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 8px; }
 .brand h1 { font-family: var(--display); font-weight: 400; font-size: clamp(44px, 11vw, 74px); line-height: .9; margin: 0; letter-spacing: .12em; color: var(--ink); text-transform: uppercase; }
 .brand h1 span { display: block; font-size: 11px; letter-spacing: .42em; font-family: var(--sans); font-weight: 400; color: var(--ink-soft); margin-top: 10px; }
-.brand .rule { width: 34px; height: 1px; background: var(--ink); margin: 12px auto 0; opacity: .6; }
+.brand .rule { width: 34px; height: 1px; background: var(--sun); margin: 12px auto 0; opacity: .9; }
 .tag { font-family: var(--serif); font-weight: 500; font-size: clamp(20px, 4.6vw, 25px); color: var(--ink-soft); margin: 0; text-align: center; line-height: 1.3; text-wrap: balance; }
 
 /* navigacija */
@@ -156,7 +182,7 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .mcal-day[disabled] { color: var(--ink-mute); opacity: .45; cursor: not-allowed; }
 .mcal-day.today { border-color: var(--line); }
 .mcal-day.on { background: var(--olive-deep); border-color: var(--olive-deep); color: var(--paper); }
-.mcal-day.free::after { content: ""; position: absolute; bottom: 5px; left: 50%; width: 4px; height: 4px; border-radius: 50%; background: var(--olive); transform: translateX(-50%); }
+.mcal-day.free::after { content: ""; position: absolute; bottom: 5px; left: 50%; width: 4px; height: 4px; border-radius: 50%; background: var(--sun); transform: translateX(-50%); }
 .mcal-day.on.free::after { background: var(--blush); }
 .mcal-foot { font-size: 12px; color: var(--ink-soft); margin: 0; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -228,7 +254,7 @@ a.row:hover { border-color: var(--line); }
 .rules { gap: 24px; }
 .rules ul { margin: 10px 0 0; padding-left: 0; list-style: none; display: grid; gap: 10px; max-width: 60ch; font-family: var(--serif); font-size: 19px; font-weight: 500; line-height: 1.4; }
 .rules li { padding-left: 22px; position: relative; }
-.rules li::before { content: ""; position: absolute; left: 0; top: .7em; width: 10px; height: 1px; background: var(--olive); }
+.rules li::before { content: ""; position: absolute; left: 0; top: .7em; width: 10px; height: 1px; background: var(--sun); }
 .rules strong { color: var(--olive); font-weight: 600; }
 .kv { display: grid; grid-template-columns: 130px 1fr; gap: 12px 18px; margin: 0; }
 .kv dt { font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--ink-soft); padding-top: 4px; }
@@ -277,7 +303,7 @@ details[open].card summary::after { content: "–"; }
 textarea.input { resize: vertical; }
 
 .toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--olive-deep); color: var(--paper); padding: 13px 20px; border-radius: 14px; font-size: 14px; max-width: calc(100% - 32px); z-index: 20; box-shadow: 0 16px 40px -10px rgba(29,28,25,.5); animation: rise .3s ease both; }
-footer { padding-block: 24px 50px; color: var(--ink-mute); text-align: center; font-family: var(--serif); font-weight: 500; letter-spacing: .08em; font-size: 17px; }
+footer { padding-block: 24px 50px; color: var(--earth); text-align: center; font-family: var(--serif); font-weight: 500; letter-spacing: .08em; font-size: 17px; }
 footer span { display: block; font-family: var(--sans); font-style: normal; font-size: 9px; letter-spacing: .3em; text-transform: uppercase; margin-top: 6px; }
 
 @media (max-width: 560px) {
@@ -304,7 +330,10 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
 </div>
 <div class="hero-clip"><header class="wrap hero">
   <div class="hero-wide" aria-hidden="true">
+    <div class="sun" aria-hidden="true"></div>
     <div class="mist l" data-speed="-.08"></div><div class="mist r" data-speed=".06"></div>
+    <img class="shadow a" src="/img/shadow.webp" alt="" width="900" height="1400" decoding="async">
+    <img class="shadow b" src="/img/shadow.webp" alt="" width="900" height="1400" decoding="async">
     <img class="leaf l" src="/img/calla.webp" alt="" width="1206" height="1861" decoding="async" data-open="-1">
     <img class="leaf r" src="/img/calla.webp" alt="" width="1206" height="1861" decoding="async" data-open="1">
   </div>
@@ -329,6 +358,18 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
     <img src="/img/trening.jpg" alt="Vežba na reformeru u studiju Ritual" width="1400" height="1871" loading="lazy" decoding="async" data-blur="focus">
     <figcaption><span>Svaki pokret ima svrhu,</span> a svaka žena svoj prostor.</figcaption>
   </figure>
+</section>
+<section class="wrap earth" aria-label="Sunce i zemlja">
+  <div class="earth-panel">
+    <p class="eyebrow">Sunce i zemlja</p>
+    <h3>Energija koja greje, mir koji nosi.</h3>
+    <ul>
+      <li><b>Harmonija</b><span>Dah, pokret i misao u istom ritmu. Reformer vodi telo, ti vodiš pažnju.</span></li>
+      <li><b>Toplina</b><span>Mala grupa, do pet žena na času, i trener koji zna tvoje ime i tvoja leđa.</span></li>
+      <li><b>Spokoj</b><span>Pedeset pet minuta bez telefona i žurbe. Izlaziš lakša nego što si ušla.</span></li>
+    </ul>
+    <div class="sunline" aria-hidden="true"></div>
+  </div>
 </section>
 
 <nav class="tabs" aria-label="Glavni meni">
