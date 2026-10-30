@@ -67,9 +67,9 @@ a { color: var(--olive); text-decoration-color: rgba(92,98,62,.35); text-underli
 header.hero { padding-block: 26px 22px; display: grid; grid-template-columns: 1fr; gap: 18px; position: relative; }
 .hero-clip { overflow: hidden; }
 .hero-wide { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-.hero-wide .leaf { position: absolute; bottom: -6%; height: 112%; width: auto; opacity: .96; will-change: transform, opacity; transform-origin: 50% 100%; }
-.hero-wide .leaf.l { left: calc(50% - min(380px, 50vw) - min(16vw, 150px)); --dir: -1; }
-.hero-wide .leaf.r { right: calc(50% - min(380px, 50vw) - min(16vw, 150px)); --dir: 1; }
+.hero-wide .leaf { position: absolute; bottom: 2%; height: 62%; width: auto; opacity: .62; will-change: transform; }
+.hero-wide .leaf.l { left: calc(50% - min(380px, 50vw) - min(30vw, 330px)); }
+.hero-wide .leaf.r { right: calc(50% - min(380px, 50vw) - min(30vw, 330px)); transform: scaleX(-1); }
 .hero-wide .mist { position: absolute; top: 40px; width: min(60vw, 520px); height: min(60vw, 520px); border-radius: 50%; background: radial-gradient(circle, rgba(92,98,62,.28), rgba(92,98,62,0) 62%); will-change: transform; }
 .hero-wide .mist.l { left: calc(50% - min(380px, 50vw) - min(34vw, 320px)); }
 .hero-wide .mist.r { right: calc(50% - min(380px, 50vw) - min(34vw, 320px)); top: 180px; }
@@ -77,31 +77,13 @@ header.hero { padding-block: 26px 22px; display: grid; grid-template-columns: 1f
 .hero-wide .sun { position: absolute; left: 50%; top: 150px; width: min(120vw, 820px); aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%;
   background: radial-gradient(circle, rgba(215,168,91,.55) 0%, rgba(215,168,91,.28) 28%, rgba(215,168,91,0) 62%); animation: breathe 9s ease-in-out infinite alternate; will-change: transform, opacity; }
 @keyframes breathe { from { transform: translateX(-50%) scale(.96); opacity: .85; } to { transform: translateX(-50%) scale(1.04); opacity: 1; } }
-/* senka lišća na zidu: pomera se sporo, kao na vetru */
-.hero-wide .shadow { position: absolute; top: -8%; width: min(90vw, 640px); height: auto; mix-blend-mode: multiply; opacity: .75; animation: sway 14s ease-in-out infinite alternate; will-change: transform; pointer-events: none; }
-.hero-wide .shadow.a { left: calc(50% - 560px); transform-origin: 50% 0; }
-.hero-wide .shadow.b { right: calc(50% - 600px); top: 10%; transform: scaleX(-1); animation-duration: 17s; animation-delay: -6s; }
-@keyframes sway { from { transform: var(--flip, none) rotate(-1.2deg) translate3d(0,0,0); } to { transform: var(--flip, none) rotate(1.4deg) translate3d(14px, 6px, 0); } }
-.hero-wide .shadow.b { --flip: scaleX(-1); }
-@media (max-width: 760px) { .hero-wide .shadow.a { left: -30vw; } .hero-wide .shadow.b { right: -40vw; } .hero-wide .sun { top: 120px; } }
-/* zemlja: tamna, topla traka sa vrednostima studija */
-.earth { padding-block: 26px 0; }
-.earth-panel { border-radius: 28px; padding: clamp(28px, 6vw, 48px) clamp(22px, 5vw, 44px); color: var(--paper); position: relative; overflow: hidden;
-  background: linear-gradient(160deg, #6b5240 0%, var(--earth) 45%, #3f3125 100%); box-shadow: 0 30px 70px -40px rgba(63,49,37,.8); }
-.earth-panel::before { content: ""; position: absolute; right: -18%; top: -55%; width: 70%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(215,168,91,.5), rgba(215,168,91,0) 65%); }
-.earth-panel .eyebrow { color: rgba(215,168,91,.95); }
-.earth-panel h3 { font-family: var(--display); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--paper); font-size: clamp(28px, 6vw, 40px); line-height: 1.1; margin: 8px 0 22px; text-wrap: balance; }
-.earth-panel ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-.earth-panel li b { display: block; font-family: var(--display); font-size: 22px; font-weight: 500; margin-bottom: 4px; }
-.earth-panel li span { font-size: 13px; color: rgba(248,243,232,.78); line-height: 1.5; }
-.earth-panel .sunline { width: 44px; height: 1px; background: var(--sun); margin-top: 26px; }
-@media (max-width: 560px) { .earth-panel ul { grid-template-columns: 1fr; gap: 14px; } }
+@media (max-width: 760px) { .hero-wide .sun { top: 120px; } }
 .arch, .hero-top, .tag { position: relative; z-index: 1; }
-.arch { box-shadow: 0 0 0 1px rgba(255,253,246,.9), 0 0 0 10px rgba(255,253,246,.35), 0 30px 70px -30px rgba(63,69,43,.5), 0 0 120px rgba(92,98,62,.18), inset 0 0 40px rgba(255,253,246,.45); }
+.arch { box-shadow: 0 0 0 1px rgba(255,253,246,.9), 0 0 0 10px rgba(255,253,246,.35), 0 30px 70px -30px rgba(63,69,43,.5), 0 0 120px rgba(92,98,62,.18); }
 @media (max-width: 760px) {
-  .hero-wide .leaf { height: 72%; bottom: 30%; opacity: .9; }
-  .hero-wide .leaf.l { left: -30vw; }
-  .hero-wide .leaf.r { right: -30vw; }
+  .hero-wide .leaf { height: 40%; bottom: 10%; opacity: .5; }
+  .hero-wide .leaf.l { left: -26vw; }
+  .hero-wide .leaf.r { right: -26vw; }
   .hero-wide .mist.l { left: -30vw; } .hero-wide .mist.r { right: -30vw; }
 }
 .hero-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
@@ -109,20 +91,18 @@ header.hero { padding-block: 26px 22px; display: grid; grid-template-columns: 1f
 .account { display: flex; gap: 14px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft); }
 .account a, .account .link { color: var(--ink); background: none; border: 0; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; padding: 0; text-decoration: none; border-bottom: 1px solid var(--line); }
 .arch { position: relative; border-radius: 999px 999px 28px 28px; overflow: hidden; aspect-ratio: 4 / 5; max-height: 520px; width: 100%; background: var(--bg-deep);
-  box-shadow: 0 0 0 1px rgba(255,253,246,.9), 0 0 0 10px rgba(255,253,246,.35), 0 30px 70px -30px rgba(29,28,25,.45), inset 0 0 40px rgba(255,253,246,.45); }
-.arch img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; filter: saturate(.85) brightness(1.03); animation: settle 2.4s ease-out both; will-change: transform, opacity; transform: translateZ(0); }
-.arch img.blurred { filter: blur(9px) saturate(.85) brightness(1.03); transform: scale(1.1); opacity: 0; }
+  box-shadow: 0 0 0 1px rgba(255,253,246,.9), 0 0 0 10px rgba(255,253,246,.35), 0 30px 70px -30px rgba(29,28,25,.45), inset 0 0 0 1px rgba(255,253,246,.5); }
+.arch img { position: absolute; inset: -6% 0; width: 100%; height: 112%; object-fit: cover; object-position: 50% 40%; display: block; animation: settle 1.6s ease-out both; will-change: transform; }
 .arch { aspect-ratio: 4 / 5; }
 .motion { padding-block: 10px 0; }
 .motion-panel { margin: 0; position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 16 / 9; background: var(--bg-deep); box-shadow: 0 30px 70px -40px rgba(63,69,43,.6), 0 0 0 1px rgba(255,253,246,.8); }
-.motion-panel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; display: block; filter: saturate(.85); will-change: transform, opacity; transform: translateZ(0); }
-.motion-panel img.blurred { filter: blur(16px) saturate(.85); transform: scale(1.1); }
+.motion-panel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; display: block; }
 @media (max-width: 560px) { .motion-panel img { object-position: 55% 40%; } .arch img { object-position: 50% 25%; } }
 .motion-panel figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 26px 22px; font-family: var(--serif); font-style: italic; font-size: clamp(20px, 4.4vw, 28px); color: var(--paper); line-height: 1.25; background: linear-gradient(to top, rgba(35,38,28,.72), transparent); text-wrap: balance; }
 .motion-panel figcaption span { display: block; font-style: normal; font-size: .62em; letter-spacing: .26em; text-transform: uppercase; font-family: var(--sans); color: rgba(248,245,237,.85); margin-bottom: 6px; }
 @media (max-width: 560px) { .motion-panel { aspect-ratio: 4 / 5; border-radius: 22px; } }
 @keyframes settle { from { opacity: 0; } to { opacity: 1; } }
-.arch::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(239,234,224,.96) 0%, rgba(239,234,224,.55) 26%, transparent 52%); }
+.arch::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(235,226,210,.97) 0%, rgba(235,226,210,.6) 24%, transparent 48%); }
 .arch .brand { position: absolute; left: 0; right: 0; bottom: 24px; text-align: center; z-index: 1; padding: 0 16px; }
 .brand .eyebrow { font-size: 10px; letter-spacing: .36em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 8px; }
 .brand h1 { font-family: var(--display); font-weight: 400; font-size: clamp(44px, 11vw, 74px); line-height: .9; margin: 0; letter-spacing: .12em; color: var(--ink); text-transform: uppercase; }
@@ -332,18 +312,15 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
   <div class="hero-wide" aria-hidden="true">
     <div class="sun" aria-hidden="true"></div>
     <div class="mist l" data-speed="-.08"></div><div class="mist r" data-speed=".06"></div>
-    <img class="shadow a" src="/img/shadow.webp" alt="" width="900" height="1400" decoding="async">
-    <img class="shadow b" src="/img/shadow.webp" alt="" width="900" height="1400" decoding="async">
-    <img class="leaf l" src="/img/calla.webp" alt="" width="1206" height="1861" decoding="async" data-open="-1">
-    <img class="leaf r" src="/img/calla.webp" alt="" width="1206" height="1861" decoding="async" data-open="1">
+    <img class="leaf l" src="/img/calla.webp" alt="" width="1206" height="1861" decoding="async" data-speed=".10">
+    <img class="leaf r" src="/img/calla.webp" alt="" width="1206" height="1861" decoding="async" data-speed=".16">
   </div>
   <div class="hero-top">
     <img class="logo" src="/logo.svg" alt="Ritual Pilates Studio" width="64" height="64">
     <div class="account" id="account"></div>
   </div>
   <div class="arch">
-    <img src="/img/pokret.jpg" alt="" class="blurred" width="1400" height="1871" aria-hidden="true" decoding="async">
-    <img src="/img/pokret.jpg" alt="Pokret u studiju Ritual" width="1400" height="1871" fetchpriority="high" decoding="async" data-blur="hero">
+    <img src="/img/studio.jpg" alt="Studio Ritual: reformeri ispod lučnih prolaza" width="1400" height="1871" fetchpriority="high" decoding="async" data-speed="-.06">
     <div class="brand">
       <p class="eyebrow">Reformer pilates · Dorćol</p>
       <h1>Ritual<span>Pilates studio</span></h1>
@@ -354,22 +331,9 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
 </header></div>
 <section class="wrap motion" aria-label="Trening u studiju">
   <figure class="motion-panel">
-    <img src="/img/trening.jpg" alt="" class="blurred" width="1400" height="1871" aria-hidden="true" loading="lazy" decoding="async">
-    <img src="/img/trening.jpg" alt="Vežba na reformeru u studiju Ritual" width="1400" height="1871" loading="lazy" decoding="async" data-blur="focus">
+    <img src="/img/trening.jpg" alt="Vežba na reformeru u studiju Ritual" width="1400" height="1871" loading="lazy" decoding="async">
     <figcaption><span>Svaki pokret ima svrhu,</span> a svaka žena svoj prostor.</figcaption>
   </figure>
-</section>
-<section class="wrap earth" aria-label="Sunce i zemlja">
-  <div class="earth-panel">
-    <p class="eyebrow">Sunce i zemlja</p>
-    <h3>Energija koja greje, mir koji nosi.</h3>
-    <ul>
-      <li><b>Harmonija</b><span>Dah, pokret i misao u istom ritmu. Reformer vodi telo, ti vodiš pažnju.</span></li>
-      <li><b>Toplina</b><span>Mala grupa, do pet žena na času, i trener koji zna tvoje ime i tvoja leđa.</span></li>
-      <li><b>Spokoj</b><span>Pedeset pet minuta bez telefona i žurbe. Izlaziš lakša nego što si ušla.</span></li>
-    </ul>
-    <div class="sunline" aria-hidden="true"></div>
-  </div>
 </section>
 
 <nav class="tabs" aria-label="Glavni meni">
