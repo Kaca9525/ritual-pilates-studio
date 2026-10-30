@@ -1,0 +1,180 @@
+{
+  "studio": {
+    "name": "Ritual Pilates Studio",
+    "address": "Skenderbegova 53, Dorćol, Beograd",
+    "phone": "+381 66 428 926",
+    "email": "",
+    "instagram": "pilates__ritual"
+  },
+  "groupCapacity": 5,
+  "bookAheadDays": 14,
+  "minutes": 55,
+  "cancelHours": 12,
+  "validDays": 30,
+  "maxExtend": 7,
+  "maxFreeze": 14,
+  "week": {
+    "1": {
+      "g": [
+        "08:00",
+        "09:00",
+        "18:00",
+        "19:00",
+        "20:00"
+      ],
+      "p": [
+        "10:00",
+        "11:00",
+        "12:00",
+        "16:00",
+        "17:00"
+      ]
+    },
+    "2": {
+      "g": [
+        "08:00",
+        "09:00",
+        "18:00",
+        "19:00",
+        "20:00"
+      ],
+      "p": [
+        "10:00",
+        "11:00",
+        "12:00",
+        "16:00",
+        "17:00"
+      ]
+    },
+    "3": {
+      "g": [
+        "08:00",
+        "09:00",
+        "18:00",
+        "19:00",
+        "20:00"
+      ],
+      "p": [
+        "10:00",
+        "11:00",
+        "12:00",
+        "16:00",
+        "17:00"
+      ]
+    },
+    "4": {
+      "g": [
+        "08:00",
+        "09:00",
+        "18:00",
+        "19:00",
+        "20:00"
+      ],
+      "p": [
+        "10:00",
+        "11:00",
+        "12:00",
+        "16:00",
+        "17:00"
+      ]
+    },
+    "5": {
+      "g": [
+        "08:00",
+        "09:00",
+        "18:00",
+        "19:00"
+      ],
+      "p": [
+        "10:00",
+        "11:00",
+        "12:00",
+        "16:00",
+        "17:00"
+      ]
+    },
+    "6": {
+      "g": [
+        "09:00",
+        "10:00",
+        "11:00"
+      ],
+      "p": [
+        "12:00",
+        "13:00"
+      ]
+    },
+    "0": {
+      "g": [],
+      "p": []
+    }
+  },
+  "overrides": {},
+  "catalog": [
+    {
+      "id": "pg",
+      "name": "Probni grupni",
+      "cat": "grupni",
+      "total": 1,
+      "price": 2000,
+      "trial": true
+    },
+    {
+      "id": "pi",
+      "name": "Probni individualni",
+      "cat": "individualni",
+      "total": 1,
+      "price": 3000,
+      "trial": true
+    },
+    {
+      "id": "g1",
+      "name": "Grupni čas",
+      "cat": "grupni",
+      "total": 1,
+      "price": 2000
+    },
+    {
+      "id": "g8",
+      "name": "Grupni · 8 termina",
+      "cat": "grupni",
+      "total": 8,
+      "price": 14000
+    },
+    {
+      "id": "g12",
+      "name": "Grupni · 12 termina",
+      "cat": "grupni",
+      "total": 12,
+      "price": 18000
+    },
+    {
+      "id": "i1",
+      "name": "Individualni čas",
+      "cat": "individualni",
+      "total": 1,
+      "price": 3500
+    },
+    {
+      "id": "d1",
+      "name": "Duo čas",
+      "cat": "duo",
+      "total": 1,
+      "price": 5000
+    },
+    {
+      "id": "i8",
+      "name": "Individualni · 8 termina",
+      "cat": "individualni",
+      "total": 8,
+      "price": 24000
+    },
+    {
+      "id": "i12",
+      "name": "Individualni · 12 termina",
+      "cat": "individualni",
+      "total": 12,
+      "price": 36000
+    }
+  ]
+}

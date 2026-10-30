@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ritual Pilates Studio · Zakazivanje</title>
+<meta name="description" content="Online zakazivanje reformer pilates treninga u studiju Ritual, Dorćol, Beograd.">
+<meta name="theme-color" content="#efeae0">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icons/favicon.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@400;500&display=swap">
+<style>
+/* Layout: ivory studio ground, backlit arches as the recurring form (hero, days, panes), black reformer
+   leather for ink, olive from the logo, blush from the logotype. Serif italic voice, slow light. */
+:root {
+  --bg: #efeae0;
+  --bg-deep: #e6dfd2;
+  --paper: #f8f5ee;
+  --glow: #fffdf6;
+  --line: rgba(29, 28, 25, 0.12);
+  --line-soft: rgba(29, 28, 25, 0.07);
+  --ink: #1d1c19;
+  --ink-soft: #6c675d;
+  --ink-mute: #9d978a;
+  --olive: #5c623e;
+  --olive-soft: #8b9170;
+  --blush: #d9b4a6;
+  --blush-deep: #b98f80;
+  --danger: #a3493a;
+  --serif: "Cormorant Garamond", "Cormorant", Garamond, "Times New Roman", serif;
+  --sans: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.65; min-height: 100%; }
+[hidden] { display: none !important; }
+a { color: var(--olive); text-decoration-color: rgba(92,98,62,.35); text-underline-offset: 3px; }
+::selection { background: rgba(217,180,166,.45); }
+
+/* ambijent: toplo svetlo kao iza lukova */
+.ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; background:
+  radial-gradient(55% 45% at 50% -5%, #fffdf6 0%, rgba(255,253,246,.6) 40%, transparent 75%),
+  radial-gradient(40% 35% at 100% 70%, rgba(217,180,166,.22), transparent 70%),
+  radial-gradient(45% 40% at 0% 90%, rgba(139,145,112,.18), transparent 70%),
+  var(--bg); }
+.ambient svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ambient .grain { opacity: .5; mix-blend-mode: multiply; }
+.orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .5; animation: drift 30s ease-in-out infinite alternate; }
+.orb.a { width: 50vw; height: 50vw; left: 10vw; top: -20vw; background: #fffdf6; }
+.orb.b { width: 34vw; height: 34vw; right: -12vw; top: 48vh; background: #e9d2c6; animation-delay: -12s; animation-duration: 38s; }
+@keyframes drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(-5vw, 5vh, 0) scale(1.1); } }
+
+.wrap { max-width: 760px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+
+/* hero: luk sa fotografijom studija */
+header.hero { padding-block: 26px 22px; display: grid; grid-template-columns: 1fr; gap: 18px; }
+.hero-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.hero-top .logo { width: 64px; height: 64px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(92,98,62,.2), 0 10px 30px rgba(92,98,62,.18); }
+.account { display: flex; gap: 14px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft); }
+.account a, .account .link { color: var(--ink); background: none; border: 0; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; padding: 0; text-decoration: none; border-bottom: 1px solid var(--line); }
+.arch { position: relative; border-radius: 999px 999px 28px 28px; overflow: hidden; aspect-ratio: 4 / 5; max-height: 520px; width: 100%; background: var(--bg-deep);
+  box-shadow: 0 0 0 1px rgba(255,253,246,.9), 0 0 0 10px rgba(255,253,246,.35), 0 30px 70px -30px rgba(29,28,25,.45), inset 0 0 90px rgba(255,253,246,.9); }
+.arch img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; display: block; filter: saturate(.9) brightness(1.02); animation: settle 2.4s ease-out both; }
+@keyframes settle { from { transform: scale(1.06); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.arch::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(239,234,224,.98) 0%, rgba(239,234,224,.7) 28%, transparent 58%); }
+.arch .brand { position: absolute; left: 0; right: 0; bottom: 24px; text-align: center; z-index: 1; padding: 0 16px; }
+.brand .eyebrow { font-size: 10px; letter-spacing: .36em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 8px; }
+.brand h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(44px, 11vw, 74px); line-height: .9; margin: 0; letter-spacing: .12em; color: var(--ink); text-transform: uppercase; }
+.brand h1 span { display: block; font-size: 11px; letter-spacing: .42em; font-family: var(--sans); font-weight: 400; color: var(--ink-soft); margin-top: 10px; }
+.brand .rule { width: 34px; height: 1px; background: var(--ink); margin: 12px auto 0; opacity: .6; }
+.tag { font-family: var(--serif); font-style: italic; font-size: clamp(20px, 4.6vw, 25px); color: var(--ink-soft); margin: 0; text-align: center; line-height: 1.3; text-wrap: balance; }
+
+/* navigacija */
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: rgba(239,234,224,.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); }
+nav.tabs .wrap { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; padding-block: 8px; }
+nav.tabs .wrap::-webkit-scrollbar { display: none; }
+nav.tabs a { flex: none; text-decoration: none; color: var(--ink-soft); font-family: var(--serif); font-size: 19px; font-style: italic; padding: 7px 14px; border-radius: 999px; transition: color .25s, background .25s; }
+nav.tabs a:hover { color: var(--ink); }
+nav.tabs a[aria-current="page"] { color: var(--paper); background: var(--ink); }
+:focus-visible { outline: 2px solid var(--olive); outline-offset: 3px; border-radius: 4px; }
+
+main { padding-block: 38px 70px; }
+section[data-view] { display: grid; grid-template-columns: minmax(0, 1fr); gap: 30px; animation: rise .55s ease both; }
+section[data-view] > * { min-width: 0; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+h2 { font-family: var(--serif); font-weight: 400; font-style: italic; font-size: clamp(36px, 7.5vw, 50px); line-height: 1.02; margin: 0; color: var(--ink); text-wrap: balance; }
+h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-transform: uppercase; margin: 0; color: var(--ink-soft); }
+.label { margin-bottom: 12px; display: block; }
+.lead { margin: 12px 0 0; color: var(--ink-soft); max-width: 56ch; font-family: var(--serif); font-size: 20px; line-height: 1.4; }
+.note { font-size: 13px; color: var(--ink-soft); margin: 0; }
+.stack { display: grid; gap: 14px; }
+.stack.tight { gap: 10px; }
+.banner { font-size: 14px; padding: 14px 18px; border-radius: 16px; background: var(--paper); border: 1px solid var(--line-soft); color: var(--ink); }
+
+/* izbor tipa */
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.seg button { font: inherit; text-align: left; padding: 18px 16px 14px; border: 1px solid var(--line-soft); border-radius: 22px; background: var(--paper); color: var(--ink); cursor: pointer; display: grid; gap: 4px; min-width: 0; transition: box-shadow .3s, border-color .25s, background .25s; }
+.seg button:hover { border-color: var(--line); }
+.seg button b { font-family: var(--serif); font-size: 27px; font-weight: 400; font-style: italic; line-height: 1; }
+.seg button span { font-size: 12px; color: var(--ink-soft); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); box-shadow: 0 18px 40px -22px rgba(29,28,25,.6); }
+.seg button[aria-pressed="true"] span { color: rgba(248,245,238,.7); }
+
+/* dani kao mali lukovi */
+.days { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.days button { flex: none; width: 58px; font: inherit; padding: 12px 0 10px; border-radius: 30px 30px 14px 14px; border: 1px solid var(--line-soft); background: var(--paper); color: var(--ink); cursor: pointer; display: grid; justify-items: center; line-height: 1.15; transition: background .25s, border-color .25s, box-shadow .3s; }
+.days button small { font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); }
+.days button strong { font-family: var(--serif); font-size: 26px; font-weight: 400; }
+.days button:hover { border-color: var(--line); }
+.days button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); box-shadow: 0 14px 30px -16px rgba(29,28,25,.7); }
+.days button[aria-pressed="true"] small { color: rgba(248,245,238,.7); }
+.days button:disabled { opacity: .35; cursor: not-allowed; }
+
+/* termini */
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.slot { font: inherit; text-align: left; border: 1px solid var(--line-soft); background: var(--paper); color: var(--ink); border-radius: 18px; padding: 14px 16px; cursor: pointer; display: grid; gap: 6px; transition: border-color .25s, box-shadow .3s, background .25s; }
+.slot:hover:not(:disabled) { border-color: var(--line); box-shadow: 0 10px 30px -20px rgba(29,28,25,.5); }
+.slot .t { font-family: var(--serif); font-size: 27px; font-weight: 400; line-height: 1; }
+.slot .t em { font-style: italic; font-size: 18px; color: var(--ink-soft); }
+.slot .meta { font-size: 12px; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; }
+.dots { display: inline-flex; gap: 4px; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--bg-deep); border: 1px solid var(--line); }
+.dots i.on { background: var(--olive); border-color: var(--olive); }
+.slot[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); background: var(--glow); }
+.slot:disabled { cursor: not-allowed; opacity: .45; }
+.slot.mine { border-style: dashed; border-color: var(--olive); opacity: 1; }
+.empty { padding: 28px; text-align: center; color: var(--ink-soft); border: 1px dashed var(--line); border-radius: 18px; font-family: var(--serif); font-size: 19px; font-style: italic; }
+
+/* kartice */
+.card { background: var(--paper); border: 1px solid var(--line-soft); border-radius: 24px; padding: 26px; display: grid; gap: 16px; box-shadow: 0 30px 60px -45px rgba(29,28,25,.5); }
+.summary { display: grid; gap: 4px; }
+.summary .big { font-family: var(--serif); font-size: 31px; font-style: italic; line-height: 1.15; }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+label.f { display: grid; gap: 6px; font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); min-width: 0; }
+.input, label.f input, label.f select, label.f textarea { font: inherit; font-size: 15px; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink); background: var(--glow); border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; width: 100%; }
+.input.small { width: auto; min-width: 110px; }
+label.check { display: flex; gap: 12px; align-items: flex-start; font-size: 13px; color: var(--ink-soft); }
+label.check input { margin-top: 4px; accent-color: var(--olive); }
+.btn { font: inherit; font-size: 11px; font-weight: 500; letter-spacing: .24em; text-transform: uppercase; border: 1px solid var(--ink); border-radius: 999px; padding: 14px 26px; background: var(--ink); color: var(--paper); cursor: pointer; justify-self: start; text-decoration: none; display: inline-block; transition: box-shadow .3s, transform .2s; }
+.btn:hover { box-shadow: 0 16px 34px -16px rgba(29,28,25,.7); }
+.btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); padding: 9px 16px; font-size: 10px; }
+.btn.ghost:hover { border-color: var(--ink); }
+.btn.ghost.danger { color: var(--danger); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+
+/* liste */
+.list { display: grid; gap: 10px; }
+.row { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; background: var(--paper); border: 1px solid var(--line-soft); border-radius: 20px; padding: 14px 18px; color: inherit; text-decoration: none; }
+a.row:hover { border-color: var(--line); }
+.row .date { text-align: center; line-height: 1.1; min-width: 46px; }
+.row .date strong { display: block; font-family: var(--serif); font-size: 30px; font-weight: 400; }
+.row .date small { font-size: 9px; text-transform: uppercase; letter-spacing: .16em; color: var(--ink-soft); }
+.row .info { min-width: 0; }
+.row .info b { font-weight: 500; }
+.row .info p { margin: 0; font-size: 13px; color: var(--ink-soft); }
+.pill { display: inline-block; font-size: 9px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; background: rgba(92,98,62,.1); color: var(--olive); border: 1px solid rgba(92,98,62,.2); white-space: nowrap; }
+.pill.used { background: transparent; color: var(--ink-soft); border-color: var(--line); }
+.pill.lock { background: rgba(163,73,58,.08); color: var(--danger); border-color: rgba(163,73,58,.25); }
+
+/* cenovnik */
+.price-group { gap: 8px; }
+.price { display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
+.price:last-child { border-bottom: 0; }
+.price .dur { font-size: 10px; letter-spacing: .14em; color: var(--ink-mute); text-transform: uppercase; }
+.price .amt { font-family: var(--serif); font-size: 25px; text-align: right; }
+.price .amt small { font-family: var(--sans); font-size: 9px; letter-spacing: .14em; color: var(--ink-soft); margin-left: 4px; text-transform: uppercase; }
+
+/* pravilnik, kontakt */
+.rules { gap: 24px; }
+.rules ul { margin: 10px 0 0; padding-left: 0; list-style: none; display: grid; gap: 10px; max-width: 60ch; font-family: var(--serif); font-size: 19px; line-height: 1.4; }
+.rules li { padding-left: 22px; position: relative; }
+.rules li::before { content: ""; position: absolute; left: 0; top: .7em; width: 10px; height: 1px; background: var(--ink); }
+.rules strong { color: var(--olive); font-weight: 600; }
+.kv { display: grid; grid-template-columns: 130px 1fr; gap: 12px 18px; margin: 0; }
+.kv dt { font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--ink-soft); padding-top: 4px; }
+.kv dd { margin: 0; min-width: 0; font-family: var(--serif); font-size: 20px; }
+.hours div { display: flex; gap: 10px; }
+.hours b { font-weight: 500; min-width: 40px; color: var(--ink-soft); font-family: var(--sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding-top: 5px; }
+.todo { color: var(--blush-deep); font-style: italic; }
+.gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.gallery img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 999px 999px 18px 18px; display: block; box-shadow: inset 0 0 40px rgba(255,253,246,.6); }
+.gallery img:nth-child(2) { border-radius: 18px 18px 999px 999px; }
+
+/* paketi */
+.pkg { background: var(--paper); border: 1px solid var(--line-soft); border-radius: 24px; padding: 24px; display: grid; gap: 12px; box-shadow: 0 30px 60px -45px rgba(29,28,25,.5); }
+.pkg-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.pkg-head b { font-family: var(--serif); font-size: 28px; font-weight: 400; font-style: italic; }
+.bar { display: flex; gap: 4px; }
+.bar i { flex: 1; height: 6px; border-radius: 3px; background: var(--bg-deep); }
+.bar i.used { background: var(--ink); }
+.bar i.sched { background: var(--olive-soft); }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.stats div { display: grid; }
+.stats small { font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft); }
+.stats strong { font-family: var(--serif); font-size: 32px; font-weight: 400; line-height: 1.1; }
+.dates { font-size: 13px; color: var(--ink-soft); margin: 0; }
+
+/* admin */
+.admin-slot { background: var(--paper); border: 1px solid var(--line-soft); border-radius: 20px; padding: 14px 18px; display: grid; gap: 10px; }
+.admin-slot header { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.admin-slot header b { font-family: var(--serif); font-size: 27px; font-weight: 400; }
+.person { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; font-size: 14px; border-top: 1px solid var(--line-soft); padding-top: 10px; }
+.person small { color: var(--ink-soft); display: block; }
+.inline-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; border-top: 1px solid var(--line-soft); padding-top: 10px; }
+.inline-form .input { width: auto; flex: 1 1 150px; }
+.add-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+.add-form label.f { flex: 1 1 170px; }
+.client-row { grid-template-columns: 1.2fr 1fr auto; }
+.week { display: grid; gap: 8px; }
+.week-row { display: grid; grid-template-columns: 44px 1fr 1fr; gap: 8px; align-items: center; }
+.week-row b { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); font-weight: 500; }
+.week-row.head small { font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-mute); }
+.log { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 6px; font-size: 13px; }
+details.card summary { cursor: pointer; list-style: none; }
+details.card summary::-webkit-details-marker { display: none; }
+details.card summary::after { content: "+"; float: right; font-family: var(--serif); font-size: 24px; line-height: 1; }
+details[open].card summary::after { content: "–"; }
+textarea.input { resize: vertical; }
+
+.toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 13px 20px; border-radius: 14px; font-size: 14px; max-width: calc(100% - 32px); z-index: 20; box-shadow: 0 16px 40px -10px rgba(29,28,25,.5); animation: rise .3s ease both; }
+footer { padding-block: 24px 50px; color: var(--ink-mute); text-align: center; font-family: var(--serif); font-style: italic; letter-spacing: .08em; font-size: 17px; }
+footer span { display: block; font-family: var(--sans); font-style: normal; font-size: 9px; letter-spacing: .3em; text-transform: uppercase; margin-top: 6px; }
+
+@media (max-width: 560px) {
+  .seg { grid-template-columns: 1fr; }
+  .seg button { grid-template-columns: auto 1fr; align-items: baseline; column-gap: 12px; }
+  .fields { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kv { grid-template-columns: 1fr; gap: 2px 0; }
+  .kv dd { margin-bottom: 12px; }
+  .row, .client-row { grid-template-columns: auto 1fr; }
+  .row > :last-child { grid-column: 1 / -1; justify-self: start; }
+  .person { grid-template-columns: 1fr; }
+  .week-row { grid-template-columns: 44px 1fr; }
+  .week-row > :last-child { grid-column: 2; }
+  .arch { aspect-ratio: 3 / 4; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="ambient" aria-hidden="true">
+  <div class="orb a"></div><div class="orb b"></div>
+  <svg class="grain"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .4 0 0 0 0 .38 0 0 0 0 .33 0 0 0 .08 0"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+</div>
+<header class="wrap hero">
+  <div class="hero-top">
+    <img class="logo" src="/logo.svg" alt="Ritual Pilates Studio" width="64" height="64">
+    <div class="account" id="account"></div>
+  </div>
+  <div class="arch">
+    <img src="/img/studio.jpg" alt="Studio Ritual: reformeri ispod osvetljenih lukova" width="1400" height="1871" fetchpriority="high">
+    <div class="brand">
+      <p class="eyebrow">Reformer pilates · Dorćol</p>
+      <h1>Ritual<span>Pilates studio</span></h1>
+      <div class="rule"></div>
+    </div>
+  </div>
+  <p class="tag">Prostor stvoren za vaše telo, dah i mir.<br>Pedeset pet minuta samo za sebe.</p>
+</header>
+
+<nav class="tabs" aria-label="Glavni meni">
+  <div class="wrap" id="tabs">
+    <a href="#zakazi" data-tab="zakazi">Zakaži</a>
+    <a href="#moji-termini" data-tab="moji-termini">Moji termini</a>
+    <a href="#cenovnik" data-tab="cenovnik">Cenovnik</a>
+    <a href="#pravilnik" data-tab="pravilnik">Pravilnik</a>
+    <a href="#kontakt" data-tab="kontakt">Kontakt</a>
+    <a href="#raspored" data-tab="raspored" class="admin-tab" hidden>Raspored</a>
+    <a href="#klijenti" data-tab="klijenti" class="admin-tab" hidden>Klijenti</a>
+    <a href="#podesavanja" data-tab="podesavanja" class="admin-tab" hidden>Podešavanja</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <!-- ZAKAZIVANJE -->
+  <section data-view="zakazi">
+    <div>
+      <h2>Zakažite svoj termin</h2>
+      <p class="lead">Svaki trening traje 55 minuta. Prijava je obavezna kako bi se obezbedilo mesto na reformeru.</p>
+    </div>
+    <div class="seg" id="type-seg" role="group" aria-label="Vrsta treninga"></div>
+    <div>
+      <h3 class="label">Dan</h3>
+      <div class="days" id="days"></div>
+    </div>
+    <div>
+      <h3 class="label" id="slots-title">Termini</h3>
+      <div class="slots" id="slots"><div class="empty">Učitavam termine…</div></div>
+    </div>
+    <form class="card" id="confirm" hidden>
+      <div class="summary">
+        <h3>Vaša rezervacija</h3>
+        <div class="big" id="sum-main"></div>
+        <div class="note" id="sum-sub"></div>
+      </div>
+      <div id="confirm-guest" hidden>
+        <p class="note">Za zakazivanje je potreban nalog, kako biste videli svoje termine i stanje paketa.</p>
+        <div class="actions" style="margin-top:10px">
+          <a class="btn" href="#prijava" data-auth="login">Prijava</a>
+          <a class="btn ghost" href="#prijava" data-auth="register">Registracija</a>
+        </div>
+      </div>
+      <div id="confirm-user" hidden style="display:grid;gap:14px">
+        <label class="check" id="trial-row"><input type="checkbox" id="f-trial"> Ovo mi je prvi, probni trening</label>
+        <label class="check"><input type="checkbox" id="f-rules"> Znam da se termin može otkazati najkasnije 12h ranije, a da se kasnije otkazan ili propušten trening računa kao iskorišćen.</label>
+        <button class="btn" id="f-submit" type="submit">Potvrdi rezervaciju</button>
+      </div>
+      <p class="note">Molimo dođite 5–10 min ranije. U slučaju kašnjenja trening se ne produžava.</p>
+    </form>
+  </section>
+
+  <!-- MOJI TERMINI -->
+  <section data-view="moji-termini" hidden>
+    <div>
+      <h2>Moji termini</h2>
+      <p class="lead">Otkazivanje je moguće najkasnije 12h pre termina. Kasnije otkazani ili propušteni treninzi računaju se kao iskorišćeni.</p>
+    </div>
+    <div id="my-pkg" class="stack"></div>
+    <div>
+      <h3 class="label">Zakazani i održani treninzi</h3>
+      <div class="list" id="my-list"></div>
+    </div>
+  </section>
+
+  <!-- PRIJAVA -->
+  <section data-view="prijava" hidden>
+    <div>
+      <h2 id="auth-title">Prijava</h2>
+      <p class="lead" id="auth-lead">Prijavite se da biste zakazivali termine i pratili svoj paket.</p>
+    </div>
+    <form class="card" id="login-form">
+      <label class="f">E-mail <input id="l-email" type="email" autocomplete="email" required></label>
+      <label class="f">Lozinka <input id="l-pw" type="password" autocomplete="current-password" required></label>
+      <button class="btn" type="submit">Prijavi se</button>
+      <p class="note">Nemate nalog? <a href="#prijava" data-auth="register">Registrujte se</a> · <a href="#prijava" data-auth="forgot">Zaboravljena lozinka</a></p>
+    </form>
+    <form class="card" id="register-form" hidden>
+      <div class="fields">
+        <label class="f">Ime <input id="r-ime" autocomplete="given-name" required></label>
+        <label class="f">Prezime <input id="r-prezime" autocomplete="family-name" required></label>
+        <label class="f">E-mail <input id="r-email" type="email" autocomplete="email" required></label>
+        <label class="f">Telefon <input id="r-tel" type="tel" autocomplete="tel" placeholder="06x xxx xxxx" required></label>
+        <label class="f">Lozinka <input id="r-pw" type="password" autocomplete="new-password" minlength="6" required></label>
+      </div>
+      <label class="check"><input type="checkbox" id="r-consent"> Pročitao/la sam <a href="#pravilnik">pravilnik studija</a> i prihvatam ga.</label>
+      <button class="btn" type="submit">Napravi nalog</button>
+      <p class="note">Već imate nalog? <a href="#prijava" data-auth="login">Prijavite se</a></p>
+    </form>
+    <form class="card" id="forgot-form" hidden>
+      <label class="f">E-mail <input id="fg-email" type="email" autocomplete="email" required></label>
+      <button class="btn" type="submit">Pošalji link za novu lozinku</button>
+      <p class="note"><a href="#prijava" data-auth="login">Nazad na prijavu</a></p>
+    </form>
+    <form class="card" id="reset-form" hidden>
+      <label class="f">Nova lozinka <input id="rs-pw" type="password" autocomplete="new-password" minlength="6" required></label>
+      <button class="btn" type="submit">Sačuvaj lozinku</button>
+    </form>
+  </section>
+
+  <!-- CENOVNIK -->
+  <section data-view="cenovnik" hidden>
+    <div>
+      <h2>Cenovnik</h2>
+      <p class="lead">Svi treninzi traju 55 minuta. Paketi važe 30 dana od datuma uplaćene članarine.</p>
+    </div>
+    <div id="prices" class="stack"></div>
+  </section>
+
+  <!-- PRAVILNIK -->
+  <section data-view="pravilnik" hidden>
+    <div>
+      <h2>Pravilnik</h2>
+      <p class="lead">Ritual Pilates Studio</p>
+    </div>
+    <div class="card rules">
+      <div>
+        <h3>Trajanje treninga</h3>
+        <ul>
+          <li>Jedan trening traje <strong>55 min</strong>.</li>
+          <li>Potrebno je doći 5–10 min <strong>ranije</strong> kako biste se za isti pripremili.</li>
+          <li>U slučaju <strong>kašnjenja</strong>, treneri nisu dužni da produže trajanje treninga.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Važenje termina</h3>
+        <ul>
+          <li>Kupljeni paketi važe <strong>30 dana</strong> od datuma uplaćene članarine.</li>
+          <li>U opravdanim situacijama i uz dogovor sa trenerom, Vaša članarina se može <strong>produžiti</strong> za maksimalno 7 dana ili <strong>zamrznuti</strong> na 14 dana najviše.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Zakazivanje i otkazivanje</h3>
+        <ul>
+          <li>Prijava za trening je <strong>obavezna</strong> kako bi se obezbedilo mesto na času.</li>
+          <li>U slučaju da ne možete da prisustvujete treningu, potrebno je <strong>otkazati</strong> termin na vreme.</li>
+          <li>Otkazivanje treninga moguće je najkasnije <strong>12h</strong> pre zakazanog termina.</li>
+          <li>Treninzi koji nisu otkazani na vreme ili na kojima se klijent ne pojavi računaju se kao <strong>iskorišćeni</strong> i ne mogu se nadoknaditi.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- KONTAKT -->
+  <section data-view="kontakt" hidden>
+    <div>
+      <h2>Kontakt</h2>
+      <p class="lead">Reformer pilates, grupni, individualni i duo treninzi.</p>
+    </div>
+    <div class="card">
+      <dl class="kv" id="contact"></dl>
+    </div>
+    <div class="gallery" aria-label="Fotografije studija">
+      <img src="/img/trening.jpg" alt="Trening na reformeru" loading="lazy" width="1400" height="1871">
+      <img src="/img/reformer.jpg" alt="Reformer sa Ritual logom" loading="lazy" width="1400" height="1871">
+    </div>
+  </section>
+
+  <!-- ADMIN: RASPORED -->
+  <section data-view="raspored" hidden>
+    <div>
+      <h2>Raspored</h2>
+      <p class="lead">Ko je zakazan po terminima. „Kasno otkazao“ oslobađa mesto, a trening se računa kao iskorišćen. „Otkaži“ vraća trening u paket.</p>
+    </div>
+    <div class="actions">
+      <button class="btn ghost" type="button" id="adm-prev">‹ Prethodni dan</button>
+      <input type="date" id="adm-date" class="input">
+      <button class="btn ghost" type="button" id="adm-next">Sledeći dan ›</button>
+    </div>
+    <div id="adm-day" class="list"></div>
+    <details class="card" id="adm-override">
+      <summary><h3 style="display:inline">Izmeni termine za ovaj dan</h3></summary>
+      <p class="note">Upišite vremena odvojena zarezom, npr. 08:00, 09:00. Ostavite prazno da taj dan nema takvih termina. Nedeljni raspored menjate u Podešavanjima.</p>
+      <label class="f">Grupni časovi <input id="ov-g"></label>
+      <label class="f">Individualni / duo <input id="ov-p"></label>
+      <div class="actions">
+        <button class="btn" type="button" id="ov-save">Sačuvaj za ovaj dan</button>
+        <button class="btn ghost" type="button" id="ov-reset">Vrati nedeljni raspored</button>
+      </div>
+    </details>
+  </section>
+
+  <!-- ADMIN: KLIJENTI -->
+  <section data-view="klijenti" hidden>
+    <div>
+      <h2>Klijenti i paketi</h2>
+      <p class="lead">Evidencija uplata, iskorišćenih i preostalih treninga. Svaka ručna izmena se upisuje u istoriju klijenta.</p>
+    </div>
+    <label class="f" style="max-width:340px">Pretraga <input id="client-q" placeholder="Ime, e-mail ili telefon"></label>
+    <div class="list" id="client-list"></div>
+  </section>
+  <section data-view="klijent" hidden>
+    <a href="#klijenti" class="note">‹ Svi klijenti</a>
+    <div id="client-detail" class="stack"></div>
+  </section>
+
+  <!-- ADMIN: PODEŠAVANJA -->
+  <section data-view="podesavanja" hidden>
+    <div>
+      <h2>Podešavanja</h2>
+      <p class="lead">Podaci o studiju, broj mesta na grupnom času, nedeljni raspored i cene.</p>
+    </div>
+    <form class="card" id="settings-form"></form>
+  </section>
+</main>
+
+<footer>it’s pilates time<span>Ritual · Skenderbegova 53 · Beograd</span></footer>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+"use strict";
+/* ---------- pomoćne ---------- */
+const $ = s => document.querySelector(s);
+const DAYS = ["Ned","Pon","Uto","Sre","Čet","Pet","Sub"];
+const DAYS_LONG = ["nedelja","ponedeljak","utorak","sreda","četvrtak","petak","subota"];
+const MONTHS = ["jan","feb","mar","apr","maj","jun","jul","avg","sep","okt","nov","dec"];
+const TYPES = {
+  grupni:       { label: "Grupni",       kind: "g", desc: cap => "do " + cap + " osoba na reformerima" },
+  individualni: { label: "Individualni", kind: "p", desc: () => "1 na 1 sa trenerom" },
+  duo:          { label: "Duo",          kind: "p", desc: () => "vas dvoje sa trenerom" }
+};
+const STATUS = { zakazano: "Zakazano", kasno: "Kasno otkazan", otkazano: "Otkazan" };
+const pad = n => String(n).padStart(2, "0");
+const dstr = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const parseD = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+const addDays = (s, n) => { const d = parseD(s); d.setDate(d.getDate() + n); return dstr(d); };
+const slotTime = (date, start) => { const d = parseD(date); const [h, m] = start.split(":").map(Number); d.setHours(h, m); return d; };
+const hoursUntil = (date, start) => (slotTime(date, start) - Date.now()) / 36e5;
+const endOf = start => { const [h, m] = start.split(":").map(Number); const e = h * 60 + m + (S.pub ? S.pub.minutes : 55); return pad(Math.floor(e / 60)) + ":" + pad(e % 60); };
+const fmtRsd = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const fmtDayLong = s => { const d = parseD(s); return DAYS_LONG[d.getDay()] + ", " + d.getDate() + ". " + MONTHS[d.getMonth()]; };
+const fmtDate = s => { const d = parseD(s.slice(0, 10)); return d.getDate() + ". " + MONTHS[d.getMonth()] + " " + d.getFullYear() + "."; };
+const fmtStamp = iso => { const d = new Date(iso); return fmtDate(dstr(d)) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()); };
+function el(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "value") e.value = v;
+    else if (v === true) e.setAttribute(k, ""); else if (v !== false && v != null) e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) e.append(k.nodeType ? k : document.createTextNode(k));
+  return e;
+}
+let toastTimer;
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 4200); }
+async function api(url, body) {
+  const r = await fetch(url, body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  let data = {}; try { data = await r.json(); } catch {}
+  if (!r.ok) { const e = new Error(data.error || "Greška na serveru. Pokušajte ponovo."); e.status = r.status; throw e; }
+  return data;
+}
+async function act(fn, okMsg) { try { const r = await fn(); if (okMsg) toast(okMsg); return r; } catch (e) { toast(e.message); return null; } }
+// Dugme za opasne radnje traži drugi klik.
+function confirmBtn(label, cls, onConfirm, confirmLabel = "Potvrdi") {
+  const b = el("button", { class: cls, type: "button" }, label);
+  b.addEventListener("click", async () => {
+    if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = confirmLabel; setTimeout(() => { b.dataset.armed = ""; b.textContent = label; }, 4000); return; }
+    b.disabled = true; await onConfirm(); b.disabled = false;
+  });
+  return b;
+}
+
+/* ---------- stanje ---------- */
+const S = { pub: null, me: null, type: "grupni", slots: null, day: null, selected: null, my: null, admDate: dstr(new Date()), clients: null, q: "", client: null, authMode: "login" };
+
+/* ---------- nalog ---------- */
+function renderAccount() {
+  const a = $("#account"); a.replaceChildren();
+  if (S.me) a.append(el("span", {}, S.me.ime + (S.me.admin ? " · admin" : "")), " ", el("button", { class: "link", type: "button", onclick: logout }, "Odjava"));
+  else a.append(el("a", { href: "#prijava", "data-auth": "login" }, "Prijava"), " · ", el("a", { href: "#prijava", "data-auth": "register" }, "Registracija"));
+  document.querySelectorAll(".admin-tab").forEach(t => t.hidden = !(S.me && S.me.admin));
+}
+async function logout() { await act(() => api("/api/logout", {})); S.me = null; S.my = null; renderAccount(); location.hash = "#zakazi"; loadSlots(); }
+function setAuthMode(m) {
+  S.authMode = m;
+  $("#login-form").hidden = m !== "login"; $("#register-form").hidden = m !== "register";
+  $("#forgot-form").hidden = m !== "forgot"; $("#reset-form").hidden = m !== "reset";
+  $("#auth-title").textContent = { login: "Prijava", register: "Registracija", forgot: "Nova lozinka", reset: "Nova lozinka" }[m];
+  $("#auth-lead").textContent = { login: "Prijavite se da biste zakazivali termine i pratili svoj paket.", register: "Nalog vam omogućava da zakazujete termine i vidite koliko vam je treninga ostalo u paketu.", forgot: "Poslaćemo vam link za postavljanje nove lozinke.", reset: "Upišite novu lozinku za svoj nalog." }[m];
+}
+document.addEventListener("click", e => { const a = e.target.closest("[data-auth]"); if (a) setAuthMode(a.dataset.auth); });
+async function afterLogin(me) {
+  S.me = me; renderAccount(); await loadSlots();
+  location.hash = S.selected ? "#zakazi" : "#moji-termini";
+}
+$("#login-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const r = await act(() => api("/api/login", { email: $("#l-email").value, pw: $("#l-pw").value }));
+  if (r) { toast("Dobro došli, " + r.me.ime + "."); afterLogin(r.me); }
+});
+$("#register-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const r = await act(() => api("/api/register", { ime: $("#r-ime").value, prezime: $("#r-prezime").value, email: $("#r-email").value, telefon: $("#r-tel").value, pw: $("#r-pw").value, consent: $("#r-consent").checked }));
+  if (r) { toast("Nalog je napravljen. Dobro došli!"); afterLogin(r.me); }
+});
+$("#forgot-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  await act(() => api("/api/forgot", { email: $("#fg-email").value }), "Ako nalog postoji, link za novu lozinku je poslat na e-mail.");
+});
+$("#reset-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const token = new URLSearchParams(location.search).get("reset");
+  const r = await act(() => api("/api/reset", { token, pw: $("#rs-pw").value }), "Lozinka je promenjena.");
+  if (r) { history.replaceState(null, "", "/"); afterLogin(r.me); }
+});
+
+/* ---------- zakazivanje ---------- */
+async function loadSlots() {
+  try { S.slots = await api("/api/slots?type=" + S.type); } catch (e) { $("#slots").replaceChildren(el("div", { class: "empty" }, e.message)); return; }
+  renderBooking();
+}
+function renderBooking() {
+  const seg = $("#type-seg"); seg.replaceChildren();
+  const cap = S.pub ? S.pub.groupCapacity : 5;
+  const price = { grupni: "g1", individualni: "i1", duo: "d1" };
+  for (const [id, t] of Object.entries(TYPES)) {
+    const c = S.pub && S.pub.catalog.find(x => x.id === price[id]);
+    seg.append(el("button", { type: "button", "aria-pressed": String(S.type === id), onclick: () => { S.type = id; S.selected = null; loadSlots(); } },
+      el("b", {}, t.label), el("span", {}, t.desc(cap) + (c ? " · " + fmtRsd(c.price) + " rsd" : ""))));
+  }
+  if (!S.slots || S.slots.type !== S.type) return;
+  const open = d => d.slots.some(s => !s.past);
+  if (!S.day || !S.slots.days.some(d => d.date === S.day && open(d))) S.day = (S.slots.days.find(open) || {}).date || null;
+  const days = $("#days"); days.replaceChildren();
+  for (const d of S.slots.days) {
+    const dt = parseD(d.date);
+    days.append(el("button", { type: "button", disabled: !open(d), "aria-pressed": String(S.day === d.date), "aria-label": fmtDayLong(d.date), onclick: () => { S.day = d.date; S.selected = null; renderBooking(); } },
+      el("small", {}, DAYS[dt.getDay()]), el("strong", {}, dt.getDate()), el("small", {}, MONTHS[dt.getMonth()])));
+  }
+  const box = $("#slots"); box.replaceChildren();
+  const form = $("#confirm");
+  if (!S.day) { box.append(el("div", { class: "empty" }, "Trenutno nema slobodnih termina za ovu vrstu treninga.")); form.hidden = true; return; }
+  $("#slots-title").textContent = "Termini · " + fmtDayLong(S.day);
+  const day = S.slots.days.find(d => d.date === S.day);
+  const group = TYPES[S.type].kind === "g";
+  for (const s of day.slots) {
+    const key = S.day + "T" + s.start, full = s.taken >= s.cap;
+    const status = s.mine ? "Vaš termin" : s.past ? "Prošao" : full ? (group ? "Popunjeno" : "Zauzeto") : group ? (s.cap - s.taken) + " od " + s.cap + " slobodno" : "Slobodno";
+    const dots = group ? el("span", { class: "dots", "aria-hidden": "true" }, Array.from({ length: s.cap }, (_, i) => el("i", { class: i < s.taken ? "on" : "" }))) : null;
+    box.append(el("button", { type: "button", class: "slot" + (s.mine ? " mine" : ""), disabled: s.mine || s.past || full, "aria-pressed": String(S.selected === key),
+      onclick: () => { S.selected = key; renderBooking(); form.scrollIntoView({ behavior: "smooth", block: "nearest" }); } },
+      el("span", { class: "t" }, s.start, el("em", {}, "–" + s.end)), el("span", { class: "meta" }, dots, status)));
+  }
+  if (!day.slots.length) box.append(el("div", { class: "empty" }, "Studio ne radi ovog dana."));
+  form.hidden = !S.selected;
+  if (!S.selected) return;
+  const [date, start] = S.selected.split("T");
+  $("#sum-main").textContent = TYPES[S.type].label + " trening · " + start + "–" + endOf(start);
+  $("#confirm-guest").hidden = !!S.me; $("#confirm-user").hidden = !S.me;
+  let pay = "";
+  if (S.me) {
+    const pkg = activePackage(S.type, date);
+    const trialItem = S.pub.catalog.find(x => x.trial && x.cat === S.type);
+    $("#trial-row").hidden = !!pkg || !trialItem;
+    if (pkg) pay = "Troši se iz paketa „" + pkg.name + "” (ostaje " + (pkg.remaining - 1) + ")";
+    else {
+      const single = S.pub.catalog.find(x => x.cat === S.type && x.total === 1 && !x.trial);
+      const trial = $("#f-trial").checked && trialItem;
+      pay = "Plaćanje u studiju: " + fmtRsd((trial ? trialItem : single).price) + " rsd" + (trial ? " (probni)" : "");
+    }
+  }
+  $("#sum-sub").textContent = fmtDayLong(date) + " · 55 min" + (pay ? " · " + pay : "");
+}
+function activePackage(type, date) {
+  if (!S.my) return null;
+  return S.my.packages.filter(p => p.cat === type && p.remaining > 0 && p.paidAt <= date && date <= p.validUntil)
+    .sort((a, b) => a.validUntil.localeCompare(b.validUntil))[0] || null;
+}
+$("#f-trial").addEventListener("change", renderBooking);
+$("#confirm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!S.me || !S.selected) return;
+  if (!$("#f-rules").checked) { toast("Potvrdite da znate pravila otkazivanja."); return; }
+  const [date, start] = S.selected.split("T");
+  const btn = $("#f-submit"); btn.disabled = true;
+  const r = await act(() => api("/api/bookings", { date, start, type: S.type, trial: $("#f-trial").checked }));
+  btn.disabled = false;
+  if (r) {
+    toast("Rezervisano: " + fmtDayLong(date) + " u " + start + ". Vidimo se!");
+    S.selected = null; $("#f-trial").checked = false; $("#f-rules").checked = false;
+    await Promise.all([loadSlots(), loadMy()]);
+  } else loadSlots();
+});
+
+/* ---------- moji termini ---------- */
+async function loadMy() {
+  if (!S.me) { S.my = null; return; }
+  S.my = await api("/api/my").catch(() => null);
+  renderMine();
+}
+function pkgCard(p, adminCtx) {
+  const bar = el("div", { class: "bar", "aria-hidden": "true" }, Array.from({ length: Math.min(p.total, 40) }, (_, i) =>
+    el("i", { class: i < p.used ? "used" : i < p.used + p.sched ? "sched" : "" })));
+  const status = p.expired ? el("span", { class: "pill used" }, "Isteklo " + fmtDate(p.validUntil))
+    : p.remaining === 0 && p.sched === 0 ? el("span", { class: "pill used" }, "Iskorišćen")
+    : el("span", { class: "pill" }, "Važi do " + fmtDate(p.validUntil));
+  const extra = [p.extendDays ? "produžen " + p.extendDays + " d" : null, p.freezeDays ? "zamrznut " + p.freezeDays + " d" : null,
+    p.adjust ? "ručna korekcija " + (p.adjust > 0 ? "+" : "") + p.adjust : null].filter(Boolean).join(" · ");
+  const card = el("div", { class: "pkg" },
+    el("div", { class: "pkg-head" }, el("b", {}, p.name), status),
+    el("div", { class: "stats" },
+      el("div", {}, el("small", {}, "Ukupno"), el("strong", {}, p.total)),
+      el("div", {}, el("small", {}, "Iskorišćeno"), el("strong", {}, p.used)),
+      el("div", {}, el("small", {}, "Zakazano"), el("strong", {}, p.sched)),
+      el("div", {}, el("small", {}, "Preostalo"), el("strong", {}, p.remaining))),
+    bar,
+    el("p", { class: "dates" }, "Uplaćeno " + fmtDate(p.paidAt) + " · " + (p.firstUse ? "počeo sa korišćenjem " + fmtDate(p.firstUse) : "još nije korišćen") + (extra ? " · " + extra : "")),
+    p.note && adminCtx ? el("p", { class: "dates" }, "Napomena: " + p.note) : null);
+  if (adminCtx) card.append(pkgAdminActions(p, adminCtx));
+  return card;
+}
+function renderMine() {
+  const pk = $("#my-pkg"), list = $("#my-list");
+  pk.replaceChildren(); list.replaceChildren();
+  if (!S.me) { pk.append(el("div", { class: "empty" }, el("a", { href: "#prijava", "data-auth": "login" }, "Prijavite se"), " da biste videli svoje termine i paket.")); return; }
+  if (!S.my) return;
+  const pkgs = S.my.packages.filter(p => !p.expired || p.paidAt >= addDays(dstr(new Date()), -90));
+  if (pkgs.length) pkgs.forEach(p => pk.append(pkgCard(p)));
+  else pk.append(el("div", { class: "banner" }, "Nemate aktivan paket. Nakon uplate u studiju, paket će biti upisan na vaš nalog i ovde ćete videti koliko vam je treninga ostalo."));
+  if (!S.my.bookings.length) { list.append(el("div", { class: "empty" }, "Još nemate zakazanih termina. ", el("a", { href: "#zakazi" }, "Zakažite prvi trening."))); return; }
+  for (const b of S.my.bookings) {
+    const h = hoursUntil(b.date, b.start), pkg = S.my.packages.find(p => p.id === b.pkgId);
+    let right;
+    if (b.status === "kasno") right = el("span", { class: "pill lock" }, "Kasno otkazan");
+    else if (h <= 0) right = el("span", { class: "pill used" }, "Iskorišćen");
+    else if (h < S.pub.cancelHours) right = el("span", { class: "pill lock" }, "Ne može se otkazati");
+    else right = confirmBtn("Otkaži", "btn ghost danger", async () => {
+      const r = await act(() => api("/api/bookings/" + b.id + "/cancel", {}), "Termin je otkazan" + (pkg ? " i trening je vraćen u paket." : "."));
+      if (r) { await Promise.all([loadMy(), loadSlots()]); }
+    }, "Potvrdi otkazivanje");
+    list.append(bookingRow(b, [b.start + "–" + endOf(b.start), pkg ? "paket „" + pkg.name + "”" : b.trial ? "probni, plaćanje u studiju" : "plaćanje u studiju",
+      b.status === "zakazano" && h > 0 && h < S.pub.cancelHours ? "računa se kao iskorišćen ako izostanete" : null], right));
+  }
+}
+function bookingRow(b, subParts, right) {
+  const d = parseD(b.date);
+  return el("div", { class: "row" },
+    el("div", { class: "date" }, el("small", {}, DAYS[d.getDay()]), el("strong", {}, d.getDate()), el("small", {}, MONTHS[d.getMonth()])),
+    el("div", { class: "info" }, el("b", {}, TYPES[b.type].label + " trening"), el("p", {}, subParts.filter(Boolean).join(" · "))),
+    right);
+}
+
+/* ---------- cenovnik i kontakt ---------- */
+function renderPublic() {
+  const c = S.pub.catalog;
+  const groups = [["Probni pilates trening", c.filter(x => x.trial)], ["Grupni pilates trening", c.filter(x => !x.trial && x.cat === "grupni")],
+    ["Individualni pilates trening", c.filter(x => !x.trial && x.cat !== "grupni")]];
+  const short = x => x.trial ? TYPES[x.cat].label : x.total === 1 ? x.name : x.total + " termina";
+  $("#prices").replaceChildren(...groups.map(([title, items]) => el("div", { class: "card price-group" }, el("h3", {}, title),
+    el("div", {}, items.map(x => el("div", { class: "price" }, el("span", {}, short(x)), el("span", { class: "dur" }, "55 min"), el("span", { class: "amt" }, fmtRsd(x.price), el("small", {}, "rsd"))))))));
+  const st = S.pub.studio, todo = t => el("span", { class: "todo" }, t);
+  const hours = [1, 2, 3, 4, 5, 6, 0].map(i => {
+    const w = S.pub.week[i] || { g: [], p: [] }; const all = [...w.g, ...w.p].sort();
+    return el("div", {}, el("b", {}, DAYS[i] + " "), all.length ? all[0] + "–" + endOf(all[all.length - 1]) : "zatvoreno");
+  });
+  $("#contact").replaceChildren(
+    el("dt", {}, "Adresa"), el("dd", {}, st.address || todo("Uskoro")),
+    el("dt", {}, "Telefon"), el("dd", {}, st.phone || todo("Uskoro")),
+    st.email ? el("dt", {}, "E-mail") : null, st.email ? el("dd", {}, st.email) : null,
+    el("dt", {}, "Instagram"), el("dd", {}, st.instagram ? el("a", { href: "https://www.instagram.com/" + st.instagram.replace(/^@/, "") + "/", target: "_blank", rel: "noopener" }, "@" + st.instagram.replace(/^@/, "")) : todo("Uskoro")),
+    el("dt", {}, "Radno vreme"), el("dd", { class: "hours" }, hours));
+}
+
+/* ---------- admin: raspored ---------- */
+async function loadAdminDay() {
+  $("#adm-date").value = S.admDate;
+  let d; try { d = await api("/api/admin/day?date=" + S.admDate); } catch (e) { toast(e.message); return; }
+  $("#ov-g").value = d.g.join(", "); $("#ov-p").value = d.p.join(", ");
+  const list = $("#adm-day"); list.replaceChildren();
+  list.append(el("p", { class: "note" }, fmtDayLong(d.date) + (d.overridden ? " · posebno podešen raspored za ovaj dan" : "")));
+  if (!d.slots.length) { list.append(el("div", { class: "empty" }, "Ovog dana nema termina.")); return; }
+  if (!S.clients) S.clients = await api("/api/admin/clients").catch(() => []);
+  for (const s of d.slots) {
+    const active = s.bookings.filter(b => b.status === "zakazano");
+    const label = s.kind === "g" ? "Grupni " + active.length + "/" + s.cap : s.kind === "p" ? (active[0] ? TYPES[active[0].type].label : "Individualni/duo · slobodno") : "Van rasporeda";
+    const box = el("div", { class: "admin-slot" }, el("header", {}, el("b", {}, s.start + "–" + s.end), el("span", { class: "pill" }, label)));
+    for (const b of s.bookings) {
+      const late = b.status === "kasno";
+      box.append(el("div", { class: "person" },
+        el("div", {}, el("a", { href: "#klijent", onclick: () => openClient(b.userEmail) }, (b.ime || "") + " " + (b.prezime || "")), late ? " · kasno otkazan" : "",
+          el("small", {}, [b.telefon, TYPES[b.type].label, b.pkg ? b.pkg.name + " (ostalo " + b.pkg.remaining + ")" : b.trial ? "probni, plaća u studiju" : "plaća u studiju"].filter(Boolean).join(" · "))),
+        el("div", { class: "actions" },
+          late ? el("button", { class: "btn ghost", type: "button", onclick: () => setStatus(b, "zakazano") }, "Vrati")
+               : el("button", { class: "btn ghost", type: "button", onclick: () => setStatus(b, "kasno") }, "Kasno otkazao"),
+          el("button", { class: "btn ghost", type: "button", onclick: ev => moveForm(ev.currentTarget, b) }, "Premesti"),
+          confirmBtn("Otkaži", "btn ghost danger", () => setStatus(b, "otkazano"), "Potvrdi"))));
+    }
+    if (s.kind) box.append(addToSlotForm(s));
+    list.append(box);
+  }
+}
+async function setStatus(b, status) {
+  const msg = { zakazano: "Rezervacija je vraćena.", kasno: "Upisano kao kasno otkazivanje. Trening se računa kao iskorišćen.", otkazano: "Termin je otkazan, trening je vraćen u paket." }[status];
+  if (await act(() => api("/api/admin/bookings/" + b.id, { status }), msg)) { S.clients = null; loadAdminDay(); }
+}
+function moveForm(anchor, b) {
+  const wrap = anchor.closest(".person");
+  if (wrap.nextElementSibling && wrap.nextElementSibling.classList.contains("inline-form")) { wrap.nextElementSibling.remove(); return; }
+  const date = el("input", { type: "date", class: "input", value: b.date }), time = el("input", { type: "time", class: "input", value: b.start, step: 900 });
+  const force = el("input", { type: "checkbox" });
+  wrap.after(el("form", { class: "inline-form", onsubmit: async e => {
+    e.preventDefault();
+    if (await act(() => api("/api/admin/bookings/" + b.id, { date: date.value, start: time.value, force: force.checked }), "Termin je premešten.")) loadAdminDay();
+  } }, el("label", { class: "f" }, "Novi datum", date), el("label", { class: "f" }, "Vreme", time),
+     el("label", { class: "check" }, force, "ipak upiši i ako je popunjeno"), el("button", { class: "btn", type: "submit" }, "Premesti")));
+}
+function addToSlotForm(s) {
+  const types = s.kind === "g" ? ["grupni"] : ["individualni", "duo"];
+  const sel = el("select", { class: "input" }, el("option", { value: "" }, "Dodaj klijenta u termin…"),
+    (S.clients || []).map(c => el("option", { value: c.email }, c.ime + " " + c.prezime + " · " + (c.telefon || c.email))));
+  const type = el("select", { class: "input" }, types.map(t => el("option", { value: t }, TYPES[t].label)));
+  return el("form", { class: "inline-form", onsubmit: async e => {
+    e.preventDefault(); if (!sel.value) { toast("Izaberite klijenta."); return; }
+    if (await act(() => api("/api/admin/bookings", { email: sel.value, date: S.admDate, start: s.start, type: type.value, force: true }), "Klijent je upisan u termin.")) { S.clients = null; loadAdminDay(); }
+  } }, sel, types.length > 1 ? type : null, el("button", { class: "btn ghost", type: "submit" }, "Upiši"));
+}
+$("#adm-date").addEventListener("change", e => { if (e.target.value) { S.admDate = e.target.value; loadAdminDay(); } });
+$("#adm-prev").addEventListener("click", () => { S.admDate = addDays(S.admDate, -1); loadAdminDay(); });
+$("#adm-next").addEventListener("click", () => { S.admDate = addDays(S.admDate, 1); loadAdminDay(); });
+const times = s => s.split(/[,\s]+/).map(x => x.trim()).filter(Boolean).map(x => /^\d:\d\d$/.test(x) ? "0" + x : x);
+$("#ov-save").addEventListener("click", async () => {
+  if (await act(() => api("/api/admin/day", { date: S.admDate, g: times($("#ov-g").value), p: times($("#ov-p").value) }), "Raspored za ovaj dan je sačuvan.")) { loadAdminDay(); loadSlots(); }
+});
+$("#ov-reset").addEventListener("click", async () => {
+  if (await act(() => api("/api/admin/day", { date: S.admDate, reset: true }), "Vraćen je nedeljni raspored.")) { loadAdminDay(); loadSlots(); }
+});
+
+/* ---------- admin: klijenti ---------- */
+async function loadClients() {
+  S.clients = await api("/api/admin/clients").catch(e => { toast(e.message); return []; });
+  renderClients();
+}
+function renderClients() {
+  const list = $("#client-list"); list.replaceChildren();
+  const q = S.q.toLowerCase();
+  const rows = (S.clients || []).filter(c => !q || (c.ime + " " + c.prezime + " " + c.email + " " + (c.telefon || "")).toLowerCase().includes(q));
+  if (!rows.length) { list.append(el("div", { class: "empty" }, q ? "Nema klijenata za tu pretragu." : "Još nema registrovanih klijenata.")); return; }
+  for (const c of rows) {
+    const active = c.packages.find(p => !p.expired && (p.remaining > 0 || p.sched > 0));
+    list.append(el("a", { class: "row client-row", href: "#klijent", onclick: () => openClient(c.email) },
+      el("div", { class: "info" }, el("b", {}, c.ime + " " + c.prezime), el("p", {}, [c.telefon, c.email].filter(Boolean).join(" · "))),
+      el("div", { class: "info" }, el("p", {}, active ? active.name + " · ostalo " + active.remaining + " · važi do " + fmtDate(active.validUntil) : "Nema aktivan paket"),
+        el("p", {}, c.upcoming + " zakazano · " + c.visits + " održanih")),
+      el("span", { class: "pill" + (active ? "" : " used") }, active ? active.remaining + " / " + active.total : "—")));
+  }
+}
+$("#client-q").addEventListener("input", e => { S.q = e.target.value; renderClients(); });
+async function openClient(email) { S.client = email; location.hash = "#klijent"; await loadClient(); }
+async function loadClient() {
+  const box = $("#client-detail"); box.replaceChildren();
+  if (!S.client) { location.hash = "#klijenti"; return; }
+  let c; try { c = await api("/api/admin/clients/" + encodeURIComponent(S.client)); } catch (e) { toast(e.message); return; }
+  box.append(el("div", {}, el("h2", {}, c.ime + " " + c.prezime), el("p", { class: "lead" }, [c.email, c.telefon, "nalog od " + fmtDate(c.created)].filter(Boolean).join(" · "))));
+  // paketi
+  const pkgBox = el("div", { class: "stack" }, el("h3", { class: "label" }, "Paketi"));
+  if (!c.packages.length) pkgBox.append(el("div", { class: "empty" }, "Klijent još nema evidentiranu uplatu."));
+  c.packages.forEach(p => pkgBox.append(pkgCard(p, { reload: loadClient })));
+  const cat = el("select", { class: "input" }, S.pub.catalog.map(x => el("option", { value: x.id }, x.name + " · " + fmtRsd(x.price) + " rsd")));
+  const paid = el("input", { type: "date", class: "input", value: dstr(new Date()) });
+  const note = el("input", { class: "input", placeholder: "npr. plaćeno gotovinom" });
+  pkgBox.append(el("form", { class: "card add-form", onsubmit: async e => {
+    e.preventDefault();
+    if (await act(() => api("/api/admin/packages", { email: c.email, catalogId: cat.value, paidAt: paid.value, note: note.value }), "Uplata je evidentirana.")) loadClient();
+  } }, el("h3", { style: "flex-basis:100%" }, "Evidentiraj uplatu"), el("label", { class: "f" }, "Paket", cat), el("label", { class: "f" }, "Datum uplate", paid),
+     el("label", { class: "f" }, "Napomena", note), el("button", { class: "btn", type: "submit" }, "Sačuvaj uplatu")));
+  box.append(pkgBox);
+  // termini
+  const bk = el("div", { class: "stack" }, el("h3", { class: "label" }, "Termini"));
+  if (!c.bookings.length) bk.append(el("div", { class: "empty" }, "Nema rezervacija."));
+  for (const b of c.bookings.slice(0, 60)) {
+    const pkg = c.packages.find(p => p.id === b.pkgId);
+    const pkgSel = el("select", { class: "input small", "aria-label": "Paket za ovaj termin", onchange: async e => {
+      if (await act(() => api("/api/admin/bookings/" + b.id, { pkgId: e.target.value || null }), "Paket za termin je promenjen.")) loadClient();
+    } }, el("option", { value: "" }, "bez paketa"), c.packages.filter(p => p.cat === b.type).map(p => el("option", { value: p.id, selected: p.id === b.pkgId }, p.name + " (" + fmtDate(p.paidAt) + ")")));
+    const right = el("div", { class: "actions" }, el("span", { class: "pill" + (b.status === "zakazano" ? "" : b.status === "kasno" ? " lock" : " used") }, STATUS[b.status]),
+      b.status === "zakazano" ? el("button", { class: "btn ghost", type: "button", onclick: async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { status: "kasno" }), "Upisano kao kasno otkazivanje.")) loadClient(); } }, "Kasno otkazao") : null,
+      b.status !== "zakazano" ? el("button", { class: "btn ghost", type: "button", onclick: async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { status: "zakazano" }), "Rezervacija je vraćena.")) loadClient(); } }, "Vrati") : null,
+      b.status === "zakazano" ? confirmBtn("Otkaži", "btn ghost danger", async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { status: "otkazano" }), "Termin je otkazan.")) loadClient(); }) : null,
+      b.status !== "otkazano" ? pkgSel : null);
+    bk.append(bookingRow(b, [b.start + "–" + endOf(b.start), pkg ? pkg.name : b.trial ? "probni" : "bez paketa", b.cancelledBy && b.status !== "zakazano" ? "otkazao " + (b.cancelledBy === c.email ? "klijent" : "studio") : null], right));
+  }
+  box.append(bk);
+  // profil
+  const tel = el("input", { class: "input", value: c.telefon || "" }), nt = el("textarea", { class: "input", rows: 2 }, c.note || ""), pw = el("input", { class: "input", type: "text", placeholder: "ostavite prazno" });
+  box.append(el("form", { class: "card", onsubmit: async e => {
+    e.preventDefault();
+    const body = { telefon: tel.value, note: nt.value }; if (pw.value) body.newPassword = pw.value;
+    if (await act(() => api("/api/admin/clients/" + encodeURIComponent(c.email), body), pw.value ? "Sačuvano. Javite klijentu novu lozinku." : "Sačuvano.")) loadClient();
+  } }, el("h3", {}, "Podaci klijenta"), el("div", { class: "fields" }, el("label", { class: "f" }, "Telefon", tel), el("label", { class: "f" }, "Nova lozinka", pw)),
+     el("label", { class: "f" }, "Napomena (vidi samo studio)", nt), el("button", { class: "btn", type: "submit" }, "Sačuvaj")));
+  // istorija
+  if (c.log.length) box.append(el("div", { class: "card" }, el("h3", {}, "Istorija izmena"),
+    el("ul", { class: "log" }, c.log.map(l => el("li", {}, el("span", { class: "note" }, fmtStamp(l.at) + " · "), l.action + ": " + l.detail)))));
+}
+function pkgAdminActions(p, ctx) {
+  const reason = el("input", { class: "input", placeholder: "Razlog (upisuje se u istoriju)" });
+  const upd = (body, msg) => act(() => api("/api/admin/packages/" + p.id, { ...body, reason: reason.value }), msg).then(r => r && ctx.reload());
+  const ext = el("input", { class: "input small", type: "number", min: 0, max: S.pub.maxExtend, value: p.extendDays || 0, "aria-label": "Dana produženja" });
+  const frz = el("input", { class: "input small", type: "number", min: 0, max: S.pub.maxFreeze, value: p.freezeDays || 0, "aria-label": "Dana zamrzavanja" });
+  const paid = el("input", { class: "input small", type: "date", value: p.paidAt, "aria-label": "Datum uplate" });
+  return el("div", { class: "stack tight" },
+    el("div", { class: "actions" },
+      el("button", { class: "btn ghost", type: "button", onclick: () => upd({ adjustDelta: 1 }, "Upisan iskorišćen trening.") }, "+1 iskorišćen"),
+      el("button", { class: "btn ghost", type: "button", onclick: () => upd({ adjustDelta: -1 }, "Trening je vraćen u paket.") }, "Vrati 1 trening"),
+      confirmBtn("Obriši paket", "btn ghost danger", () => act(() => api("/api/admin/packages/" + p.id + "/delete", {}), "Paket je obrisan.").then(r => r && ctx.reload()), "Potvrdi brisanje")),
+    el("div", { class: "actions" },
+      el("label", { class: "f" }, "Produženje (do " + S.pub.maxExtend + " d)", ext),
+      el("label", { class: "f" }, "Zamrzavanje (do " + S.pub.maxFreeze + " d)", frz),
+      el("label", { class: "f" }, "Datum uplate", paid),
+      el("button", { class: "btn ghost", type: "button", onclick: () => upd({ extendDays: ext.value, freezeDays: frz.value, paidAt: paid.value }, "Paket je ažuriran.") }, "Sačuvaj")),
+    reason);
+}
+
+/* ---------- admin: podešavanja ---------- */
+async function loadSettings() {
+  let c; try { c = await api("/api/admin/settings"); } catch (e) { toast(e.message); return; }
+  const f = $("#settings-form"); f.replaceChildren();
+  const inp = (label, val, attrs = {}) => { const i = el("input", { class: "input", value: val ?? "", ...attrs }); return [el("label", { class: "f" }, label, i), i]; };
+  const [lAddr, addr] = inp("Adresa", c.studio.address), [lTel, tel] = inp("Telefon", c.studio.phone), [lMail, mail] = inp("E-mail studija", c.studio.email, { type: "email" }),
+    [lIg, ig] = inp("Instagram", c.studio.instagram), [lCap, cap] = inp("Mesta na grupnom času", c.groupCapacity, { type: "number", min: 1, max: 30 }),
+    [lAhead, ahead] = inp("Zakazivanje unapred (dana)", c.bookAheadDays, { type: "number", min: 1, max: 60 });
+  const week = {};
+  const weekRows = [1, 2, 3, 4, 5, 6, 0].map(d => {
+    const w = c.week[d] || { g: [], p: [] };
+    const g = el("input", { class: "input", value: w.g.join(", "), "aria-label": DAYS_LONG[d] + " grupni" }), p = el("input", { class: "input", value: w.p.join(", "), "aria-label": DAYS_LONG[d] + " individualni" });
+    week[d] = { g, p };
+    return el("div", { class: "week-row" }, el("b", {}, DAYS[d]), g, p);
+  });
+  const prices = c.catalog.map(x => { const i = el("input", { class: "input small", type: "number", min: 0, value: x.price, "aria-label": x.name }); return { id: x.id, i, row: el("div", { class: "price" }, el("span", {}, x.name), el("span", { class: "dur" }, x.total + " × 55 min"), i) }; });
+  f.append(el("h3", {}, "Studio"), el("div", { class: "fields" }, lAddr, lTel, lMail, lIg, lCap, lAhead),
+    el("h3", {}, "Nedeljni raspored"), el("p", { class: "note" }, "Vremena početka odvojena zarezom. Prva kolona su grupni časovi, druga individualni i duo termini."),
+    el("div", { class: "week" }, el("div", { class: "week-row head" }, el("span", {}), el("small", {}, "Grupni"), el("small", {}, "Individualni / duo")), weekRows),
+    el("h3", {}, "Cene"), el("div", {}, prices.map(p => p.row)),
+    el("button", { class: "btn", type: "submit" }, "Sačuvaj podešavanja"),
+    el("p", { class: "note" }, "Rezervna kopija svih podataka: ", el("a", { href: "/api/admin/backup" }, "preuzmi JSON"), "."));
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const wk = {}; for (const d in week) wk[d] = { g: times(week[d].g.value), p: times(week[d].p.value) };
+    const r = await act(() => api("/api/admin/settings", { studio: { address: addr.value, phone: tel.value, email: mail.value, instagram: ig.value.replace(/^@/, "") },
+      groupCapacity: cap.value, bookAheadDays: ahead.value, week: wk, catalog: prices.map(p => ({ id: p.id, price: p.i.value })) }), "Podešavanja su sačuvana.");
+    if (r) { S.pub = await api("/api/public"); renderPublic(); loadSlots(); loadSettings(); }
+  };
+}
+
+/* ---------- navigacija ---------- */
+const VIEWS = ["zakazi", "moji-termini", "prijava", "cenovnik", "pravilnik", "kontakt", "raspored", "klijenti", "klijent", "podesavanja"];
+const ADMIN_VIEWS = ["raspored", "klijenti", "klijent", "podesavanja"];
+function route() {
+  let v = location.hash.slice(1);
+  if (!VIEWS.includes(v)) v = "zakazi";
+  if (ADMIN_VIEWS.includes(v) && !(S.me && S.me.admin)) v = S.me ? "zakazi" : "prijava";
+  if (v === "prijava" && S.me && S.authMode !== "reset") v = "moji-termini";
+  document.querySelectorAll("section[data-view]").forEach(s => s.hidden = s.dataset.view !== v);
+  const tab = v === "klijent" ? "klijenti" : v;
+  document.querySelectorAll("#tabs a").forEach(a => a.dataset.tab === tab ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
+  if (v === "moji-termini") loadMy();
+  if (v === "raspored") loadAdminDay();
+  if (v === "klijenti") loadClients();
+  if (v === "klijent") loadClient();
+  if (v === "podesavanja") loadSettings();
+  if (v === "zakazi") loadSlots();
+}
+window.addEventListener("hashchange", route);
+
+(async function init() {
+  try { S.pub = await api("/api/public"); } catch (e) { toast("Server nije dostupan. Osvežite stranicu."); return; }
+  S.me = S.pub.me; renderAccount(); renderPublic();
+  if (new URLSearchParams(location.search).get("reset")) { setAuthMode("reset"); location.hash = "#prijava"; }
+  if (S.me) await loadMy();
+  route();
+})();
+</script>
+</body>
+</html>

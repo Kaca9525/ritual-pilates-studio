@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Ritual Pilates Studio">
+  <circle cx="100" cy="100" r="100" fill="#5c623e"/>
+  <text x="100" y="104" text-anchor="middle" font-family="Cormorant Garamond, Cormorant, Garamond, 'Times New Roman', serif" font-size="46" font-weight="400" letter-spacing="2" fill="#ecd6cb">RITUAL</text>
+  <line x1="88" y1="112" x2="112" y2="112" stroke="#ecd6cb" stroke-width="1.4"/>
+  <text x="100" y="130" text-anchor="middle" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-size="8.5" letter-spacing="3.2" fill="#ecd6cb">PILATES STUDIO</text>
+</svg>

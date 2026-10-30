@@ -1,0 +1,17 @@
+{
+  "name": "ritual-rezervacije",
+  "version": "1.0.0",
+  "description": "Ritual Pilates Studio - online zakazivanje reformer pilates treninga, paketi i admin panel",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/smoke.js"
+  },
+  "engines": { "node": "22.x" },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.19.2",
+    "nodemailer": "^6.9.14"
+  }
+}
