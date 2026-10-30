@@ -69,6 +69,21 @@ const dstr = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.ge
   // podešavanja
   r = await call("a", "/api/admin/settings", { studio: { phone: "011" }, groupCapacity: 6, catalog: [{ id: "g1", price: 2200 }] });
   assert.equal(r.data.groupCapacity, 6); assert.equal(r.data.catalog.find(x => x.id === "g1").price, 2200);
+  // fiksni termini: nova klijentkinja sa paketom od 8, pon/sre/pet
+  await call("f", "/api/register", { ime: "Fiksna", prezime: "T", email: "fiksna@test.rs", telefon: "2", pw: "lozinka1", consent });
+  r = await call("a", "/api/admin/packages", { email: "fiksna@test.rs", catalogId: "g8", paidAt: dstr(new Date()) }); assert.equal(r.status, 200);
+  const fp = r.data.pkg;
+  r = await call("f", "/api/packages/" + fp.id + "/fixed", { preview: true }); assert.equal(r.status, 200); assert.ok(r.data.options["1"].length);
+  const ft = r.data.options["1"][0];
+  r = await call("f", "/api/packages/" + fp.id + "/fixed", { days: [1, 3, 5], time: ft, preview: true }); assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.ok(r.data.plan.length >= 8, "plan " + r.data.plan.length);
+  r = await call("f", "/api/packages/" + fp.id + "/fixed", { days: [1, 3, 5], time: ft }); assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.made.length + r.data.skipped.length, r.data.made.length ? r.data.made.length + r.data.skipped.length : 0); assert.ok(r.data.made.length >= 6, "made " + r.data.made.length);
+  let fmy = (await call("f", "/api/my")).data; assert.equal(fmy.packages[0].sched, r.data.made.length); assert.deepEqual(fmy.packages[0].fixed.days, [1, 3, 5]);
+  assert.ok(fmy.bookings.every(b => [1, 3, 5].includes(new Date(b.date + "T12:00:00").getDay()) && b.start === ft && b.fixed === 1));
+  r = await call("f", "/api/packages/" + fp.id + "/fixed", { days: [2], time: ft }); assert.equal(r.status, 400); // nema preostalih
+  r = await call("f", "/api/packages/" + fp.id + "/fixed/clear", {}); assert.equal(r.status, 200); assert.ok(r.data.cancelled >= 5);
+  fmy = (await call("f", "/api/my")).data; assert.equal(fmy.packages[0].fixed, null); assert.equal(fmy.packages[0].remaining, 8 - fmy.packages[0].sched);
   // odjava
   await call("k", "/api/logout", {}); assert.equal((await call("k", "/api/my")).status, 401);
   console.log("Svi testovi su prošli.");

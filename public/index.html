@@ -159,6 +159,14 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .mcal-day.free::after { content: ""; position: absolute; bottom: 5px; left: 50%; width: 4px; height: 4px; border-radius: 50%; background: var(--olive); transform: translateX(-50%); }
 .mcal-day.on.free::after { background: var(--blush); }
 .mcal-foot { font-size: 12px; color: var(--ink-soft); margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { font: inherit; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; }
+.chips button[aria-pressed="true"] { background: var(--olive-deep); border-color: var(--olive-deep); color: var(--paper); }
+.chips button[disabled] { opacity: .35; cursor: not-allowed; }
+.plan { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-height: 220px; overflow: auto; font-size: 13px; }
+.plan li { display: flex; justify-content: space-between; gap: 10px; padding: 6px 10px; border-radius: 10px; background: rgba(92,98,62,.07); }
+.plan li.skip { background: rgba(217,180,166,.25); color: var(--ink-soft); }
+.fixed-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 13px; }
 /* dani kao mali lukovi */
 
 /* termini */
@@ -537,6 +545,10 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
 </main>
 
 <footer>it’s pilates time<span>Ritual · Skenderbegova 53 · Beograd</span></footer>
+<div class="modal-root" id="modal-gen" hidden>
+  <div class="modal-bg" data-close></div>
+  <div class="modal" role="dialog" aria-modal="true" id="modal-gen-box"></div>
+</div>
 <div class="modal-root" id="modal-root" hidden>
   <div class="modal-bg" data-close></div>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mcal-title">
@@ -761,6 +773,76 @@ $("#confirm").addEventListener("submit", async e => {
 });
 
 /* ---------- moji termini ---------- */
+/* ---------- opšti modal ---------- */
+function openModal(...kids) { const b = $("#modal-gen-box"); b.replaceChildren(...kids.filter(Boolean)); $("#modal-gen").hidden = false; b.querySelector("button,select,input")?.focus(); }
+function closeModal() { $("#modal-gen").hidden = true; }
+$("#modal-gen").addEventListener("click", e => { if (e.target.closest("[data-close]")) closeModal(); });
+addEventListener("keydown", e => { if (e.key === "Escape" && !$("#modal-gen").hidden) closeModal(); });
+
+/* ---------- fiksni termini uz paket 8/12 ---------- */
+const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
+const fixedText = f => f.days.slice().sort((a, b) => DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b)).map(d => DAYS[d].toLowerCase()).join(", ") + " u " + f.time;
+function fixedRow(p, reload) {
+  if (p.total < 8 || p.expired) return null;
+  if (p.fixed) return el("div", { class: "fixed-row" }, el("span", { class: "pill" }, "Fiksni termini: " + fixedText(p.fixed)),
+    confirmBtn("Ukini fiksne", "btn ghost danger", async () => {
+      const r = await act(() => api("/api/packages/" + p.id + "/fixed/clear", {}));
+      if (r) { toast(r.cancelled ? "Otkazano " + r.cancelled + " budućih termina." : "Fiksni raspored je ukinut."); reload(); }
+    }, "Potvrdi ukidanje"));
+  if (p.remaining <= 0) return null;
+  return el("div", { class: "fixed-row" }, el("span", { class: "note" }, "Dolazite uvek u iste dane? Zakažite sve preostale treninge odjednom."),
+    el("button", { class: "btn ghost", type: "button", onclick: () => openFixed(p, reload) }, "Postavi fiksne termine"));
+}
+async function openFixed(p, reload) {
+  const o = await act(() => api("/api/packages/" + p.id + "/fixed", { preview: true })); if (!o) return;
+  const st = { days: [], time: "", type: p.cat === "grupni" ? "grupni" : "individualni", from: addDays(dstr(new Date()), 1), force: false };
+  const timeSel = el("select", { class: "input", "aria-label": "Vreme", onchange: e => { st.time = e.target.value; plan.replaceChildren(); } });
+  const chips = el("div", { class: "chips" }, DAY_ORDER.map(d => el("button", { type: "button", "aria-pressed": "false", disabled: !o.options[d].length, onclick: e => {
+    const on = e.currentTarget.getAttribute("aria-pressed") !== "true"; e.currentTarget.setAttribute("aria-pressed", String(on));
+    st.days = on ? [...st.days, d] : st.days.filter(x => x !== d); fillTimes(); plan.replaceChildren();
+  } }, DAYS[d])));
+  const fillTimes = () => {
+    const times = [...new Set(st.days.flatMap(d => o.options[d]))].sort();
+    timeSel.replaceChildren(el("option", { value: "" }, times.length ? "izaberite vreme" : "prvo izaberite dane"), ...times.map(t => el("option", { value: t, selected: t === st.time }, t + "–" + endOf(t))));
+    if (!times.includes(st.time)) st.time = ""; timeSel.value = st.time;
+  };
+  fillTimes();
+  const typeSel = p.cat !== "grupni" ? el("select", { class: "input", onchange: e => st.type = e.target.value }, el("option", { value: "individualni" }, "Individualni"), el("option", { value: "duo" }, "Duo")) : null;
+  const from = el("input", { class: "input", type: "date", value: st.from, min: st.from, max: p.validUntil, onchange: e => { st.from = e.target.value; plan.replaceChildren(); } });
+  const force = S.me && S.me.admin ? el("label", { class: "check" }, el("input", { type: "checkbox", onchange: e => st.force = e.target.checked }), " Upiši i kada je termin popunjen (preko kapaciteta)") : null;
+  const plan = el("ul", { class: "plan" });
+  const info = el("p", { class: "note" }, "Zakazuje se narednih " + p.remaining + " treninga po ovom obrascu, do isteka paketa (" + fmtDate(p.validUntil) + "). Svaki termin možete posle pojedinačno otkazati po pravilniku.");
+  const body = () => ({ days: st.days, time: st.time, type: st.type, from: st.from, force: st.force });
+  const preview = el("button", { class: "btn ghost", type: "button", onclick: async () => {
+    const r = await act(() => api("/api/packages/" + p.id + "/fixed", { ...body(), preview: true })); if (!r) return;
+    plan.replaceChildren(...(r.plan.length ? r.plan.map(x => el("li", { class: x.ok ? "" : "skip" }, el("span", {}, fmtDayLong(x.date) + " · " + x.start), el("span", {}, x.ok ? "✓" : x.reason)))
+      : [el("li", { class: "skip" }, "Nema slobodnih termina po ovom obrascu do isteka paketa.")]));
+  } }, "Prikaži plan");
+  const confirm = el("button", { class: "btn", type: "button", onclick: async () => {
+    const r = await act(() => api("/api/packages/" + p.id + "/fixed", body())); if (!r) return;
+    closeModal(); toast("Zakazano " + r.made.length + " fiksnih termina" + (r.skipped.length ? ", " + r.skipped.length + " preskočeno (popunjeno)." : ".")); reload();
+  } }, "Potvrdi fiksne termine");
+  openModal(el("div", { class: "mcal-head" }, el("b", {}, "Fiksni termini"), el("button", { type: "button", class: "mcal-nav", "data-close": true, "aria-label": "Zatvori" }, "×")),
+    el("p", { class: "note", style: "margin:0" }, p.name + " · preostalo " + p.remaining),
+    el("label", { class: "f" }, "Dani u nedelji", chips),
+    el("div", { class: "fields" }, el("label", { class: "f" }, "Vreme", timeSel), typeSel ? el("label", { class: "f" }, "Vrsta", typeSel) : null, el("label", { class: "f" }, "Od datuma", from)),
+    force, info, plan, el("div", { class: "actions", style: "justify-content:flex-end" }, preview, confirm));
+}
+
+// Pitanje posle uplate: automatska rezervacija svih termina u iste dane i vreme?
+const askedKey = id => "ritual-fixed-asked-" + id;
+function askFixed(p, reload, who) {
+  try { if (localStorage.getItem(askedKey(p.id))) return false; } catch {}
+  const done = () => { try { localStorage.setItem(askedKey(p.id), "1"); } catch {} };
+  openModal(el("div", { class: "mcal-head" }, el("b", {}, "Fiksni termini?"), el("button", { type: "button", class: "mcal-nav", "data-close": true, "aria-label": "Zatvori", onclick: done }, "×")),
+    el("p", { style: "margin:0" }, (who ? who + " je uplatio/la " : "Uplaćen je ") + p.name.toLowerCase() + ". Želite li automatsku rezervaciju svih uplaćenih termina u tačno određene dane u nedelji, u određeno vreme?"),
+    el("p", { class: "note", style: "margin:0" }, "Na primer: ponedeljak, sreda i petak u 18:00. Svaki termin se kasnije može pojedinačno otkazati ili pomeriti."),
+    el("div", { class: "actions", style: "justify-content:flex-end" },
+      el("button", { class: "btn ghost", type: "button", onclick: () => { done(); closeModal(); } }, who ? "Ne sada" : "Ne, zakazivaću sam/a"),
+      el("button", { class: "btn", type: "button", onclick: () => { done(); openFixed(p, reload); } }, "Da, izaberi dane")));
+  return true;
+}
+
 async function loadMy() {
   if (!S.me) { S.my = null; return; }
   S.my = await api("/api/my").catch(() => null);
@@ -784,6 +866,8 @@ function pkgCard(p, adminCtx) {
     bar,
     el("p", { class: "dates" }, "Uplaćeno " + fmtDate(p.paidAt) + " · " + (p.firstUse ? "počeo sa korišćenjem " + fmtDate(p.firstUse) : "još nije korišćen") + (extra ? " · " + extra : "")),
     p.note && adminCtx ? el("p", { class: "dates" }, "Napomena: " + p.note) : null);
+  const fr = fixedRow(p, adminCtx ? adminCtx.reload : async () => { await Promise.all([loadMy(), loadSlots()]); });
+  if (fr) card.append(fr);
   if (adminCtx) card.append(pkgAdminActions(p, adminCtx));
   return card;
 }
@@ -795,6 +879,8 @@ function renderMine() {
   const pkgs = S.my.packages.filter(p => !p.expired || p.paidAt >= addDays(dstr(new Date()), -90));
   if (pkgs.length) pkgs.forEach(p => pk.append(pkgCard(p)));
   else pk.append(el("div", { class: "banner" }, "Nemate aktivan paket. Nakon uplate u studiju, paket će biti upisan na vaš nalog i ovde ćete videti koliko vam je treninga ostalo."));
+  const fresh = pkgs.find(p => p.total >= 8 && !p.expired && !p.fixed && p.used === 0 && p.sched === 0 && p.remaining > 0);
+  if (fresh && location.hash.startsWith("#moji") && $("#modal-gen").hidden) askFixed(fresh, async () => { await Promise.all([loadMy(), loadSlots()]); });
   if (!S.my.bookings.length) { list.append(el("div", { class: "empty" }, "Još nemate zakazanih termina. ", el("a", { href: "#zakazi" }, "Zakažite prvi trening."))); return; }
   for (const b of S.my.bookings) {
     const h = hoursUntil(b.date, b.start), pkg = S.my.packages.find(p => p.id === b.pkgId);
@@ -938,7 +1024,8 @@ async function loadClient() {
   const note = el("input", { class: "input", placeholder: "npr. plaćeno gotovinom" });
   pkgBox.append(el("form", { class: "card add-form", onsubmit: async e => {
     e.preventDefault();
-    if (await act(() => api("/api/admin/packages", { email: c.email, catalogId: cat.value, paidAt: paid.value, note: note.value }), "Uplata je evidentirana.")) loadClient();
+    const r = await act(() => api("/api/admin/packages", { email: c.email, catalogId: cat.value, paidAt: paid.value, note: note.value }), "Uplata je evidentirana.");
+    if (r) { await loadClient(); if (r.pkg.total >= 8) askFixed(r.pkg, loadClient, c.ime); }
   } }, el("h3", { style: "flex-basis:100%" }, "Evidentiraj uplatu"), el("label", { class: "f" }, "Paket", cat), el("label", { class: "f" }, "Datum uplate", paid),
      el("label", { class: "f" }, "Napomena", note), el("button", { class: "btn", type: "submit" }, "Sačuvaj uplatu")));
   box.append(pkgBox);
@@ -1039,6 +1126,8 @@ function route() {
   if (v === "zakazi") loadSlots();
 }
 window.addEventListener("hashchange", route);
+// Kada se korisnik vrati u aplikaciju, osveži „Moje termine“ (npr. studio je u međuvremenu upisao uplatu).
+document.addEventListener("visibilitychange", () => { if (!document.hidden && S.me && location.hash.startsWith("#moji")) loadMy(); });
 
 /* ---------- lagano pomeranje zelenila pri skrolu ---------- */
 (function () {

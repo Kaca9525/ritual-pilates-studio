@@ -51,6 +51,9 @@ if (!db.prepare("SELECT 1 FROM settings WHERE key='config'").get()) {
     .run(fs.readFileSync(path.join(__dirname, "seed", "settings.json"), "utf8"));
   console.log("Podešavanja su učitana iz seed/settings.json.");
 }
+// Dopune šeme za postojeće baze (fiksni termini).
+for (const [t, col, def] of [["packages", "fixed", "TEXT"], ["bookings", "fixed", "INTEGER DEFAULT 0"]])
+  if (!db.prepare(`PRAGMA table_info(${t})`).all().some(x => x.name === col)) db.exec(`ALTER TABLE ${t} ADD COLUMN ${col} ${def}`);
 const cfg = () => JSON.parse(db.prepare("SELECT json FROM settings WHERE key='config'").get().json);
 const saveCfg = c => db.prepare("UPDATE settings SET json=? WHERE key='config'").run(JSON.stringify(c));
 
@@ -140,7 +143,7 @@ function pkgStats(p, c = cfg()) {
   const remaining = Math.max(0, p.total - used - sched - (p.adjust || 0));
   return { used: used + (p.adjust || 0), sched, remaining, firstUse: first, validUntil: addDays(expires, -1), expired: expires <= today() };
 }
-const pkgOut = (p, c) => ({ ...p, ...pkgStats(p, c) });
+const pkgOut = (p, c) => ({ ...p, fixed: p.fixed ? JSON.parse(p.fixed) : null, ...pkgStats(p, c) });
 function pickPackage(email, type, date, c = cfg()) {
   return db.prepare("SELECT * FROM packages WHERE userEmail=? AND cat=?").all(email, type)
     .map(p => pkgOut(p, c))
@@ -248,7 +251,7 @@ app.post("/api/reset", (req, res) => {
 });
 
 /* ---- rezervacije ---- */
-function createBooking({ email, date, start, type, trial, by, force }) {
+function createBooking({ email, date, start, type, trial, by, force, fixed }) {
   const c = cfg();
   if (!validDate(date) || !validTime(start) || !TYPES[type]) return { code: 400, error: "Neispravan termin." };
   const kind = kindOf(type);
@@ -263,8 +266,8 @@ function createBooking({ email, date, start, type, trial, by, force }) {
     if (!force && countAt(date, start) >= capacity(kindAt(date, start, c) || kind, c))
       return { code: 409, error: "Termin je upravo popunjen. Izaberite drugi." };
     const pkg = pickPackage(email, type, date, c);
-    const b = { id: newId(), userEmail: email, date, start, type, pkgId: pkg ? pkg.id : null, trial: !pkg && trial ? 1 : 0, status: "zakazano", created: nowIso(), createdBy: by };
-    db.prepare("INSERT INTO bookings(id,userEmail,date,start,type,pkgId,trial,status,created,createdBy) VALUES(@id,@userEmail,@date,@start,@type,@pkgId,@trial,@status,@created,@createdBy)").run(b);
+    const b = { id: newId(), userEmail: email, date, start, type, pkgId: pkg ? pkg.id : null, trial: !pkg && trial ? 1 : 0, status: "zakazano", created: nowIso(), createdBy: by, fixed: fixed ? 1 : 0 };
+    db.prepare("INSERT INTO bookings(id,userEmail,date,start,type,pkgId,trial,status,created,createdBy,fixed) VALUES(@id,@userEmail,@date,@start,@type,@pkgId,@trial,@status,@created,@createdBy,@fixed)").run(b);
     return { booking: b, pkg };
   });
   return tx.immediate();
@@ -306,6 +309,76 @@ app.post("/api/bookings/:id/cancel", auth, (req, res) => {
   db.prepare("UPDATE bookings SET status='otkazano', cancelledAt=?, cancelledBy=? WHERE id=?").run(nowIso(), req.user.email, b.id);
   notify(b, "cancel");
   res.json({ ok: true });
+});
+
+/* ---- fiksni termini uz paket od 8 ili 12 treninga ---- */
+const DAY_SHORT = ["ned", "pon", "uto", "sre", "čet", "pet", "sub"];
+const fixedText = f => f ? f.days.map(d => DAY_SHORT[d]).join(", ") + " u " + f.time : "";
+// Planira narednih N termina po nedeljnom obrascu, u okviru važenja paketa.
+function planFixed(p, f, c = cfg()) {
+  const st = pkgStats(p, c), type = f.type, kind = kindOf(type);
+  const first = f.from && f.from > today() ? f.from : addDays(today(), 1);
+  const plan = []; let need = st.remaining;
+  for (let d = first; d <= st.validUntil && need > 0; d = addDays(d, 1)) {
+    if (!f.days.includes(parseD(d).getDay())) continue;
+    const inSched = slotsFor(d, kind, c).includes(f.time);
+    const mine = db.prepare("SELECT 1 FROM bookings WHERE userEmail=? AND date=? AND start=? AND status='zakazano'").get(p.userEmail, d, f.time);
+    const full = inSched && countAt(d, f.time) >= capacity(kindAt(d, f.time, c) || kind, c);
+    const reason = !inSched ? "nema termina u rasporedu" : mine ? "već zakazano" : full ? "popunjeno" : null;
+    plan.push({ date: d, start: f.time, ok: !reason, reason });
+    if (!reason || mine) need--;
+  }
+  return { plan, remaining: st.remaining, validUntil: st.validUntil };
+}
+function fixedOptions(p, c = cfg()) {
+  const kind = kindOf(p.cat), out = {};
+  for (let d = 0; d < 7; d++) out[d] = ((c.week[String(d)] || {})[kind] || []).slice().sort();
+  return out;
+}
+app.post("/api/packages/:id/fixed", auth, (req, res) => {
+  const p = db.prepare("SELECT * FROM packages WHERE id=?").get(req.params.id);
+  if (!p || (!req.user.admin && p.userEmail !== req.user.email)) return fail(res, 404, "Paket nije pronađen.");
+  if (p.total < 8) return fail(res, 400, "Fiksni termini važe za pakete od 8 ili 12 treninga.");
+  const c = cfg(), body = req.body || {};
+  if (body.preview === true && !body.days) return res.json({ options: fixedOptions(p, c), fixed: p.fixed ? JSON.parse(p.fixed) : null });
+  const days = [...new Set((Array.isArray(body.days) ? body.days : []).map(Number).filter(d => d >= 0 && d <= 6))].sort();
+  const type = p.cat === "grupni" ? "grupni" : (body.type === "duo" ? "duo" : "individualni");
+  const f = { days, time: String(body.time || ""), type, from: validDate(body.from) ? body.from : null };
+  if (!days.length) return fail(res, 400, "Izaberite bar jedan dan u nedelji.");
+  if (!validTime(f.time)) return fail(res, 400, "Izaberite vreme.");
+  if (!days.some(d => fixedOptions(p, c)[d].includes(f.time))) return fail(res, 400, "U izabrane dane nema termina u to vreme.");
+  const st = pkgStats(p, c);
+  if (st.expired || st.remaining <= 0) return fail(res, 400, "Paket nema preostalih treninga ili je istekao.");
+  const planned = planFixed(p, f, c);
+  if (body.preview) return res.json({ ...planned, options: fixedOptions(p, c) });
+  const made = [], skipped = [];
+  for (const x of planned.plan) {
+    if (!x.ok) { if (x.reason !== "već zakazano") skipped.push(x); continue; }
+    const r = createBooking({ email: p.userEmail, date: x.date, start: x.start, type, by: req.user.email, force: !!(req.user.admin && body.force), fixed: true });
+    if (r.error) skipped.push({ ...x, reason: r.error }); else made.push(r.booking);
+  }
+  db.prepare("UPDATE packages SET fixed=? WHERE id=?").run(JSON.stringify(f), p.id);
+  logAction(req.user.email, p.userEmail, "fiksni termini", `${p.name}: ${fixedText(f)}, zakazano ${made.length}${skipped.length ? ", preskočeno " + skipped.length : ""}`);
+  if (made.length) {
+    const u = db.prepare("SELECT * FROM users WHERE email=?").get(p.userEmail);
+    if (u) sendMail(u.email, "Vaši fiksni termini - Ritual Pilates Studio",
+      `Zdravo ${u.ime},\n\nzakazani su vaši fiksni termini (${fixedText(f)}):\n${made.map(b => "- " + fmtD(b.date) + " u " + b.start).join("\n")}\n\nOtkazivanje pojedinačnog termina je moguće najkasnije ${c.cancelHours}h ranije.\n\nRitual Pilates Studio`);
+  }
+  res.json({ made, skipped, fixed: f });
+});
+app.post("/api/packages/:id/fixed/clear", auth, (req, res) => {
+  const p = db.prepare("SELECT * FROM packages WHERE id=?").get(req.params.id);
+  if (!p || (!req.user.admin && p.userEmail !== req.user.email)) return fail(res, 404, "Paket nije pronađen.");
+  const c = cfg();
+  // Budući fiksni termini se otkazuju (uz poštovanje roka za otkazivanje kada to radi klijent).
+  const fut = db.prepare("SELECT * FROM bookings WHERE pkgId=? AND fixed=1 AND status='zakazano'").all(p.id)
+    .filter(b => hoursUntil(b.date, b.start) >= (req.user.admin ? 0 : c.cancelHours));
+  db.transaction(() => {
+    for (const b of fut) db.prepare("UPDATE bookings SET status='otkazano', cancelledAt=?, cancelledBy=? WHERE id=?").run(nowIso(), req.user.email, b.id);
+    db.prepare("UPDATE packages SET fixed=NULL WHERE id=?").run(p.id);
+    logAction(req.user.email, p.userEmail, "fiksni termini ukinuti", `${p.name}: otkazano ${fut.length} budućih termina`);
+  })();
+  res.json({ cancelled: fut.length });
 });
 
 /* ---- admin: raspored ---- */
