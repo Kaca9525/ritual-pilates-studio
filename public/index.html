@@ -16,17 +16,19 @@
 /* Layout: ivory studio ground, backlit arches as the recurring form (hero, days, panes), black reformer
    leather for ink, olive from the logo, blush from the logotype. Serif italic voice, slow light. */
 :root {
-  --bg: #efeae0;
-  --bg-deep: #e6dfd2;
-  --paper: #f8f5ee;
-  --glow: #fffdf6;
+  --bg: #eee8dc;
+  --bg-deep: #e3dccc;
+  --paper: #f8f5ed;
+  --glow: #fffdf5;
   --line: rgba(29, 28, 25, 0.12);
   --line-soft: rgba(29, 28, 25, 0.07);
-  --ink: #1d1c19;
+  --ink: #23261c;
   --ink-soft: #6c675d;
   --ink-mute: #9d978a;
   --olive: #5c623e;
+  --olive-deep: #3f452b;
   --olive-soft: #8b9170;
+  --sage: #b9c29c;
   --blush: #d9b4a6;
   --blush-deep: #b98f80;
   --danger: #a3493a;
@@ -43,29 +45,52 @@ a { color: var(--olive); text-decoration-color: rgba(92,98,62,.35); text-underli
 
 /* ambijent: toplo svetlo kao iza lukova */
 .ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; background:
-  radial-gradient(55% 45% at 50% -5%, #fffdf6 0%, rgba(255,253,246,.6) 40%, transparent 75%),
-  radial-gradient(40% 35% at 100% 70%, rgba(217,180,166,.22), transparent 70%),
-  radial-gradient(45% 40% at 0% 90%, rgba(139,145,112,.18), transparent 70%),
+  radial-gradient(55% 45% at 50% -5%, #fffdf5 0%, rgba(255,253,245,.6) 40%, transparent 75%),
+  radial-gradient(40% 35% at 100% 70%, rgba(217,180,166,.18), transparent 70%),
+  radial-gradient(45% 40% at 0% 90%, rgba(92,98,62,.16), transparent 70%),
+  radial-gradient(35% 30% at 95% 15%, rgba(92,98,62,.12), transparent 70%),
   var(--bg); }
 .ambient svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ambient .grain { opacity: .5; mix-blend-mode: multiply; }
 .orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .5; animation: drift 30s ease-in-out infinite alternate; }
 .orb.a { width: 50vw; height: 50vw; left: 10vw; top: -20vw; background: #fffdf6; }
-.orb.b { width: 34vw; height: 34vw; right: -12vw; top: 48vh; background: #e9d2c6; animation-delay: -12s; animation-duration: 38s; }
+.orb.b { width: 34vw; height: 34vw; right: -12vw; top: 48vh; background: #c9cfb0; animation-delay: -12s; animation-duration: 38s; }
 @keyframes drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(-5vw, 5vh, 0) scale(1.1); } }
 
 .wrap { max-width: 760px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
 
 /* hero: luk sa fotografijom studija */
-header.hero { padding-block: 26px 22px; display: grid; grid-template-columns: 1fr; gap: 18px; }
+header.hero { padding-block: 26px 22px; display: grid; grid-template-columns: 1fr; gap: 18px; position: relative; }
+.hero-clip { overflow: hidden; }
+.hero-wide { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.hero-wide .leaf { position: absolute; top: 90px; width: min(46vw, 420px); height: auto; opacity: .95; will-change: transform; filter: drop-shadow(0 30px 40px rgba(63,69,43,.18)); }
+.hero-wide .leaf.l { left: calc(50% - min(380px, 50vw) - min(24vw, 260px)); transform: rotate(-6deg); }
+.hero-wide .leaf.r { right: calc(50% - min(380px, 50vw) - min(24vw, 260px)); top: 150px; transform: rotate(8deg) scaleX(-1); }
+.hero-wide .mist { position: absolute; top: 40px; width: min(60vw, 520px); height: min(60vw, 520px); border-radius: 50%; background: radial-gradient(circle, rgba(92,98,62,.35), rgba(92,98,62,0) 65%); filter: blur(30px); }
+.hero-wide .mist.l { left: calc(50% - min(380px, 50vw) - min(34vw, 320px)); }
+.hero-wide .mist.r { right: calc(50% - min(380px, 50vw) - min(34vw, 320px)); top: 180px; }
+.arch, .hero-top, .tag { position: relative; z-index: 1; }
+.arch { box-shadow: 0 0 0 1px rgba(255,253,246,.9), 0 0 0 10px rgba(255,253,246,.35), 0 30px 70px -30px rgba(63,69,43,.5), 0 0 120px rgba(92,98,62,.18), inset 0 0 90px rgba(255,253,246,.9); }
+@media (max-width: 760px) {
+  .hero-wide .leaf { width: 48vw; top: 60px; }
+  .hero-wide .leaf.l { left: -24vw; }
+  .hero-wide .leaf.r { right: -24vw; top: 140px; }
+  .hero-wide .mist.l { left: -30vw; } .hero-wide .mist.r { right: -30vw; }
+}
 .hero-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
 .hero-top .logo { width: 64px; height: 64px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(92,98,62,.2), 0 10px 30px rgba(92,98,62,.18); }
 .account { display: flex; gap: 14px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft); }
 .account a, .account .link { color: var(--ink); background: none; border: 0; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; padding: 0; text-decoration: none; border-bottom: 1px solid var(--line); }
 .arch { position: relative; border-radius: 999px 999px 28px 28px; overflow: hidden; aspect-ratio: 4 / 5; max-height: 520px; width: 100%; background: var(--bg-deep);
   box-shadow: 0 0 0 1px rgba(255,253,246,.9), 0 0 0 10px rgba(255,253,246,.35), 0 30px 70px -30px rgba(29,28,25,.45), inset 0 0 90px rgba(255,253,246,.9); }
-.arch img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; display: block; filter: saturate(.9) brightness(1.02); animation: settle 2.4s ease-out both; }
-@keyframes settle { from { transform: scale(1.06); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.arch img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; filter: saturate(.85) brightness(1.03); animation: settle 2.4s ease-out both; will-change: filter, transform; }
+.motion { padding-block: 10px 0; }
+.motion-panel { margin: 0; position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 16 / 9; background: var(--bg-deep); box-shadow: 0 30px 70px -40px rgba(63,69,43,.6), 0 0 0 1px rgba(255,253,246,.8); }
+.motion-panel img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; display: block; filter: blur(14px) saturate(.85); transform: scale(1.08); will-change: filter, transform; transition: filter .15s linear, transform .15s linear; }
+.motion-panel figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 26px 22px; font-family: var(--serif); font-style: italic; font-size: clamp(20px, 4.4vw, 28px); color: var(--paper); line-height: 1.25; background: linear-gradient(to top, rgba(35,38,28,.72), transparent); text-wrap: balance; }
+.motion-panel figcaption span { display: block; font-style: normal; font-size: .62em; letter-spacing: .26em; text-transform: uppercase; font-family: var(--sans); color: rgba(248,245,237,.85); margin-bottom: 6px; }
+@media (max-width: 560px) { .motion-panel { aspect-ratio: 4 / 5; border-radius: 22px; } }
+@keyframes settle { from { opacity: 0; } to { opacity: 1; } }
 .arch::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(239,234,224,.98) 0%, rgba(239,234,224,.7) 28%, transparent 58%); }
 .arch .brand { position: absolute; left: 0; right: 0; bottom: 24px; text-align: center; z-index: 1; padding: 0 16px; }
 .brand .eyebrow { font-size: 10px; letter-spacing: .36em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 8px; }
@@ -80,7 +105,7 @@ nav.tabs .wrap { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: non
 nav.tabs .wrap::-webkit-scrollbar { display: none; }
 nav.tabs a { flex: none; text-decoration: none; color: var(--ink-soft); font-family: var(--serif); font-size: 19px; font-style: italic; padding: 7px 14px; border-radius: 999px; transition: color .25s, background .25s; }
 nav.tabs a:hover { color: var(--ink); }
-nav.tabs a[aria-current="page"] { color: var(--paper); background: var(--ink); }
+nav.tabs a[aria-current="page"] { color: var(--paper); background: var(--olive-deep); }
 :focus-visible { outline: 2px solid var(--olive); outline-offset: 3px; border-radius: 4px; }
 
 main { padding-block: 38px 70px; }
@@ -102,7 +127,7 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .seg button:hover { border-color: var(--line); }
 .seg button b { font-family: var(--serif); font-size: 27px; font-weight: 400; font-style: italic; line-height: 1; }
 .seg button span { font-size: 12px; color: var(--ink-soft); }
-.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); box-shadow: 0 18px 40px -22px rgba(29,28,25,.6); }
+.seg button[aria-pressed="true"] { background: var(--olive-deep); color: var(--paper); border-color: var(--olive-deep); box-shadow: 0 18px 40px -22px rgba(63,69,43,.7); }
 .seg button[aria-pressed="true"] span { color: rgba(248,245,238,.7); }
 
 /* dani kao mali lukovi */
@@ -111,7 +136,7 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .days button small { font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); }
 .days button strong { font-family: var(--serif); font-size: 26px; font-weight: 400; }
 .days button:hover { border-color: var(--line); }
-.days button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); box-shadow: 0 14px 30px -16px rgba(29,28,25,.7); }
+.days button[aria-pressed="true"] { background: var(--olive-deep); border-color: var(--olive-deep); color: var(--paper); box-shadow: 0 14px 30px -16px rgba(63,69,43,.8); }
 .days button[aria-pressed="true"] small { color: rgba(248,245,238,.7); }
 .days button:disabled { opacity: .35; cursor: not-allowed; }
 
@@ -125,7 +150,7 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .dots { display: inline-flex; gap: 4px; }
 .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--bg-deep); border: 1px solid var(--line); }
 .dots i.on { background: var(--olive); border-color: var(--olive); }
-.slot[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); background: var(--glow); }
+.slot[aria-pressed="true"] { border-color: var(--olive); box-shadow: inset 0 0 0 1px var(--olive); background: var(--glow); }
 .slot:disabled { cursor: not-allowed; opacity: .45; }
 .slot.mine { border-style: dashed; border-color: var(--olive); opacity: 1; }
 .empty { padding: 28px; text-align: center; color: var(--ink-soft); border: 1px dashed var(--line); border-radius: 18px; font-family: var(--serif); font-size: 19px; font-style: italic; }
@@ -140,8 +165,8 @@ label.f { display: grid; gap: 6px; font-size: 10px; font-weight: 500; letter-spa
 .input.small { width: auto; min-width: 110px; }
 label.check { display: flex; gap: 12px; align-items: flex-start; font-size: 13px; color: var(--ink-soft); }
 label.check input { margin-top: 4px; accent-color: var(--olive); }
-.btn { font: inherit; font-size: 11px; font-weight: 500; letter-spacing: .24em; text-transform: uppercase; border: 1px solid var(--ink); border-radius: 999px; padding: 14px 26px; background: var(--ink); color: var(--paper); cursor: pointer; justify-self: start; text-decoration: none; display: inline-block; transition: box-shadow .3s, transform .2s; }
-.btn:hover { box-shadow: 0 16px 34px -16px rgba(29,28,25,.7); }
+.btn { font: inherit; font-size: 11px; font-weight: 500; letter-spacing: .24em; text-transform: uppercase; border: 1px solid var(--olive-deep); border-radius: 999px; padding: 14px 26px; background: var(--olive-deep); color: var(--paper); cursor: pointer; justify-self: start; text-decoration: none; display: inline-block; transition: box-shadow .3s, transform .2s; }
+.btn:hover { box-shadow: 0 16px 34px -16px rgba(63,69,43,.8); }
 .btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
 .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); padding: 9px 16px; font-size: 10px; }
 .btn.ghost:hover { border-color: var(--ink); }
@@ -174,7 +199,7 @@ a.row:hover { border-color: var(--line); }
 .rules { gap: 24px; }
 .rules ul { margin: 10px 0 0; padding-left: 0; list-style: none; display: grid; gap: 10px; max-width: 60ch; font-family: var(--serif); font-size: 19px; line-height: 1.4; }
 .rules li { padding-left: 22px; position: relative; }
-.rules li::before { content: ""; position: absolute; left: 0; top: .7em; width: 10px; height: 1px; background: var(--ink); }
+.rules li::before { content: ""; position: absolute; left: 0; top: .7em; width: 10px; height: 1px; background: var(--olive); }
 .rules strong { color: var(--olive); font-weight: 600; }
 .kv { display: grid; grid-template-columns: 130px 1fr; gap: 12px 18px; margin: 0; }
 .kv dt { font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--ink-soft); padding-top: 4px; }
@@ -192,7 +217,7 @@ a.row:hover { border-color: var(--line); }
 .pkg-head b { font-family: var(--serif); font-size: 28px; font-weight: 400; font-style: italic; }
 .bar { display: flex; gap: 4px; }
 .bar i { flex: 1; height: 6px; border-radius: 3px; background: var(--bg-deep); }
-.bar i.used { background: var(--ink); }
+.bar i.used { background: var(--olive-deep); }
 .bar i.sched { background: var(--olive-soft); }
 .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .stats div { display: grid; }
@@ -222,7 +247,7 @@ details.card summary::after { content: "+"; float: right; font-family: var(--ser
 details[open].card summary::after { content: "–"; }
 textarea.input { resize: vertical; }
 
-.toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 13px 20px; border-radius: 14px; font-size: 14px; max-width: calc(100% - 32px); z-index: 20; box-shadow: 0 16px 40px -10px rgba(29,28,25,.5); animation: rise .3s ease both; }
+.toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--olive-deep); color: var(--paper); padding: 13px 20px; border-radius: 14px; font-size: 14px; max-width: calc(100% - 32px); z-index: 20; box-shadow: 0 16px 40px -10px rgba(29,28,25,.5); animation: rise .3s ease both; }
 footer { padding-block: 24px 50px; color: var(--ink-mute); text-align: center; font-family: var(--serif); font-style: italic; letter-spacing: .08em; font-size: 17px; }
 footer span { display: block; font-family: var(--sans); font-style: normal; font-size: 9px; letter-spacing: .3em; text-transform: uppercase; margin-top: 6px; }
 
@@ -238,7 +263,7 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
   .person { grid-template-columns: 1fr; }
   .week-row { grid-template-columns: 44px 1fr; }
   .week-row > :last-child { grid-column: 2; }
-  .arch { aspect-ratio: 3 / 4; }
+  .arch { aspect-ratio: 3 / 4; width: 86%; margin: 0 auto; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
@@ -248,13 +273,38 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
   <div class="orb a"></div><div class="orb b"></div>
   <svg class="grain"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .4 0 0 0 0 .38 0 0 0 0 .33 0 0 0 .08 0"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
 </div>
-<header class="wrap hero">
+<div class="hero-clip"><header class="wrap hero">
+  <div class="hero-wide" aria-hidden="true">
+    <div class="mist l" data-speed="-.08"></div><div class="mist r" data-speed=".06"></div>
+    <div class="leaf l" data-speed=".18"><svg viewBox="0 0 300 420" aria-hidden="true">
+      <defs>
+        <linearGradient id="lga" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b9170"/><stop offset=".55" stop-color="#5c623e"/><stop offset="1" stop-color="#3f452b"/></linearGradient>
+        <linearGradient id="lha" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf5" stop-opacity=".45"/><stop offset="1" stop-color="#fffdf5" stop-opacity="0"/></linearGradient>
+      </defs>
+      <path d="M150 420 C150 320 140 240 120 150" fill="none" stroke="#3f452b" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+      <path d="M120 150 C40 130 -10 70 12 0 C100 10 170 60 190 140 C200 180 165 170 120 150 Z" fill="url(#lga)"/>
+      <path d="M120 150 C70 120 40 70 30 20 C90 40 140 80 165 135 C150 150 135 155 120 150 Z" fill="url(#lha)"/>
+      <path d="M118 148 C100 110 96 70 104 32" fill="none" stroke="#d9b4a6" stroke-width="9" stroke-linecap="round" opacity=".85"/>
+      <path d="M150 300 C210 280 250 230 252 170 C200 190 165 240 150 300 Z" fill="url(#lga)" opacity=".85"/>
+    </svg></div>
+    <div class="leaf r" data-speed=".32"><svg viewBox="0 0 300 420" aria-hidden="true">
+      <defs>
+        <linearGradient id="lgb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b9170"/><stop offset=".55" stop-color="#5c623e"/><stop offset="1" stop-color="#3f452b"/></linearGradient>
+        <linearGradient id="lhb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf5" stop-opacity=".45"/><stop offset="1" stop-color="#fffdf5" stop-opacity="0"/></linearGradient>
+      </defs>
+      <path d="M150 420 C150 320 140 240 120 150" fill="none" stroke="#3f452b" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+      <path d="M120 150 C40 130 -10 70 12 0 C100 10 170 60 190 140 C200 180 165 170 120 150 Z" fill="url(#lgb)"/>
+      <path d="M120 150 C70 120 40 70 30 20 C90 40 140 80 165 135 C150 150 135 155 120 150 Z" fill="url(#lhb)"/>
+      <path d="M118 148 C100 110 96 70 104 32" fill="none" stroke="#d9b4a6" stroke-width="9" stroke-linecap="round" opacity=".85"/>
+      <path d="M150 300 C210 280 250 230 252 170 C200 190 165 240 150 300 Z" fill="url(#lgb)" opacity=".85"/>
+    </svg></div>
+  </div>
   <div class="hero-top">
     <img class="logo" src="/logo.svg" alt="Ritual Pilates Studio" width="64" height="64">
     <div class="account" id="account"></div>
   </div>
   <div class="arch">
-    <img src="/img/studio.jpg" alt="Studio Ritual: reformeri ispod osvetljenih lukova" width="1400" height="1871" fetchpriority="high">
+    <img src="/img/pokret.jpg" alt="Pokret u studiju Ritual" width="1400" height="1871" fetchpriority="high" data-blur="hero">
     <div class="brand">
       <p class="eyebrow">Reformer pilates · Dorćol</p>
       <h1>Ritual<span>Pilates studio</span></h1>
@@ -262,7 +312,13 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
     </div>
   </div>
   <p class="tag">Prostor stvoren za vaše telo, dah i mir.<br>Pedeset pet minuta samo za sebe.</p>
-</header>
+</header></div>
+<section class="wrap motion" aria-label="Trening u studiju">
+  <figure class="motion-panel">
+    <img src="/img/trening.jpg" alt="Vežba na reformeru u studiju Ritual" width="1400" height="1871" loading="lazy" data-blur="focus">
+    <figcaption><span>Svaki pokret ima svrhu,</span> a svaka žena svoj prostor.</figcaption>
+  </figure>
+</section>
 
 <nav class="tabs" aria-label="Glavni meni">
   <div class="wrap" id="tabs">
@@ -926,6 +982,38 @@ function route() {
   if (v === "zakazi") loadSlots();
 }
 window.addEventListener("hashchange", route);
+
+/* ---------- lagano pomeranje zelenila pri skrolu ---------- */
+(function () {
+  const items = [...document.querySelectorAll("[data-speed]")];
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { document.querySelectorAll("[data-blur]").forEach(i => { i.style.filter = "none"; i.style.transform = "none"; }); return; }
+  const base = items.map(e => getComputedStyle(e).transform === "none" ? "" : getComputedStyle(e).transform);
+  let ticking = false;
+  const blurs = [...document.querySelectorAll("[data-blur]")];
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const update = () => {
+    const y = scrollY;
+    items.forEach((e, i) => { e.style.transform = `translate3d(0, ${Math.round(y * parseFloat(e.dataset.speed))}px, 0) ${base[i]}`; });
+    for (const img of blurs) {
+      const r = img.getBoundingClientRect();
+      if (img.dataset.blur === "hero") {
+        // hero se zamućuje i lagano uvećava kako odlazi iz vidnog polja
+        const p = clamp(-r.top / Math.max(r.height, 1), 0, 1);
+        img.style.filter = `blur(${(p * 16).toFixed(1)}px) saturate(.85) brightness(1.03)`;
+        img.style.transform = `scale(${1 + p * .08}) translateY(${(p * 10).toFixed(1)}%)`;
+      } else {
+        // slika je oštra kad je u sredini ekrana, zamućena na ivicama
+        const center = r.top + r.height / 2, d = Math.abs(center - innerHeight / 2) / (innerHeight / 2);
+        const p = clamp((d - .3) / .5, 0, 1);
+        img.style.filter = `blur(${(p * 14).toFixed(1)}px) saturate(.85)`;
+        img.style.transform = `scale(${1.02 + p * .06})`;
+      }
+    }
+    ticking = false;
+  };
+  addEventListener("scroll", () => { if (!ticking) { requestAnimationFrame(update); ticking = true; } }, { passive: true });
+  addEventListener("resize", update); update();
+})();
 
 (async function init() {
   try { S.pub = await api("/api/public"); } catch (e) { toast("Server nije dostupan. Osvežite stranicu."); return; }
