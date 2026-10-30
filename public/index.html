@@ -96,7 +96,7 @@ header.hero { padding-block: 26px 22px; display: grid; grid-template-columns: 1f
 .arch { aspect-ratio: 4 / 5; }
 .motion { padding-block: 10px 0; }
 .motion-panel { margin: 0; position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 16 / 9; background: var(--bg-deep); box-shadow: 0 30px 70px -40px rgba(63,69,43,.6), 0 0 0 1px rgba(255,253,246,.8); }
-.motion-panel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; display: block; }
+.motion-panel img { position: absolute; inset: -12% 0; width: 100%; height: 124%; object-fit: cover; object-position: 50% 45%; display: block; will-change: transform; }
 @media (max-width: 560px) { .motion-panel img { object-position: 55% 40%; } .arch img { object-position: 50% 25%; } }
 .motion-panel figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 26px 22px; font-family: var(--serif); font-style: italic; font-size: clamp(20px, 4.4vw, 28px); color: var(--paper); line-height: 1.25; background: linear-gradient(to top, rgba(35,38,28,.72), transparent); text-wrap: balance; }
 .motion-panel figcaption span { display: block; font-style: normal; font-size: .62em; letter-spacing: .26em; text-transform: uppercase; font-family: var(--sans); color: rgba(248,245,237,.85); margin-bottom: 6px; }
@@ -331,7 +331,7 @@ footer span { display: block; font-family: var(--sans); font-style: normal; font
 </header></div>
 <section class="wrap motion" aria-label="Trening u studiju">
   <figure class="motion-panel">
-    <img src="/img/trening.jpg" alt="Vežba na reformeru u studiju Ritual" width="1400" height="1871" loading="lazy" decoding="async">
+    <img src="/img/trening.jpg" alt="Vežba na reformeru u studiju Ritual" width="1400" height="1871" loading="lazy" decoding="async" data-parallax=".18">
     <figcaption><span>Svaki pokret ima svrhu,</span> a svaka žena svoj prostor.</figcaption>
   </figure>
 </section>
@@ -1141,12 +1141,17 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden && S.
   const base = items.map(e => getComputedStyle(e).transform === "none" ? "" : getComputedStyle(e).transform);
   let ticking = false;
   const blurs = [...document.querySelectorAll("[data-blur]")];
-  const opens = [...document.querySelectorAll("[data-open]")];
+  const opens = [...document.querySelectorAll("[data-open]")], pars = [...document.querySelectorAll("[data-parallax]")];
   const heroEl = document.querySelector("header.hero"), heroH = () => heroEl ? heroEl.offsetHeight : innerHeight;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const update = () => {
     const y = scrollY;
     items.forEach((e, i) => { e.style.transform = `translate3d(0, ${Math.round(y * parseFloat(e.dataset.speed))}px, 0) ${base[i]}`; });
+    // slike u okvirima: lagano klize dok prolaze kroz ekran
+    for (const e of pars) {
+      const r = e.parentElement.getBoundingClientRect(), c = (r.top + r.height / 2 - innerHeight / 2) / innerHeight;
+      e.style.transform = `translate3d(0, ${(-c * r.height * parseFloat(e.dataset.parallax)).toFixed(1)}px, 0)`;
+    }
     // kale: zagrljaj koji se polako otvara dok se skroluje
     const q = clamp(y / Math.max(heroH() * 1.15, 1), 0, 1), ease = q * (2 - q);
     for (const e of opens) {
