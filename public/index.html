@@ -925,9 +925,9 @@ function renderPublic() {
     el("dt", {}, "Instagram"), el("dd", {}, st.instagram ? el("a", { href: "https://www.instagram.com/" + st.instagram.replace(/^@/, "") + "/", target: "_blank", rel: "noopener" }, "@" + st.instagram.replace(/^@/, "")) : todo("Uskoro")),
     el("dt", {}, "Radno vreme"), el("dd", { class: "hours" }, hours));
   const fc = $("#foot-contact"), fh = $("#foot-hours");
-  if (fc) fc.replaceChildren(el("div", {}, st.address || ""), st.phone ? el("div", {}, el("a", { href: "tel:" + st.phone.replace(/\s/g, "") }, st.phone)) : null,
+  if (fc) fc.replaceChildren(...[el("div", {}, st.address || ""), st.phone ? el("div", {}, el("a", { href: "tel:" + st.phone.replace(/\s/g, "") }, st.phone)) : null,
     st.email ? el("div", {}, el("a", { href: "mailto:" + st.email }, st.email)) : null,
-    st.instagram ? el("div", {}, el("a", { href: "https://www.instagram.com/" + st.instagram.replace(/^@/, "") + "/", target: "_blank", rel: "noopener" }, "@" + st.instagram.replace(/^@/, ""))) : null);
+    st.instagram ? el("div", {}, el("a", { href: "https://www.instagram.com/" + st.instagram.replace(/^@/, "") + "/", target: "_blank", rel: "noopener" }, "@" + st.instagram.replace(/^@/, ""))) : null].filter(Boolean));
   if (fh) fh.replaceChildren(...hours.map(h => h.cloneNode(true)));
 }
 
