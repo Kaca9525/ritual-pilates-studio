@@ -122,8 +122,36 @@ a { color: var(--olive); text-decoration-color: rgba(92,98,62,.35); text-underli
 
 /* navigacija */
 nav.tabs { position: sticky; top: 75px; z-index: 5; background: rgba(239,234,224,.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); }
-nav.tabs .wrap { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; padding-block: 8px; }
-nav.tabs .wrap::-webkit-scrollbar { display: none; }
+nav.tabs .tabs-in { display: flex; align-items: center; gap: 8px; padding-block: 8px; }
+nav.tabs .tabs-scroll { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; flex: 1 1 0%; min-width: 0; }
+nav.tabs .tabs-scroll::-webkit-scrollbar { display: none; }
+/* pretraga usluga, vidljiva svima (kao u BN): na računaru polje desno u redu kartica, na telefonu dugme sa lupom koje otvara polje ispod kartica;
+   rezultati (usluge i paketi iz cenovnika + prečice do delova sajta) padaju ispod menija i vode pravo na zakazivanje */
+.search { position: relative; display: flex; align-items: center; flex: 0 1 250px; min-width: 0; margin-left: auto; }
+.search > svg { position: absolute; left: 13px; color: var(--ink-soft); pointer-events: none; }
+.search input { width: 100%; font: inherit; font-size: 14px; padding: 9px 34px 9px 36px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); -webkit-appearance: none; appearance: none; }
+.search input::placeholder { color: var(--ink-mute); }
+.search input:focus { outline: none; border-color: var(--olive); box-shadow: 0 0 0 3px rgba(92,98,62,.15); }
+.search .clr { position: absolute; right: 6px; width: 28px; height: 28px; border: 0; background: transparent; border-radius: 50%; display: none; place-items: center; color: var(--ink-soft); cursor: pointer; padding: 0; }
+.search.has-q .clr { display: grid; }
+.search .clr:hover { background: var(--bg-deep); color: var(--ink); }
+.search-btn { display: none; flex: none; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--ink); place-items: center; cursor: pointer; padding: 0; }
+.search-btn[aria-expanded="true"] { background: var(--olive-deep); color: var(--paper); border-color: var(--olive-deep); }
+@media (max-width: 760px) {
+  nav.tabs .tabs-in { flex-wrap: wrap; row-gap: 8px; }
+  .search-btn { display: grid; }
+  .search { display: none; flex: 1 1 100%; order: 1; margin-left: 0; }
+  nav.tabs.search-open .search { display: flex; }
+}
+.search-panel { position: absolute; left: 0; right: 0; top: 100%; z-index: 6; padding: 8px 0 16px; }
+.search-card { max-height: min(62vh, 560px); overflow: auto; padding: 14px 16px 10px; display: grid; gap: 2px; box-shadow: 0 30px 60px -30px rgba(35,38,28,.5); }
+.search-sum { margin: 0 0 6px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); }
+.sr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1px 12px; align-items: center; width: 100%; text-align: left; font: inherit; background: none; border: 0; border-top: 1px solid var(--line-soft); padding: 10px 8px; color: var(--ink); cursor: pointer; border-radius: 12px; }
+.sr:hover, .sr:focus-visible { background: var(--glow); }
+.sr .nm { grid-column: 1; grid-row: 1; font-family: var(--serif); font-size: 18px; font-weight: 500; }
+.sr .meta { grid-column: 1; grid-row: 2; font-size: 12.5px; color: var(--ink-soft); }
+.sr .act { grid-column: 2; grid-row: 1 / span 2; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--olive); white-space: nowrap; }
+.search-empty { margin: 4px 0 6px; padding: 0 8px; color: var(--ink-soft); font-size: 14px; }
 nav.tabs a { flex: none; text-decoration: none; color: var(--ink-soft); font-family: var(--display); font-size: 19px; font-weight: 500; padding: 7px 14px; border-radius: 999px; transition: color .25s, background .25s; }
 nav.tabs a:hover { color: var(--ink); }
 nav.tabs a[aria-current="page"] { color: var(--paper); background: var(--olive-deep); }
@@ -539,14 +567,23 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 </section>
 
 <nav class="tabs" aria-label="Glavni meni">
-  <div class="wrap" id="tabs">
-    <a href="#zakazi" data-tab="zakazi">Zakaži</a>
-    <a href="#moji-termini" data-tab="moji-termini">Moji termini</a>
-    <a href="#cenovnik" data-tab="cenovnik">Cenovnik</a>
-    <a href="#pravilnik" data-tab="pravilnik">Pravilnik</a>
-    <a href="#kontakt" data-tab="kontakt">Kontakt</a>
-    <a href="#raspored" data-tab="admin" class="admin-tab" hidden>Admin</a>
+  <div class="wrap tabs-in">
+    <div class="tabs-scroll" id="tabs">
+      <a href="#zakazi" data-tab="zakazi">Zakaži</a>
+      <a href="#moji-termini" data-tab="moji-termini">Moji termini</a>
+      <a href="#cenovnik" data-tab="cenovnik">Cenovnik</a>
+      <a href="#pravilnik" data-tab="pravilnik">Pravilnik</a>
+      <a href="#kontakt" data-tab="kontakt">Kontakt</a>
+      <a href="#raspored" data-tab="admin" class="admin-tab" hidden>Admin</a>
+    </div>
+    <button type="button" class="search-btn" id="search-btn" aria-label="Pretraga usluga" aria-expanded="false" aria-controls="site-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg></button>
+    <form class="search" id="site-search" role="search" autocomplete="off">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
+      <input id="site-q" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" aria-label="Pretraga usluga" placeholder="Pretraži usluge…">
+      <button type="button" class="clr" id="site-q-clr" aria-label="Obriši pretragu"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </form>
   </div>
+  <div class="search-panel" id="search-panel" hidden><div class="wrap"><div class="card search-card" id="search-results" aria-live="polite"></div></div></div>
 </nav>
 
 <main class="wrap">
@@ -1407,6 +1444,11 @@ function bookingRow(b, subParts, right) {
 
 /* ---------- cenovnik i kontakt ---------- */
 /* Cenovnik je interaktivan: tab Grupni / Individualni, klik na cenu vodi na zakazivanje te vrste treninga */
+/* iz cenovnika ili pretrage: otvori zakazivanje sa izabranom vrstom treninga i paketom */
+function bookItem(x) {
+  S.type = TYPES[x.cat] ? x.cat : (x.cat === "grupni" ? "grupni" : "individualni"); S.selected = null; S.day = null; $("#f-trial").checked = !!x.trial; S.plan = x.total > 1 ? x.id : "single";
+  if ((location.hash.slice(1) || "zakazi") === "zakazi") { loadSlots(); scrollToContent(); } else { S.jump = true; location.hash = "#zakazi"; }
+}
 function renderPrices() {
   const c = S.pub.catalog, cap = S.pub.groupCapacity;
   if (!S.priceTab) S.priceTab = S.type === "grupni" ? "grupni" : "individualni";
@@ -1422,8 +1464,7 @@ function renderPrices() {
   const blocks = [["Probni trening", items.filter(x => x.trial), S.pub.promo ? (S.pub.promo.text || "") + " Akcija važi do " + fmtShort(S.pub.promo.to) + "." : "Prvi dolazak, jednokratno.", 0],
     [grp ? "Pojedinačni grupni čas" : "Pojedinačni čas", items.filter(x => !x.trial && x.total === 1), null, 1],
     ["Mesečne članarine", items.filter(x => !x.trial && x.total > 1), "Članarina važi mesec dana od prvog treninga (npr. od 17.11. do 17.12.). Pri zakazivanju birate 8 ili 12 termina, dane u nedelji i vreme za ceo mesec; plaćanje uplatom na račun ili u studiju.", 2]].filter(([, l]) => l.length);
-  const go = x => { S.type = TYPES[x.cat] ? x.cat : (grp ? "grupni" : "individualni"); S.selected = null; S.day = null; $("#f-trial").checked = !!x.trial; S.plan = x.total > 1 ? x.id : "single";
-    location.hash = "#zakazi"; scrollToContent(); };
+  const go = bookItem;
   const row = x => el("button", { type: "button", class: "price", onclick: () => go(x), "aria-label": x.name + ", " + fmtRsd(x.price) + " dinara, zakaži" },
     el("span", {}, el("span", { class: "nm" }, x.name)),
     el("span", { class: "dur" }, x.total > 1 ? x.total + " termina" : "55 min"),
@@ -1701,9 +1742,63 @@ function route() {
   if (v === "zakazi") loadSlots();
   if (v === "kontakt") loadMap();
   observeRise();
+  const sp = $("#search-panel"); if (sp) sp.hidden = true;
   if (S.jump) { S.jump = false; scrollToContent(); }
 }
 window.addEventListener("hashchange", route);
+
+/* ---------- pretraga usluga, vidljiva svima: usluge i paketi iz cenovnika + prečice do delova sajta; bez obzira na kvačice (š=s, č/ć=c, đ=dj), sve reči upita moraju da se nađu ---------- */
+const fold = x => String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "dj");
+const PAGES = [
+  { name: "Zakazivanje termina", meta: "kalendar sa slobodnim terminima", view: "zakazi", kw: "zakazi zakazivanje rezervacija rezervisi termin termini kalendar slobodni slobodno" },
+  { name: "Cenovnik", meta: "cene treninga, paketi i članarine", view: "cenovnik", kw: "cena cene cenovnik kosta kostanje paket paketi clanarina clanarine popust akcija" },
+  { name: "Radno vreme", meta: "kad je studio otvoren", view: "kontakt", kw: "radno vreme sati otvoreno zatvoreno vikend subota nedelja jutro prepodne vece" },
+  { name: "Kontakt i lokacija", meta: "adresa, mapa, telefon, Instagram", view: "kontakt", kw: "kontakt adresa mapa lokacija gde telefon pozovi instagram dorcol skenderbegova navigacija parking" },
+  { name: "Pravilnik studija", meta: "otkazivanje, kašnjenje, pomeranje termina", view: "pravilnik", kw: "pravilnik pravila otkazivanje otkaz otkazati kasnjenje pomeranje promena zamrzavanje produzenje uslovi" },
+  { name: "Moji termini", meta: "vaše rezervacije i paket", view: "moji-termini", kw: "moji termini moje rezervacije paket preostalo stanje otkazi promeni nalog prijava" }
+];
+function searchIndex() {
+  const c = S.pub ? S.pub.catalog : [], cap = S.pub ? S.pub.groupCapacity : 4;
+  return c.map(x => ({ name: x.name, item: x,
+    meta: (x.trial ? "probni trening · " : x.total > 1 ? x.total + " treninga · " : "1 trening · ") + (x.trial && S.pub.promo ? "besplatno (akcija)" : fmtRsd(x.price) + " rsd") + (x.total >= 8 ? " · mesečna članarina" : ""),
+    kw: [x.cat, TYPES[x.cat] ? TYPES[x.cat].label + " " + TYPES[x.cat].desc(cap) : "", "trening cas reformer pilates", x.trial ? "probni prvi put" + (S.pub.promo ? " besplatno akcija" : "") : "",
+      x.total > 1 ? "paket " + x.total + " termina" : "pojedinacni jedan", x.total >= 8 ? "clanarina mesecna fiksni termini" : ""].join(" ") })).concat(PAGES);
+}
+function searchSite(q) {
+  const toks = fold(q).split(/\s+/).filter(Boolean); if (!toks.length) return [];
+  return searchIndex().filter(r => { const h = fold(r.name + " " + r.meta + " " + r.kw); return toks.every(t => h.includes(t)); });
+}
+const nRez = n => n + (n % 10 === 1 && n % 100 !== 11 ? " rezultat" : " rezultata");
+function goView(v) { if ((location.hash.slice(1) || "zakazi") === v) scrollToContent(); else { S.jump = true; location.hash = "#" + v; } }
+function closeSearch(clear) {
+  $("#search-panel").hidden = true;
+  if (clear) { $("#site-q").value = ""; $("#site-search").classList.remove("has-q"); }
+  document.querySelector("nav.tabs").classList.remove("search-open"); $("#search-btn").setAttribute("aria-expanded", "false");
+}
+function renderSearch() {
+  const q = $("#site-q").value.trim(), panel = $("#search-panel"), box = $("#search-results");
+  $("#site-search").classList.toggle("has-q", !!q);
+  if (!q) { panel.hidden = true; box.replaceChildren(); return; }
+  const hits = searchSite(q);
+  const row = r => el("button", { type: "button", class: "sr", onclick: () => { closeSearch(true); r.item ? bookItem(r.item) : goView(r.view); } },
+    el("span", { class: "nm" }, r.name), el("span", { class: "act" }, r.item ? "Zakaži" : "Otvori"), el("span", { class: "meta" }, r.meta));
+  box.replaceChildren(el("p", { class: "search-sum" }, hits.length ? nRez(hits.length) + " za „" + q + "”" : "Nema rezultata za „" + q + "”"),
+    ...(hits.length ? [...hits.filter(r => r.item).map(row), ...hits.filter(r => r.view).map(row)]
+      : [el("p", { class: "search-empty" }, "Probajte npr. „grupni”, „individualni”, „8 termina”, „probni” ili „radno vreme”.")]));
+  panel.hidden = false;
+}
+$("#site-q").addEventListener("input", renderSearch);
+$("#site-q").addEventListener("focus", () => { if ($("#site-q").value.trim()) renderSearch(); });
+$("#site-search").addEventListener("submit", e => { e.preventDefault(); const first = $("#search-results .sr"); if (first) first.click(); });
+$("#site-q-clr").addEventListener("click", () => { $("#site-q").value = ""; renderSearch(); $("#site-q").focus(); });
+$("#search-btn").addEventListener("click", () => {
+  const nav = document.querySelector("nav.tabs"), open = !nav.classList.contains("search-open");
+  nav.classList.toggle("search-open", open); $("#search-btn").setAttribute("aria-expanded", String(open));
+  if (open) { $("#site-q").focus(); renderSearch(); } else closeSearch(false);
+});
+document.addEventListener("click", e => { if (!e.target.closest("nav.tabs")) $("#search-panel").hidden = true; });
+addEventListener("keydown", e => { if (e.key === "Escape" && !$("#search-panel").hidden) { closeSearch(false); $("#site-q").blur(); } });
+
 // klik na karticu (tab), dugme u zaglavlju ili u zelenoj traci: stranica se pomera na početak izabranog dela, odmah ispod zaglavlja i kartica;
 // logo vraća na sam vrh. Ako je neki drugi kod već obradio klik (preventDefault), ovde se ništa ne radi.
 document.addEventListener("click", e => {
