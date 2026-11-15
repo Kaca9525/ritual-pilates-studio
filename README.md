@@ -44,13 +44,16 @@ Gmail App Password: uključite 2-Step Verification, zatim https://myaccount.goog
 
 ## Postavljanje na internet (Render.com)
 
-1. Ovaj repozitorijum na GitHub-u
-2. render.com → **New → Web Service** → povežite repo
-3. Build Command `npm install` · Start Command `npm start`
-4. Environment: bar `SECRET`; za mejlove `SMTP_USER` i `SMTP_PASS`
-5. Deploy → javna adresa tipa `https://ritual-rezervacije.onrender.com`
+Najlakše, jednim klikom preko `render.yaml` u repou:
 
-Na Render **Free** planu disk nije trajan — za pravu produkciju Starter plan + Disk (`/data`, `DATA_DIR=/data`).
+1. render.com → **New → Blueprint** → izaberite repo `ritual-pilates-studio` → **Apply**
+2. Render sam napravi web servis (Starter plan, Frankfurt), trajni disk `/data` za bazu i `SECRET`
+3. Kad se traže vrednosti, upišite `SMTP_USER` (Gmail adresa) i `SMTP_PASS` (Gmail App Password); `STUDIO_EMAIL` može ostati prazno
+4. Posle deploy-a adresa je tipa `https://ritual-pilates-studio.onrender.com`
+
+Ručno (bez Blueprint-a): **New → Web Service**, Build `npm install`, Start `npm start`, Environment `SECRET`, `ADMIN_EMAILS`, `DATA_DIR=/data` + Disk na `/data`.
+
+Na Render **Free** planu disk nije trajan — nalozi i rezervacije bi nestajali pri svakom deploy-u, zato Starter plan + Disk.
 
 ## Prvi koraci posle postavljanja
 

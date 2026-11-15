@@ -1,0 +1,36 @@
+# Render Blueprint: render.com → New → Blueprint → izaberite ovaj repo.
+# Pravi web servis + trajni disk za bazu (Starter plan). Posle prvog deploy-a
+# u Environment upišite SMTP_USER i SMTP_PASS (Gmail App Password) da bi išli mejlovi.
+services:
+  - type: web
+    name: ritual-pilates-studio
+    runtime: node
+    region: frankfurt
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/public
+    autoDeploy: true
+    disk:
+      name: ritual-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TZ
+        value: Europe/Belgrade
+      - key: DATA_DIR
+        value: /data
+      - key: ADMIN_EMAILS
+        value: kaca9525@gmail.com
+      - key: REMINDER_HOUR
+        value: "18"
+      - key: SECRET
+        generateValue: true
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: STUDIO_EMAIL
+        sync: false
