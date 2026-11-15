@@ -88,8 +88,8 @@ a { color: var(--olive); text-decoration-color: rgba(92,98,62,.35); text-underli
 @media (max-width: 560px) { nav.tabs { top: 67px; } .logo-word b { font-size: 18px; } .logo-word span { display: none; } .account { font-size: 10px; gap: 10px; } .top .logo { width: 46px; height: 46px; } }
 
 /* hero preko cele širine */
-.hero-full { position: relative; height: min(82vh, 760px); min-height: 500px; overflow: hidden; background: var(--olive-deep); }
-.hero-full img { position: absolute; left: 0; right: 0; top: -12%; width: 100%; height: 124%; object-fit: cover; object-position: 50% 45%; display: block; will-change: transform; animation: settle 1.4s ease-out both; }
+.hero-full { position: relative; height: min(88vh, 860px); min-height: 520px; overflow: hidden; background: var(--olive-deep); }
+.hero-full img { position: absolute; left: 0; right: 0; top: -8%; width: 100%; height: 116%; object-fit: cover; object-position: 50% 0%; display: block; will-change: transform; animation: settle 1.4s ease-out both; }
 .hero-full::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(18,18,14,.72) 0%, rgba(18,18,14,.34) 45%, rgba(18,18,14,.18) 100%); }
 .hero-text { position: absolute; left: 0; right: 0; bottom: clamp(32px, 7vh, 64px); z-index: 1; color: var(--paper); display: grid; gap: 18px; justify-items: start; }
 .hero-text .eyebrow { font-size: 10px; letter-spacing: .36em; text-transform: uppercase; color: rgba(248,243,232,.8); margin: 0; }
@@ -99,6 +99,16 @@ a { color: var(--olive); text-decoration-color: rgba(92,98,62,.35); text-underli
 .btn.ghost.cream { background: transparent; color: var(--paper); border-color: rgba(248,243,232,.6); }
 .btn.ghost.cream:hover { border-color: var(--paper); }
 @keyframes settle { from { opacity: 0; } to { opacity: 1; } }
+/* široki ekrani: tekst levo na maslinastoj podlozi, fotografija desno u celini (logo na zidu + reformeri) */
+@media (min-width: 1000px) {
+  .hero-full { height: min(86vh, 820px); }
+  .hero-full img { left: 58%; right: 0; width: 42%; top: -5%; height: 110%; object-position: 50% 12%; }
+  .hero-full::after { background: linear-gradient(to right, var(--olive-deep) 56%, rgba(63,69,43,.75) 59%, rgba(63,69,43,0) 64%), linear-gradient(to top, rgba(18,18,14,.35), rgba(18,18,14,0) 40%); }
+  .hero-text { left: 0; right: 42%; width: auto; max-width: none; margin: 0; box-sizing: border-box; padding-left: max(20px, calc((100vw - 760px) / 2 + 20px)); padding-right: 4vw; }
+  .hero-text h1 { font-size: clamp(48px, 6vw, 96px); }
+}
+/* telefon: cela visina fotografije bez paralakse, da logo na zidu i reformeri stanu u kadar */
+@media (max-width: 760px) { .hero-full { height: min(84vh, 760px); } .hero-full img { top: 0; height: 100%; transform: none !important; object-position: 50% 42%; } }
 
 /* tamnozelena traka: o studiju */
 .band { background: var(--olive-deep); color: var(--paper); padding-block: clamp(44px, 8vw, 80px); }
@@ -437,7 +447,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
   </div>
 </header>
 <section class="hero-full" aria-label="Studio Ritual">
-  <img src="/img/studio.jpg" alt="Studio Ritual: reformeri ispod lučnih prolaza" width="1400" height="1871" fetchpriority="high" decoding="async" data-parallax=".14">
+  <img src="/img/hero.jpg" alt="Studio Ritual: logo na zidu i reformeri" width="1200" height="1600" fetchpriority="high" decoding="async" data-parallax=".14">
   <div class="hero-text wrap">
     <p class="eyebrow">Reformer pilates · Dorćol, Beograd</p>
     <h1>telo. um.<br><em>ritual.</em></h1>
