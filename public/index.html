@@ -94,7 +94,10 @@ a { color: var(--olive); text-decoration-color: rgba(92,98,62,.35); text-underli
 
 /* hero preko cele širine */
 .hero-full { position: relative; height: min(82vh, 760px); min-height: 500px; overflow: hidden; background: var(--olive-deep); }
-.hero-full img { position: absolute; left: 0; right: 0; top: -12%; width: 100%; height: 124%; object-fit: cover; object-position: 50% 45%; display: block; will-change: transform; animation: settle 1.4s ease-out both; }
+.hero-media { position: absolute; left: 0; right: 0; top: -12%; height: 124%; will-change: transform; animation: settle 1.4s ease-out both; }
+.hero-media img, .hero-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; display: block; }
+.hero-media video { opacity: 0; transition: opacity 1.2s ease; }
+.hero-media video.on { opacity: 1; }
 .hero-full::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(18,18,14,.72) 0%, rgba(18,18,14,.34) 45%, rgba(18,18,14,.18) 100%); }
 .hero-text { position: absolute; left: 0; right: 0; bottom: clamp(32px, 7vh, 64px); z-index: 1; color: var(--paper); display: grid; gap: 18px; justify-items: start; }
 .hero-text .eyebrow { font-size: 10px; letter-spacing: .36em; text-transform: uppercase; color: rgba(248,243,232,.8); margin: 0; }
@@ -105,7 +108,7 @@ a { color: var(--olive); text-decoration-color: rgba(92,98,62,.35); text-underli
 .btn.ghost.cream:hover { border-color: var(--paper); }
 @keyframes settle { from { opacity: 0; } to { opacity: 1; } }
 /* telefon: fotografija zida sa logom (picture/source), cela visina bez paralakse da logo i reformeri stanu u kadar */
-@media (max-width: 760px) { .hero-full { height: min(84vh, 760px); } .hero-full img { top: 0; height: 100%; transform: none !important; object-position: 50% 42%; } }
+@media (max-width: 760px) { .hero-full { height: min(84vh, 760px); } .hero-media { top: 0; height: 100%; transform: none !important; } .hero-media img, .hero-media video { object-position: 50% 42%; } }
 
 /* tamnozelena traka: o studiju */
 .band { background: var(--olive-deep); color: var(--paper); padding-block: clamp(44px, 8vw, 80px); }
@@ -513,11 +516,14 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
   </div>
 </header>
 <section class="hero-full" aria-label="Studio Ritual">
-  <picture><source media="(max-width: 760px)" srcset="/img/hero.jpg" width="1200" height="1600"><img src="/img/studio.jpg" alt="Studio Ritual: reformeri ispod lučnih prolaza" width="1400" height="1871" fetchpriority="high" decoding="async" data-parallax=".14"></picture>
+  <div class="hero-media" data-parallax=".14">
+    <picture><source media="(max-width: 760px)" srcset="/img/hero.jpg" width="1200" height="1600"><img src="/img/studio.jpg" alt="Studio Ritual: reformeri ispod lučnih prolaza" width="1400" height="1871" fetchpriority="high" decoding="async"></picture>
+    <video id="heroVideo" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
+  </div>
   <div class="hero-text wrap">
     <p class="eyebrow">Reformer pilates · Dorćol, Beograd</p>
     <h1>telo. um.<br><em>ritual.</em></h1>
-    <a class="btn cream" href="#zakazi">Zakaži termin</a>
+    <a class="btn cream" href="#zakazi" id="heroBook">Zakaži termin</a>
   </div>
 </section>
 <section class="band" aria-label="O studiju">
@@ -1709,6 +1715,30 @@ document.addEventListener("click", e => {
 });
 // Kada se korisnik vrati u aplikaciju, osveži „Moje termine“ (npr. studio je u međuvremenu upisao uplatu).
 document.addEventListener("visibilitychange", () => { if (!document.hidden && S.me && location.hash.startsWith("#moji")) loadMy(); });
+
+/* ---------- hero video: tihi snimak studija, fotografija ostaje kao rezerva ---------- */
+(function () {
+  const v = document.getElementById("heroVideo");
+  if (!v) return;
+  const c = navigator.connection;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || (c && c.saveData)) { v.remove(); return; }
+  v.muted = true;
+  v.addEventListener("playing", () => v.classList.add("on"), { once: true });
+  v.addEventListener("error", () => v.remove());
+  v.src = "/img/hero.mp4";
+  const p = v.play(); if (p && p.catch) p.catch(() => {});
+})();
+
+/* ---------- „Zakaži termin“ u heru: odmah na zakazivanje ---------- */
+document.getElementById("heroBook")?.addEventListener("click", e => {
+  e.preventDefault();
+  if (location.hash !== "#zakazi") location.hash = "#zakazi"; else route();
+  requestAnimationFrame(() => {
+    const nav = document.querySelector("nav.tabs"), sec = document.querySelector('section[data-view="zakazi"]');
+    const off = nav.getBoundingClientRect().height + (parseFloat(getComputedStyle(nav).top) || 0) + 12;
+    scrollTo({ top: Math.max(0, sec.getBoundingClientRect().top + scrollY - off), behavior: "smooth" });
+  });
+});
 
 /* ---------- lagano pomeranje zelenila pri skrolu ---------- */
 (function () {
