@@ -50,11 +50,27 @@ const dstr = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.ge
   // admin status "kasno" na probnom terminu
   r = await call("a", "/api/admin/bookings/" + my.bookings[0].id, { status: "kasno" }); assert.equal(r.data.booking.status, "kasno");
   // kapacitet: popuni termin preko force i proveri 409 za klijenta
+  let xBooking;
   for (let i = 0; i < pub.groupCapacity; i++) {
     await call("x" + i, "/api/register", { ime: "K" + i, prezime: "P", email: "k" + i + "@test.rs", telefon: "1", pw: "lozinka1", consent });
-    r = await call("x" + i, "/api/bookings", { date: next.date, start: next.start, type: "grupni" }); assert.equal(r.status, 200, JSON.stringify(r.data));
+    r = await call("x" + i, "/api/bookings", { date: next.date, start: next.start, type: "grupni" }); assert.equal(r.status, 200, JSON.stringify(r.data)); if (i === 0) xBooking = r.data.booking.id;
   }
   r = await call("k", "/api/bookings", { date: next.date, start: next.start, type: "grupni" }); assert.equal(r.status, 409);
+  // lista čekanja: popunjen termin -> klijentkinja se prijavi, jedna otkaže -> obaveštenje i brisanje sa liste
+  r = await call("k", "/api/waitlist", { date: next.date, start: next.start, type: "grupni" }); assert.equal(r.status, 200, JSON.stringify(r.data)); assert.equal(r.data.waiting, true);
+  const slotOf = async who => (await call(who, "/api/slots?type=grupni")).data.days.find(d => d.date === next.date).slots.find(s => s.start === next.start);
+  let sl = await slotOf("k"); assert.equal(sl.waiting, true); assert.equal(sl.taken, pub.groupCapacity);
+  r = await call("x0", "/api/bookings/" + xBooking + "/cancel", {}); assert.equal(r.status, 200, JSON.stringify(r.data));
+  sl = await slotOf("k"); assert.equal(sl.waiting, false, "lista čekanja nije ispražnjena"); assert.equal(sl.taken, pub.groupCapacity - 1);
+  assert.ok((await call("a", "/api/admin/clients/ana@test.rs")).data.log.some(l => l.action === "lista čekanja"), "nema beleške o obaveštenju sa liste čekanja");
+  r = await call("k", "/api/waitlist", { date: next.date, start: next.start, type: "grupni" }); assert.equal(r.data.waiting, true);
+  r = await call("k", "/api/waitlist", { date: next.date, start: next.start, type: "grupni" }); assert.equal(r.data.waiting, false);
+  r = await call("x0", "/api/bookings", { date: next.date, start: next.start, type: "grupni" }); assert.equal(r.status, 200, JSON.stringify(r.data));
+  // upit za individualni trening po dogovoru
+  assert.equal((await call("k", "/api/inquiry", { type: "individualni", message: "" })).status, 400);
+  r = await call("k", "/api/inquiry", { type: "individualni", message: "sreda posle 17h" }); assert.equal(r.status, 200, JSON.stringify(r.data));
+  // akcija i napomena u javnim podešavanjima
+  { const t = dstr(new Date()), pb = (await call("k", "/api/public")).data; if (t >= "2026-11-01" && t <= "2026-12-31") assert.ok(pb.promo && pb.promo.title, "nema akcije"); assert.equal(typeof pb.individualNote, "string"); }
   r = await call("a", "/api/admin/bookings", { email: "ana@test.rs", date: next.date, start: next.start, type: "grupni", force: true }); assert.equal(r.status, 200);
   // admin dan
   const day = (await call("a", "/api/admin/day?date=" + next.date)).data;

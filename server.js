@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS bookings(
 CREATE TABLE IF NOT EXISTS log(
   id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT, by TEXT, userEmail TEXT, action TEXT, detail TEXT);
 CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, json TEXT);
+CREATE TABLE IF NOT EXISTS waitlist(id TEXT PRIMARY KEY, userEmail TEXT, date TEXT, start TEXT, type TEXT, created TEXT);
+CREATE INDEX IF NOT EXISTS idx_w_slot ON waitlist(date, start);
 CREATE INDEX IF NOT EXISTS idx_b_slot ON bookings(date, start);
 CREATE INDEX IF NOT EXISTS idx_b_user ON bookings(userEmail);
 CREATE INDEX IF NOT EXISTS idx_b_pkg ON bookings(pkgId);
@@ -56,6 +58,16 @@ for (const [t, col, def] of [["packages", "fixed", "TEXT"], ["bookings", "fixed"
   if (!db.prepare(`PRAGMA table_info(${t})`).all().some(x => x.name === col)) db.exec(`ALTER TABLE ${t} ADD COLUMN ${col} ${def}`);
 const cfg = () => JSON.parse(db.prepare("SELECT json FROM settings WHERE key='config'").get().json);
 const saveCfg = c => db.prepare("UPDATE settings SET json=? WHERE key='config'").run(JSON.stringify(c));
+// Nova verzija seed podešavanja (raspored, kapacitet, akcija) primenjuje se i na postojeću bazu.
+{
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, "seed", "settings.json"), "utf8")), c = cfg();
+  if ((seed.version || 0) > (c.version || 0)) {
+    c.week = seed.week; c.groupCapacity = seed.groupCapacity; c.individualNote = seed.individualNote;
+    if (!c.promo) c.promo = seed.promo;
+    c.version = seed.version; saveCfg(c);
+    console.log("Podešavanja dopunjena iz seed-a (verzija " + seed.version + ").");
+  }
+}
 
 /* ---------------- e-mail (Gmail SMTP) ---------------- */
 let mailer = null;
@@ -177,11 +189,12 @@ const setLogin = (res, email) => res.cookie(COOKIE, sign(email), { httpOnly: tru
 const fail = (res, code, error) => res.status(code).json({ error });
 
 /* ---- javni podaci ---- */
+const promoActive = (c = cfg()) => { const p = c.promo; if (!p || !p.active) return null; const t = today(); if ((p.from && t < p.from) || (p.to && t > p.to)) return null; return p; };
 app.get("/api/public", (req, res) => {
   const c = cfg();
   res.json({ studio: c.studio, groupCapacity: c.groupCapacity, bookAheadDays: c.bookAheadDays, minutes: c.minutes,
     cancelHours: c.cancelHours, validDays: c.validDays, maxExtend: c.maxExtend, maxFreeze: c.maxFreeze,
-    week: c.week, catalog: c.catalog, me: me(req) });
+    week: c.week, catalog: c.catalog, individualNote: c.individualNote || "", promo: promoActive(c), me: me(req) });
 });
 app.get("/api/slots", (req, res) => {
   const type = TYPES[req.query.type] ? req.query.type : "grupni";
@@ -192,7 +205,8 @@ app.get("/api/slots", (req, res) => {
     days.push({ date, slots: slotsFor(date, kind, c).map(start => {
       const n = countAt(date, start);
       const mine = u ? !!db.prepare("SELECT 1 FROM bookings WHERE userEmail=? AND date=? AND start=? AND status='zakazano'").get(u.email, date, start) : false;
-      return { start, end: endOf(start, c.minutes), taken: n, cap, mine, past: hoursUntil(date, start) <= 0 };
+      const waiting = u ? !!db.prepare("SELECT 1 FROM waitlist WHERE userEmail=? AND date=? AND start=?").get(u.email, date, start) : false;
+      return { start, end: endOf(start, c.minutes), taken: n, cap, mine, waiting, past: hoursUntil(date, start) <= 0 };
     }) });
   }
   res.json({ type, days });
@@ -316,7 +330,48 @@ app.post("/api/bookings/:id/cancel", auth, (req, res) => {
     return fail(res, 400, `Otkazivanje je moguće najkasnije ${c.cancelHours}h pre termina. Ovaj trening se računa kao iskorišćen.`);
   db.prepare("UPDATE bookings SET status='otkazano', cancelledAt=?, cancelledBy=? WHERE id=?").run(nowIso(), req.user.email, b.id);
   notify(b, "cancel");
+  notifyWaitlist(b.date, b.start);
   res.json({ ok: true });
+});
+
+/* ---- lista čekanja: kad se popunjen termin oslobodi, zainteresovani dobijaju mejl ---- */
+app.post("/api/waitlist", auth, (req, res) => {
+  const { date, start, type } = req.body || {};
+  if (!validDate(date) || !validTime(start) || !TYPES[type]) return fail(res, 400, "Neispravan termin.");
+  if (hoursUntil(date, start) <= 0) return fail(res, 400, "Termin je prošao.");
+  const ex = db.prepare("SELECT id FROM waitlist WHERE userEmail=? AND date=? AND start=?").get(req.user.email, date, start);
+  if (ex) { db.prepare("DELETE FROM waitlist WHERE id=?").run(ex.id); return res.json({ waiting: false }); }
+  db.prepare("INSERT INTO waitlist(id,userEmail,date,start,type,created) VALUES(?,?,?,?,?,?)").run(newId(), req.user.email, date, start, type, nowIso());
+  res.json({ waiting: true });
+});
+function siteUrl() { return (process.env.SITE_URL || "").replace(/\/$/, ""); }
+function notifyWaitlist(date, start) {
+  if (hoursUntil(date, start) <= 0) return 0;
+  const c = cfg(), kind = kindAt(date, start, c); if (!kind) return 0;
+  if (countAt(date, start) >= capacity(kind, c)) return 0;
+  const rows = db.prepare("SELECT * FROM waitlist WHERE date=? AND start=?").all(date, start);
+  let n = 0;
+  for (const w of rows) {
+    db.prepare("DELETE FROM waitlist WHERE id=?").run(w.id);
+    if (db.prepare("SELECT 1 FROM bookings WHERE userEmail=? AND date=? AND start=? AND status='zakazano'").get(w.userEmail, date, start)) continue;
+    const u = db.prepare("SELECT * FROM users WHERE email=?").get(w.userEmail); if (!u) continue;
+    sendMail(u.email, "Oslobodio se termin - Ritual Pilates Studio",
+      `Zdravo ${u.ime},\n\noslobodilo se mesto za termin koji ste čekali: ${TYPES[w.type] || "Grupni"} trening, ${fmtD(date)} u ${start}.\n\nMesto dobija ko prvi zakaže${siteUrl() ? ": " + siteUrl() + "/#zakazi" : " u aplikaciji."}\n\nRitual Pilates Studio`);
+    logAction("sistem", u.email, "lista čekanja", "obaveštenje: " + fmtD(date) + " " + start);
+    n++;
+  }
+  return n;
+}
+/* ---- upit za individualni / duo trening (po dogovoru) ---- */
+app.post("/api/inquiry", auth, (req, res) => {
+  const type = TYPES[(req.body || {}).type] ? req.body.type : "individualni";
+  const msg = String((req.body || {}).message || "").trim().slice(0, 1000);
+  if (!msg) return fail(res, 400, "Napišite koji dani i vreme vam odgovaraju.");
+  const u = req.user;
+  logAction(u.email, u.email, "upit", TYPES[type] + ": " + msg);
+  sendMail(studioEmail(), "Upit za " + TYPES[type].toLowerCase() + " trening: " + u.ime + " " + u.prezime,
+    `${u.ime} ${u.prezime}\nTelefon: ${u.telefon}\nE-mail: ${u.email}\n\nŽeljeni termini:\n${msg}`);
+  res.json({ ok: true, mailed: !!mailer });
 });
 
 /* ---- fiksni termini uz paket od 8 ili 12 treninga ---- */
@@ -437,6 +492,7 @@ app.post("/api/admin/bookings/:id", auth, admin, (req, res) => {
     const label = { zakazano: "vraćeno u zakazano", otkazano: "otkazano (trening vraćen)", kasno: "kasno otkazivanje (računa se)" }[status];
     logAction(req.user.email, b.userEmail, "status", bookingText(b) + ": " + label);
     if (status === "otkazano") notify(b, "cancel");
+    if (status !== "zakazano") notifyWaitlist(b.date, b.start);
   }
   if (date || start) {
     if (!validDate(date) || !validTime(start)) return fail(res, 400, "Neispravan novi termin.");
@@ -444,6 +500,7 @@ app.post("/api/admin/bookings/:id", auth, admin, (req, res) => {
     if (!(req.body || {}).force && countAt(date, start, b.id) >= capacity(kind, c)) return fail(res, 409, "Novi termin je popunjen. Označite „ipak upiši“ ako želite preko kapaciteta.");
     db.prepare("UPDATE bookings SET date=?, start=?, reminderSent=0 WHERE id=?").run(date, start, b.id);
     logAction(req.user.email, b.userEmail, "premešteno", bookingText(b) + " → " + fmtD(date) + " " + start);
+    notifyWaitlist(b.date, b.start);
   }
   if (pkgId !== undefined) {
     if (pkgId && !db.prepare("SELECT 1 FROM packages WHERE id=? AND userEmail=?").get(pkgId, b.userEmail)) return fail(res, 400, "Paket ne pripada ovom klijentu.");
@@ -542,6 +599,15 @@ app.post("/api/admin/settings", auth, admin, (req, res) => {
   if (b.week) for (const d of ["0","1","2","3","4","5","6"]) if (b.week[d]) {
     const clean = a => [...new Set((Array.isArray(a) ? a : []).map(String).map(s => s.trim()).filter(validTime))].sort();
     c.week[d] = { g: clean(b.week[d].g), p: clean(b.week[d].p) };
+  }
+  if (b.individualNote !== undefined) c.individualNote = String(b.individualNote).trim().slice(0, 300);
+  if (b.promo && typeof b.promo === "object") {
+    const p = c.promo || {};
+    p.active = !!b.promo.active;
+    for (const k of ["title", "text", "button"]) if (b.promo[k] !== undefined) p[k] = String(b.promo[k]).trim().slice(0, k === "text" ? 500 : 80);
+    for (const k of ["from", "to"]) if (b.promo[k] !== undefined) p[k] = validDate(b.promo[k]) ? b.promo[k] : "";
+    if (b.promo.image !== undefined && /^\/img\/[\w./-]+$/.test(String(b.promo.image))) p.image = String(b.promo.image);
+    c.promo = p;
   }
   if (Array.isArray(b.catalog)) for (const it of b.catalog) {
     const x = c.catalog.find(y => y.id === it.id);

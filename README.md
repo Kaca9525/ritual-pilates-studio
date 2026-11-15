@@ -12,7 +12,8 @@ Radi za neograničen broj realnih korisnika — klijentima je potreban samo link
 server.js          – ceo backend (Node.js + Express + SQLite)
 public/index.html  – kompletna aplikacija koju korisnici vide
 public/img         – fotografije studija, public/logo.svg – logo
-seed/settings.json – početna podešavanja: raspored, cene, kapacitet (učita se pri prvom startu)
+seed/settings.json – početna podešavanja: raspored, cene, kapacitet, akcija (učita se pri prvom startu;
+                     kad se poveća polje "version", raspored, kapacitet i akcija se osveže i na postojećoj bazi)
 test/smoke.js      – automatski test celog toka (npm test)
 ```
 
@@ -58,7 +59,7 @@ Na Render **Free** planu disk nije trajan — nalozi i rezervacije bi nestajali 
 ## Prvi koraci posle postavljanja
 
 1. **Registracija** sa adresom iz `ADMIN_EMAILS` → nalog je automatski admin
-2. Admin → **Podešavanja**: raspored, broj mesta na grupnom času, cene, kontakt
+2. Admin → **Podešavanja**: raspored, broj mesta na grupnom času, cene, kontakt, akcija (pop-up pri otvaranju)
 3. Admin → **Klijenti**: posle svake uplate evidentirajte paket (datum uplate pokreće 30 dana važenja)
 4. Admin → **Raspored**: dnevni pregled, „Kasno otkazao“ (računa se kao iskorišćen), premeštanje, ručni upis
 
@@ -67,7 +68,9 @@ Na Render **Free** planu disk nije trajan — nalozi i rezervacije bi nestajali 
 - trening 55 min; zakazivanje do 14 dana unapred (podesivo)
 - otkazivanje najkasnije 12h pre termina; kasnije se računa kao iskorišćen
 - paket važi 30 dana od uplate; admin može produžiti do 7 ili zamrznuti do 14 dana
-- grupni čas do 5 osoba (podesivo); individualni/duo termini 1 rezervacija
+- grupni čas do 4 osobe (podesivo); individualni i duo treninzi se zakazuju po dogovoru (upit stiže studiju mejlom)
+- lista čekanja: kad je termin popunjen, klijentkinja klikne „obavesti me“; čim neko otkaže, svi sa liste dobijaju mejl da je termin ponovo slobodan (mesto dobija ko prvi zakaže)
+- akcija: pop-up sa fotografijom i tekstom pri otvaranju; dok traje, probni trening se prikazuje kao besplatan
 - svaka ručna izmena se upisuje u istoriju klijenta
 
 ## Sigurnost
