@@ -259,9 +259,10 @@ a .ci-v:hover { color: var(--olive); }
 .foot-list .hrs { display: flex; justify-content: space-between; gap: 10px; }
 .hours b { font-weight: 500; min-width: 40px; color: var(--ink-soft); font-family: var(--sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding-top: 5px; }
 .todo { color: var(--blush-deep); }
-.gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.gallery img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 999px 999px 18px 18px; display: block; box-shadow: inset 0 0 40px rgba(255,253,246,.6); }
-.gallery img:nth-child(2) { border-radius: 18px 18px 999px 999px; }
+.gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border-radius: 26px; overflow: hidden; box-shadow: 0 30px 60px -45px rgba(29,28,25,.6); }
+.gallery figure { margin: 0; position: relative; overflow: hidden; aspect-ratio: 4 / 3; background: var(--bg-deep); }
+.gallery img { position: absolute; inset: -10% 0; width: 100%; height: 120%; object-fit: cover; object-position: 50% 30%; display: block; }
+@media (max-width: 700px) { .gallery { grid-template-columns: 1fr; } .gallery figure { aspect-ratio: 16 / 10; } }
 
 /* paketi */
 .pkg { background: var(--paper); border: 1px solid var(--line-soft); border-radius: 24px; padding: 24px; display: grid; gap: 12px; box-shadow: 0 30px 60px -45px rgba(29,28,25,.5); }
@@ -515,8 +516,8 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
       <div class="card"><h3 class="label">Radno vreme</h3><table class="hours-t" id="hours"><tbody></tbody></table></div>
     </div>
     <div class="gallery" aria-label="Fotografije studija">
-      <img src="/img/trening.jpg" alt="Trening na reformeru" loading="lazy" width="1400" height="1871">
-      <img src="/img/reformer.jpg" alt="Reformer sa Ritual logom" loading="lazy" width="1400" height="1871">
+      <figure><img src="/img/trening.jpg" alt="Trening na reformeru" loading="lazy" width="1400" height="1871" data-parallax=".08"></figure>
+      <figure><img src="/img/reformer.jpg" alt="Reformer sa Ritual logom" loading="lazy" width="1400" height="1871" data-parallax=".08"></figure>
     </div>
   </section>
 
