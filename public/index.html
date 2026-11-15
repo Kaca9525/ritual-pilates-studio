@@ -136,6 +136,10 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .modal { position: relative; width: min(100%, 380px); background: var(--paper); border: 1px solid var(--line-soft); border-radius: 26px; padding: 22px; display: grid; gap: 12px; box-shadow: 0 40px 80px -30px rgba(35,38,28,.6); animation: rise .25s ease both; }
 .mcal-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .mcal-head b { font-family: var(--display); font-size: 24px; font-weight: 500; text-transform: capitalize; }
+.mcal-top { display: grid; gap: 4px; }
+.mcal-top h3 { font-family: var(--display); font-size: 28px; font-weight: 500; line-height: 1.1; margin: 0; letter-spacing: 0; text-transform: none; color: var(--ink); }
+.mcal-top .note { margin: 0; font-size: 13px; color: var(--ink-soft); }
+.mcal-top:has(h3:empty) { display: none; }
 .mcal-title { position: relative; display: inline-flex; align-items: center; min-width: 0; }
 .mcal-title::after { content: ""; position: absolute; right: 12px; top: 50%; width: 7px; height: 7px; border-right: 1.5px solid var(--olive); border-bottom: 1.5px solid var(--olive); transform: translateY(-70%) rotate(45deg); pointer-events: none; }
 .mcal-title select { -webkit-appearance: none; appearance: none; font-family: var(--display); font-size: 23px; font-weight: 500; color: var(--ink); background: transparent; border: 1px solid transparent; border-radius: 12px; padding: 4px 32px 4px 10px; cursor: pointer; max-width: 100%; }
@@ -587,7 +591,8 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 </div>
 <div class="modal-root" id="modal-root" hidden>
   <div class="modal-bg" data-close></div>
-  <div class="modal" role="dialog" aria-modal="true" aria-label="Izbor datuma">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mcal-h">
+    <div class="mcal-top"><h3 id="mcal-h">Izaberite dan</h3><p class="note" id="mcal-sub"></p></div>
     <div class="mcal-head">
       <button type="button" class="mcal-nav" id="mcal-prev" aria-label="Prethodni mesec">‹</button>
       <label class="mcal-title"><select id="mcal-sel" aria-label="Izaberite mesec i godinu"></select></label>
@@ -757,12 +762,21 @@ function activePackage(type, date) {
     .sort((a, b) => a.validUntil.localeCompare(b.validUntil))[0] || null;
 }
 $("#f-trial").addEventListener("change", renderBooking);
+function hoursSummary() {
+  if (!S.pub) return "";
+  const close = hm => { const [h, m] = hm.split(":").map(Number); const x = Math.ceil((h * 60 + m + (S.pub.minutes || 55)) / 30) * 30; return pad(Math.floor(x / 60) % 24) + ":" + pad(x % 60); };
+  const span = i => { const w = S.pub.week[i] || { g: [], p: [] }, all = [...w.g, ...w.p].sort(); return all.length ? all[0].replace(/:00$/, "") + "–" + close(all[all.length - 1]).replace(/:00$/, "") : "neradno"; };
+  const out = []; let run = null;
+  for (const i of [1, 2, 3, 4, 5, 6, 0]) { const v = span(i); if (run && run.v === v) run.to = i; else { run = { from: i, to: i, v }; out.push(run); } }
+  return out.map(r => (r.from === r.to ? DAYS[r.from] : DAYS[r.from] + "–" + DAYS[r.to]).toLowerCase() + ": " + r.v).join(" · ");
+}
 $("#day-btn").addEventListener("click", () => openCalendar({
+  title: TYPES[S.type].label + " trening", sub: "Trajanje 55 min. Izaberite dan, pa slobodan termin.",
   selected: S.day, minDate: dstr(new Date()),
   isFree: date => { const d = S.slots && S.slots.days.find(x => x.date === date); return !!(d && d.slots.some(s => !s.past && s.taken < s.cap)); },
   isOpen: date => { const d = S.slots && S.slots.days.find(x => x.date === date); return !!(d && d.slots.some(s => !s.past)); },
   maxDate: S.slots && S.slots.days.length ? S.slots.days[S.slots.days.length - 1].date : null,
-  foot: "Tačkica označava dan sa slobodnim terminima. Zakazivanje je moguće do " + (S.pub ? S.pub.bookAheadDays : 90) + " dana unapred.",
+  foot: "Radno vreme: " + hoursSummary() + ". Tačkica označava dan sa slobodnim terminima.",
   onPick: date => { S.day = date; S.selected = null; renderBooking(); }
 }));
 
@@ -787,6 +801,7 @@ function renderCalendar() {
   const sel = $("#mcal-sel"); sel.replaceChildren();
   for (let off = R.min; off <= R.max; off++) { const d = new Date(t.getFullYear(), t.getMonth() + off, 1); sel.append(el("option", { value: String(off), selected: off === CAL.off }, capM(d.getMonth()) + " " + d.getFullYear() + ".")); }
   $("#mcal-prev").disabled = CAL.off <= R.min; $("#mcal-next").disabled = CAL.off >= R.max;
+  $("#mcal-h").textContent = o.title || "Izaberite dan"; $("#mcal-sub").textContent = o.sub || "";
   $("#mcal-foot").textContent = o.foot || "";
   const grid = $("#mcal-grid"); grid.replaceChildren(...["PON","UTO","SRE","ČET","PET","SUB","NED"].map(x => el("span", { class: "mcal-dow" }, x)));
   const lead = (first.getDay() + 6) % 7; for (let i = 0; i < lead; i++) grid.append(el("span"));
@@ -1036,7 +1051,7 @@ function addToSlotForm(s) {
     if (await act(() => api("/api/admin/bookings", { email: sel.value, date: S.admDate, start: s.start, type: type.value, force: true }), "Klijent je upisan u termin.")) { S.clients = null; loadAdminDay(); }
   } }, sel, types.length > 1 ? type : null, el("button", { class: "btn ghost", type: "submit" }, "Upiši"));
 }
-$("#adm-date-btn").addEventListener("click", () => openCalendar({ selected: S.admDate, foot: "Pregled rasporeda po danima.", onPick: d => { S.admDate = d; loadAdminDay(); } }));
+$("#adm-date-btn").addEventListener("click", () => openCalendar({ title: "Raspored", sub: "Izaberite dan za pregled.", selected: S.admDate, foot: "Radno vreme: " + hoursSummary() + ".", onPick: d => { S.admDate = d; loadAdminDay(); } }));
 $("#adm-prev").addEventListener("click", () => { S.admDate = addDays(S.admDate, -1); loadAdminDay(); });
 $("#adm-next").addEventListener("click", () => { S.admDate = addDays(S.admDate, 1); loadAdminDay(); });
 const times = s => s.split(/[,\s]+/).map(x => x.trim()).filter(Boolean).map(x => /^\d:\d\d$/.test(x) ? "0" + x : x);
