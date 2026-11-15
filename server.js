@@ -221,6 +221,9 @@ const setLogin = (res, email) => res.cookie(COOKIE, sign(email), { httpOnly: tru
 const fail = (res, code, error) => res.status(code).json({ error });
 
 /* ---- javni podaci ---- */
+// koja verzija radi: Render postavlja RENDER_GIT_COMMIT pri svakoj objavi; služi za proveru da li je nova objava podignuta
+const STARTED_AT = new Date().toISOString();
+app.get("/api/version", (req, res) => res.json({ commit: (process.env.RENDER_GIT_COMMIT || "").slice(0, 7) || null, started: STARTED_AT }));
 app.get("/api/public", (req, res) => {
   const c = cfg();
   res.json({ studio: c.studio, groupCapacity: c.groupCapacity, bookAheadDays: c.bookAheadDays, minutes: c.minutes,
