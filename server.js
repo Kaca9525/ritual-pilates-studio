@@ -157,10 +157,12 @@ app.set("trust proxy", 1);
 app.use(express.json());
 app.use(cookieParser());
 // početna strana: apsolutne adrese za pregled linka (WhatsApp, Instagram, Viber) prema stvarnom domenu
-const INDEX_HTML = fs.readFileSync(path.join(__dirname, "public", "index.html"), "utf8");
+const INDEX_PATH = path.join(__dirname, "public", "index.html");
+let indexHtml = null;
 app.get(["/", "/index.html"], (req, res) => {
+  if (!indexHtml || process.env.NODE_ENV !== "production") indexHtml = fs.readFileSync(INDEX_PATH, "utf8");
   const origin = (process.env.SITE_URL || req.protocol + "://" + req.get("host")).replace(/\/$/, "");
-  res.type("html").send(INDEX_HTML.replace(/__ORIGIN__/g, origin));
+  res.type("html").send(indexHtml.replace(/__ORIGIN__/g, origin));
 });
 app.use(express.static(path.join(__dirname, "public")));
 
