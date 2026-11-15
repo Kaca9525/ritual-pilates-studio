@@ -399,8 +399,14 @@ a .ci-v:hover { color: var(--olive); }
 .hours-bg img:first-child { left: 0; -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent 100%); mask-image: linear-gradient(90deg, #000 55%, transparent 100%); }
 .hours-bg img:last-child { right: 0; -webkit-mask-image: linear-gradient(270deg, #000 55%, transparent 100%); mask-image: linear-gradient(270deg, #000 55%, transparent 100%); }
 .hours-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(248,243,232,.64) 0, rgba(248,243,232,.78) 40%, rgba(248,243,232,.72) 100%); }
-.hours-card .hours-t td { border-bottom-color: rgba(29,28,25,.1); }
-.hours-card .hours-t td:first-child { color: var(--ink); opacity: .82; }
+/* naslov na sredini, uža tabela u sredini kartice, dani u serifu */
+.hours-title { font-family: var(--display); font-weight: 500; font-size: 30px; line-height: 1.1; letter-spacing: .01em; text-align: center; margin: 8px 0 0; }
+.hours-title::after { content: ""; display: block; width: 44px; height: 1px; background: var(--olive); opacity: .75; margin: 14px auto 0; }
+.hours-card .hours-t { max-width: 560px; margin: 0 auto 6px; }
+.hours-card .hours-t td { padding: 12px 0; border-bottom-color: rgba(29,28,25,.1); }
+.hours-card .hours-t td:first-child { font-family: var(--serif); font-size: 18px; font-weight: 500; letter-spacing: 0; text-transform: capitalize; color: var(--ink); opacity: .9; width: auto; }
+.hours-card .hours-t td.closed { opacity: .75; }
+@media (min-width: 561px) { .hours-card .hours-t .hb { display: inline; } .hours-card .hours-t .hb + .hb::before { content: " · "; color: var(--ink-soft); } }
 
 /* paketi */
 .pkg { background: var(--paper); border: 1px solid var(--line-soft); border-radius: 24px; padding: 24px; display: grid; gap: 12px; box-shadow: 0 30px 60px -45px rgba(29,28,25,.5); }
@@ -664,7 +670,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
     </div>
     <div class="card hours-card" data-rise>
       <div class="hours-bg" aria-hidden="true"><img src="/img/trening.jpg" alt="" loading="lazy"><img src="/img/reformer.jpg" alt="" loading="lazy"></div>
-      <h3 class="label">Radno vreme</h3><table class="hours-t" id="hours"><tbody></tbody></table>
+      <h3 class="hours-title">Radno vreme</h3><table class="hours-t" id="hours"><tbody></tbody></table>
     </div>
   </section>
 
