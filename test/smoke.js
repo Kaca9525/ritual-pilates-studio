@@ -14,6 +14,8 @@ async function call(who, url, body) {
 }
 const pad = n => String(n).padStart(2, "0");
 const dstr = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const addMonths = (s, n) => { const [y, m, d] = s.split("-").map(Number); const last = new Date(y, m - 1 + n + 1, 0).getDate(); return dstr(new Date(y, m - 1 + n, Math.min(d, last))); };
+const hoursUntil = (date, start) => (new Date(date + "T" + start) - Date.now()) / 36e5;
 (async () => {
   const consent = true;
   { const rr = await call("a", "/api/register", { ime: "Admin", prezime: "Studio", email: "admin@test.rs", telefon: "1", pw: "lozinka1", consent }); assert.equal(rr.status, 200, JSON.stringify(rr.data)); }
@@ -93,6 +95,7 @@ const dstr = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.ge
   await call("f", "/api/register", { ime: "Fiksna", prezime: "T", email: "fiksna@test.rs", telefon: "2", pw: "lozinka1", consent });
   r = await call("a", "/api/admin/packages", { email: "fiksna@test.rs", catalogId: "g8", paidAt: dstr(new Date()) }); assert.equal(r.status, 200);
   const fp = r.data.pkg;
+  assert.equal(fp.validUntil, addMonths(fp.paidAt, 1), "članarina važi mesec dana"); assert.equal(fp.unpaid, 0); assert.equal(fp.paidOn, fp.paidAt);
   r = await call("f", "/api/packages/" + fp.id + "/fixed", { preview: true }); assert.equal(r.status, 200); assert.ok(r.data.options["1"].length);
   const ft = r.data.options["1"][0];
   r = await call("f", "/api/packages/" + fp.id + "/fixed", { days: [1, 3, 5], time: ft, preview: true }); assert.equal(r.status, 200, JSON.stringify(r.data));
@@ -104,6 +107,47 @@ const dstr = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.ge
   r = await call("f", "/api/packages/" + fp.id + "/fixed", { days: [2], time: ft }); assert.equal(r.status, 400); // nema preostalih
   r = await call("f", "/api/packages/" + fp.id + "/fixed/clear", {}); assert.equal(r.status, 200); assert.ok(r.data.cancelled >= 5);
   fmy = (await call("f", "/api/my")).data; assert.equal(fmy.packages[0].fixed, null); assert.equal(fmy.packages[0].remaining, 8 - fmy.packages[0].sched);
+  // važenje mesec dana: isti datum narednog meseca, 31.01 -> 28.02 (već isteklo)
+  await call("v", "/api/register", { ime: "Vazenje", prezime: "T", email: "vazenje@test.rs", telefon: "3", pw: "lozinka1", consent });
+  r = await call("a", "/api/admin/packages", { email: "vazenje@test.rs", catalogId: "g8", paidAt: "2026-01-31" }); assert.equal(r.status, 200);
+  assert.equal(r.data.pkg.validUntil, "2026-02-28"); assert.equal(r.data.pkg.expired, true);
+  // članarina koju klijent sam bira: 8 termina, pon/sre/pet, uplata na račun -> paket odmah, „nije plaćeno”
+  await call("m", "/api/register", { ime: "Mesec", prezime: "T", email: "mesec@test.rs", telefon: "4", pw: "lozinka1", consent });
+  r = await call("m", "/api/plans", { preview: true }); assert.equal(r.status, 200); assert.ok(r.data.items.some(x => x.id === "g8")); assert.ok(r.data.options["1"].length);
+  const pt = r.data.options["1"].find(t => r.data.options["3"].includes(t) && r.data.options["5"].includes(t)); assert.ok(pt);
+  r = await call("m", "/api/plans", { catalogId: "g8", days: [1, 3, 5], time: pt, preview: true }); assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.validUntil, addMonths(r.data.from, 1)); assert.ok(r.data.fits >= 6, "fits " + r.data.fits);
+  assert.equal((await call("m", "/api/plans", { catalogId: "g8", days: [], time: pt, payMethod: "racun" })).status, 400);
+  r = await call("m", "/api/plans", { catalogId: "g8", days: [1, 3, 5], time: pt, payMethod: "racun" }); assert.equal(r.status, 200, JSON.stringify(r.data));
+  const mp = r.data.pkg;
+  assert.equal(mp.unpaid, 1); assert.equal(mp.payMethod, "racun"); assert.ok(r.data.made.length >= 6, "made " + r.data.made.length); assert.equal(mp.sched, r.data.made.length);
+  assert.deepEqual(mp.fixed.days, [1, 3, 5]); assert.equal(mp.validUntil, addMonths(mp.paidAt, 1)); assert.equal(mp.paidAt, r.data.made[0].date);
+  assert.equal(mp.remaining, 8 - r.data.made.length);
+  assert.equal((await call("f", "/api/plans", { catalogId: "g12", days: [1, 3, 5], time: pt, payMethod: "studio" })).status, 409, "ko ima neiskorišćene termine ne bira novu članarinu");
+  // klijent sam menja jedan termin (>=12h ranije): u periodu važenja može, van perioda ne može
+  let mmy = (await call("m", "/api/my")).data;
+  const mb = mmy.bookings.filter(b => hoursUntil(b.date, b.start) > 13).sort((a, b) => a.date.localeCompare(b.date))[0]; assert.ok(mb);
+  const mslots = (await call("m", "/api/slots?type=grupni")).data.days.flatMap(d => d.slots.map(s => ({ ...s, date: d.date })));
+  const target = mslots.find(s => !s.past && !s.mine && s.taken < s.cap && s.date >= mp.paidAt && s.date <= mp.validUntil && hoursUntil(s.date, s.start) > 13); assert.ok(target);
+  const outside = mslots.find(s => s.date > mp.validUntil && !s.past && s.taken < s.cap); assert.ok(outside, "nema termina posle isteka");
+  r = await call("m", "/api/bookings/" + mb.id + "/move", { date: outside.date, start: outside.start }); assert.equal(r.status, 400, "van važenja: " + JSON.stringify(r.data));
+  r = await call("m", "/api/bookings/" + mb.id + "/move", { date: target.date, start: target.start }); assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.booking.date, target.date); assert.equal(r.data.booking.start, target.start); assert.equal(r.data.booking.pkgId, mp.id);
+  mmy = (await call("m", "/api/my")).data; assert.equal(mmy.packages[0].sched, mp.sched); assert.equal(mmy.packages[0].unpaid, 1);
+  assert.ok((await call("a", "/api/admin/clients/mesec@test.rs")).data.log.some(l => l.action === "promenjen termin"));
+  // admin evidentira uplatu -> napomena „nije plaćeno” nestaje
+  r = await call("a", "/api/admin/packages/" + mp.id, { paid: true }); assert.equal(r.status, 200); assert.equal(r.data.pkg.unpaid, 0); assert.ok(r.data.pkg.paidOn);
+  assert.ok((await call("a", "/api/admin/clients/mesec@test.rs")).data.log.some(l => l.action === "članarina"));
+  // pojedinačan termin bez članarine: cena pojedinačnog časa, način plaćanja, admin označi plaćeno
+  await call("s", "/api/register", { ime: "Solo", prezime: "T", email: "solo@test.rs", telefon: "5", pw: "lozinka1", consent });
+  const ss = mslots.find(s => !s.past && s.taken < s.cap - 1 && hoursUntil(s.date, s.start) > 13 && !(s.date === target.date && s.start === target.start)); assert.ok(ss);
+  r = await call("s", "/api/bookings", { date: ss.date, start: ss.start, type: "grupni", payMethod: "racun" }); assert.equal(r.status, 200, JSON.stringify(r.data));
+  const pubNow = (await call("s", "/api/public")).data;
+  assert.equal(r.data.booking.payMethod, "racun"); assert.equal(r.data.booking.paid, 0); assert.equal(r.data.booking.price, pubNow.catalog.find(x => x.id === "g1").price);
+  r = await call("a", "/api/admin/bookings/" + r.data.booking.id, { paid: true }); assert.equal(r.data.booking.paid, 1);
+  // podaci za uplatu iz podešavanja idu u javne podatke
+  r = await call("a", "/api/admin/settings", { payment: { account: "160-0000000000000-00", recipient: "Ritual", purpose: "Članarina" } }); assert.equal(r.data.payment.account, "160-0000000000000-00");
+  assert.equal((await call("k", "/api/public")).data.payment.account, "160-0000000000000-00"); assert.equal(pubNow.payment, null);
   // odjava
   await call("k", "/api/logout", {}); assert.equal((await call("k", "/api/my")).status, 401);
   console.log("Svi testovi su prošli.");

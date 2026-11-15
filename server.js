@@ -53,8 +53,9 @@ if (!db.prepare("SELECT 1 FROM settings WHERE key='config'").get()) {
     .run(fs.readFileSync(path.join(__dirname, "seed", "settings.json"), "utf8"));
   console.log("Podešavanja su učitana iz seed/settings.json.");
 }
-// Dopune šeme za postojeće baze (fiksni termini).
-for (const [t, col, def] of [["packages", "fixed", "TEXT"], ["bookings", "fixed", "INTEGER DEFAULT 0"]])
+// Dopune šeme za postojeće baze (fiksni termini; članarina koju klijent sam izabere pre uplate).
+for (const [t, col, def] of [["packages", "fixed", "TEXT"], ["bookings", "fixed", "INTEGER DEFAULT 0"], ["packages", "unpaid", "INTEGER DEFAULT 0"], ["packages", "paidOn", "TEXT"], ["packages", "payMethod", "TEXT"],
+  ["bookings", "payMethod", "TEXT"], ["bookings", "paid", "INTEGER DEFAULT 0"], ["bookings", "price", "INTEGER"]])
   if (!db.prepare(`PRAGMA table_info(${t})`).all().some(x => x.name === col)) db.exec(`ALTER TABLE ${t} ADD COLUMN ${col} ${def}`);
 const cfg = () => JSON.parse(db.prepare("SELECT json FROM settings WHERE key='config'").get().json);
 const saveCfg = c => db.prepare("UPDATE settings SET json=? WHERE key='config'").run(JSON.stringify(c));
@@ -64,6 +65,8 @@ const saveCfg = c => db.prepare("UPDATE settings SET json=? WHERE key='config'")
   if ((seed.version || 0) > (c.version || 0)) {
     c.week = seed.week; c.groupCapacity = seed.groupCapacity; c.individualNote = seed.individualNote;
     if (!c.promo) c.promo = seed.promo;
+    if (!c.payment) c.payment = seed.payment;
+    delete c.validDays; // članarina važi mesec dana (isti datum narednog meseca), ne fiksan broj dana
     c.version = seed.version; saveCfg(c);
     console.log("Podešavanja dopunjena iz seed-a (verzija " + seed.version + ").");
   }
@@ -98,6 +101,8 @@ const pad = n => String(n).padStart(2, "0");
 const dstr = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
 const parseD = s => { const [a, b, c] = s.split("-").map(Number); return new Date(a, b - 1, c); };
 const addDays = (s, n) => { const d = parseD(s); d.setDate(d.getDate() + n); return dstr(d); };
+// isti datum narednog meseca (17.11 → 17.12; 31.01 → 28.02), bez obzira na broj dana u mesecu
+const addMonths = (s, n) => { const [y, m, d] = s.split("-").map(Number); const last = new Date(y, m - 1 + n + 1, 0).getDate(); return dstr(new Date(y, m - 1 + n, Math.min(d, last))); };
 const slotTime = (date, start) => { const d = parseD(date); const [h, m] = start.split(":").map(Number); d.setHours(h, m, 0, 0); return d; };
 const hoursUntil = (date, start) => (slotTime(date, start) - Date.now()) / 36e5;
 const endOf = (start, min) => { const [h, m] = start.split(":").map(Number); const e = h * 60 + m + min; return pad(Math.floor(e / 60)) + ":" + pad(e % 60); };
@@ -108,6 +113,23 @@ const validTime = s => typeof s === "string" && /^\d{2}:\d{2}$/.test(s);
 const validEmail = s => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 const kindOf = type => type === "grupni" ? "g" : "p";
 const newId = () => crypto.randomBytes(8).toString("hex");
+const fmtRsd = n => String(Math.round(+n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const promoActive = (c = cfg()) => { const p = c.promo; if (!p || !p.active) return null; const t = today(); if ((p.from && t < p.from) || (p.to && t > p.to)) return null; return p; };
+/* plaćanje: klijent pri rezervaciji bira uplatu na račun (instrukcije stižu mejlom) ili plaćanje u studiju pri dolasku;
+   dok studio ne evidentira uplatu, uz rezervaciju stoji napomena „nije plaćeno” */
+const PAY = { racun: "uplata na račun", studio: "plaćanje u studiju", akcija: "besplatno (akcija)" };
+const payMethodOf = v => v === "racun" ? "racun" : "studio";
+const paymentInfo = (c = cfg()) => { const p = c.payment || {}; return p.account ? { account: p.account, recipient: p.recipient || c.studio.name, purpose: p.purpose || "Članarina" } : null; };
+function paymentText(amount, c = cfg()) {
+  const p = paymentInfo(c);
+  if (!p) return "Podatke za uplatu na račun dobićete od studija.";
+  return `Podaci za uplatu:\nPrimalac: ${p.recipient}\nTekući račun: ${p.account}\nSvrha uplate: ${p.purpose}\nIznos: ${fmtRsd(amount)} RSD\n\nU svrhu uplate dopišite i svoje ime, da bismo uplatu lakše povezali sa vašim nalogom. Kad studio evidentira uplatu, napomena „nije plaćeno” nestaje iz aplikacije.`;
+}
+const singlePrice = (type, trial, c = cfg()) => {
+  const item = c.catalog.find(x => x.cat === type && x.total === 1 && (trial ? x.trial : !x.trial)) || c.catalog.find(x => x.cat === type && x.total === 1);
+  if (trial && promoActive(c)) return 0;
+  return item ? item.price : null;
+};
 const nowIso = () => new Date().toISOString();
 
 function scrypt(pw, salt) { return crypto.scryptSync(pw, salt, 32).toString("hex"); }
@@ -151,11 +173,19 @@ function pkgStats(p, c = cfg()) {
     if (b.status === "kasno" || hoursUntil(b.date, b.start) <= 0) used++; else sched++;
     if (!first || b.date < first) first = b.date;
   }
-  const expires = addDays(p.paidAt, c.validDays + (p.extendDays || 0) + (p.freezeDays || 0)); // prvi dan kada više ne važi
+  // Članarina važi mesec dana od početka (paidAt je datum početka važenja): od 17.11. do 17.12. bez obzira na broj dana u mesecu,
+  // plus eventualno produženje/zamrzavanje koje upiše admin.
+  const validUntil = addDays(addMonths(p.paidAt, 1), (p.extendDays || 0) + (p.freezeDays || 0));
   const remaining = Math.max(0, p.total - used - sched - (p.adjust || 0));
-  return { used: used + (p.adjust || 0), sched, remaining, firstUse: first, validUntil: addDays(expires, -1), expired: expires <= today() };
+  return { used: used + (p.adjust || 0), sched, remaining, firstUse: first, validUntil, expired: validUntil < today() };
 }
-const pkgOut = (p, c) => ({ ...p, fixed: p.fixed ? JSON.parse(p.fixed) : null, ...pkgStats(p, c) });
+const pkgOut = (p, c) => ({ ...p, unpaid: p.unpaid ? 1 : 0, fixed: p.fixed ? JSON.parse(p.fixed) : null, ...pkgStats(p, c) });
+// Aktivna članarina: nije istekla i ima neiskorišćenih termina (prvo ona koja ranije ističe).
+function activePackage(email, cat, c = cfg()) {
+  return db.prepare("SELECT * FROM packages WHERE userEmail=? AND cat=?").all(email, cat)
+    .map(p => pkgOut(p, c)).filter(p => !p.expired && p.remaining > 0)
+    .sort((a, b) => a.validUntil.localeCompare(b.validUntil))[0] || null;
+}
 function pickPackage(email, type, date, c = cfg()) {
   return db.prepare("SELECT * FROM packages WHERE userEmail=? AND cat=?").all(email, type)
     .map(p => pkgOut(p, c))
@@ -191,12 +221,11 @@ const setLogin = (res, email) => res.cookie(COOKIE, sign(email), { httpOnly: tru
 const fail = (res, code, error) => res.status(code).json({ error });
 
 /* ---- javni podaci ---- */
-const promoActive = (c = cfg()) => { const p = c.promo; if (!p || !p.active) return null; const t = today(); if ((p.from && t < p.from) || (p.to && t > p.to)) return null; return p; };
 app.get("/api/public", (req, res) => {
   const c = cfg();
   res.json({ studio: c.studio, groupCapacity: c.groupCapacity, bookAheadDays: c.bookAheadDays, minutes: c.minutes,
-    cancelHours: c.cancelHours, validDays: c.validDays, maxExtend: c.maxExtend, maxFreeze: c.maxFreeze,
-    week: c.week, catalog: c.catalog, individualNote: c.individualNote || "", promo: promoActive(c), me: me(req) });
+    cancelHours: c.cancelHours, maxExtend: c.maxExtend, maxFreeze: c.maxFreeze,
+    week: c.week, catalog: c.catalog, individualNote: c.individualNote || "", promo: promoActive(c), payment: paymentInfo(c), me: me(req) });
 });
 app.get("/api/slots", (req, res) => {
   const type = TYPES[req.query.type] ? req.query.type : "grupni";
@@ -275,7 +304,7 @@ app.post("/api/reset", (req, res) => {
 });
 
 /* ---- rezervacije ---- */
-function createBooking({ email, date, start, type, trial, by, force, fixed }) {
+function createBooking({ email, date, start, type, trial, by, force, fixed, payMethod }) {
   const c = cfg();
   if (!validDate(date) || !validTime(start) || !TYPES[type]) return { code: 400, error: "Neispravan termin." };
   const kind = kindOf(type);
@@ -290,8 +319,13 @@ function createBooking({ email, date, start, type, trial, by, force, fixed }) {
     if (!force && countAt(date, start) >= capacity(kindAt(date, start, c) || kind, c))
       return { code: 409, error: "Termin je upravo popunjen. Izaberite drugi." };
     const pkg = pickPackage(email, type, date, c);
-    const b = { id: newId(), userEmail: email, date, start, type, pkgId: pkg ? pkg.id : null, trial: !pkg && trial ? 1 : 0, status: "zakazano", created: nowIso(), createdBy: by, fixed: fixed ? 1 : 0 };
-    db.prepare("INSERT INTO bookings(id,userEmail,date,start,type,pkgId,trial,status,created,createdBy,fixed) VALUES(@id,@userEmail,@date,@start,@type,@pkgId,@trial,@status,@created,@createdBy,@fixed)").run(b);
+    const isTrial = !pkg && trial ? 1 : 0;
+    // termin van paketa: cena pojedinačnog/probnog časa i način plaćanja; besplatan probni (akcija) je odmah „plaćen”
+    const price = pkg ? null : singlePrice(type, isTrial, c);
+    const pm = pkg ? null : price === 0 ? "akcija" : payMethodOf(payMethod);
+    const b = { id: newId(), userEmail: email, date, start, type, pkgId: pkg ? pkg.id : null, trial: isTrial, status: "zakazano", created: nowIso(), createdBy: by, fixed: fixed ? 1 : 0,
+      payMethod: pm, price, paid: price === 0 ? 1 : 0 };
+    db.prepare("INSERT INTO bookings(id,userEmail,date,start,type,pkgId,trial,status,created,createdBy,fixed,payMethod,price,paid) VALUES(@id,@userEmail,@date,@start,@type,@pkgId,@trial,@status,@created,@createdBy,@fixed,@payMethod,@price,@paid)").run(b);
     return { booking: b, pkg };
   });
   return tx.immediate();
@@ -301,9 +335,12 @@ function notify(b, what) {
   const u = db.prepare("SELECT * FROM users WHERE email=?").get(b.userEmail); if (!u) return;
   const c = cfg();
   if (what === "new") {
+    const pay = b.pkgId ? "" : b.price === 0 ? "\n\nProbni trening je besplatan (akcija)." : b.payMethod === "racun"
+      ? `\n\nIzabrali ste uplatu na račun (${fmtRsd(b.price)} RSD). ${paymentText(b.price, c)}`
+      : `\n\nPlaćanje u studiju pri dolasku: ${fmtRsd(b.price)} RSD. Do uplate uz termin stoji napomena „nije plaćeno”.`;
     sendMail(u.email, "Rezervacija potvrđena - Ritual Pilates Studio",
-      `Zdravo ${u.ime},\n\nvaš termin je zakazan: ${bookingText(b)}.\n\nMolimo dođite 5-10 min ranije. Otkazivanje je moguće najkasnije ${c.cancelHours}h pre termina, inače se trening računa kao iskorišćen.\n\nRitual Pilates Studio`);
-    sendMail(studioEmail(), "Nova rezervacija: " + u.ime + " " + u.prezime, `${u.ime} ${u.prezime} (${u.telefon}) je zakazao/la: ${bookingText(b)}.`);
+      `Zdravo ${u.ime},\n\nvaš termin je zakazan: ${bookingText(b)}.${pay}\n\nMolimo dođite 5-10 min ranije. Otkazivanje je moguće najkasnije ${c.cancelHours}h pre termina, inače se trening računa kao iskorišćen.\n\nRitual Pilates Studio`);
+    sendMail(studioEmail(), "Nova rezervacija: " + u.ime + " " + u.prezime, `${u.ime} ${u.prezime} (${u.telefon}) je zakazao/la: ${bookingText(b)}.${b.pkgId ? "" : b.price === 0 ? " Besplatan probni (akcija)." : ` ${PAY[b.payMethod] || ""}, ${fmtRsd(b.price)} RSD - nije plaćeno.`}`);
   } else {
     sendMail(u.email, "Termin otkazan - Ritual Pilates Studio", `Zdravo ${u.ime},\n\notkazan je termin: ${bookingText(b)}.\n\nRitual Pilates Studio`);
     sendMail(studioEmail(), "Otkazano: " + u.ime + " " + u.prezime, `${u.ime} ${u.prezime} (${u.telefon}) je otkazao/la: ${bookingText(b)}.`);
@@ -311,8 +348,8 @@ function notify(b, what) {
 }
 
 app.post("/api/bookings", auth, (req, res) => {
-  const { date, start, type, trial } = req.body || {};
-  const r = createBooking({ email: req.user.email, date, start, type, trial: !!trial, by: req.user.email });
+  const { date, start, type, trial, payMethod } = req.body || {};
+  const r = createBooking({ email: req.user.email, date, start, type, trial: !!trial, by: req.user.email, payMethod });
   if (r.error) return fail(res, r.code, r.error);
   notify(r.booking, "new");
   res.json({ booking: r.booking, pkg: r.pkg ? pkgOut(db.prepare("SELECT * FROM packages WHERE id=?").get(r.pkg.id)) : null });
@@ -334,6 +371,40 @@ app.post("/api/bookings/:id/cancel", auth, (req, res) => {
   notify(b, "cancel");
   notifyWaitlist(b.date, b.start);
   res.json({ ok: true });
+});
+
+// Klijent sam menja pojedinačni termin: najkasnije cancelHours pre starog termina, novi termin mora biti slobodan i u periodu važenja paketa.
+app.post("/api/bookings/:id/move", auth, (req, res) => {
+  const b = db.prepare("SELECT * FROM bookings WHERE id=? AND userEmail=?").get(req.params.id, req.user.email);
+  if (!b || b.status !== "zakazano") return fail(res, 404, "Rezervacija nije pronađena.");
+  const c = cfg(), { date, start } = req.body || {};
+  if (hoursUntil(b.date, b.start) < c.cancelHours)
+    return fail(res, 400, `Termin se može promeniti najkasnije ${c.cancelHours}h ranije. Ovaj trening se računa kao iskorišćen ako izostanete.`);
+  if (!validDate(date) || !validTime(start)) return fail(res, 400, "Izaberite novi dan i vreme.");
+  if (date === b.date && start === b.start) return fail(res, 400, "To je isti termin. Izaberite drugi.");
+  const kind = kindOf(b.type);
+  if (!slotsFor(date, kind, c).includes(start)) return fail(res, 400, "Ovaj termin nije u rasporedu.");
+  if (hoursUntil(date, start) <= 0) return fail(res, 400, "Novi termin je već počeo ili prošao.");
+  if (date > addDays(today(), c.bookAheadDays - 1)) return fail(res, 400, "Termini se zakazuju najviše " + c.bookAheadDays + " dana unapred.");
+  const pkg = b.pkgId ? db.prepare("SELECT * FROM packages WHERE id=?").get(b.pkgId) : null;
+  if (pkg) { const st = pkgStats(pkg, c); if (date < pkg.paidAt || date > st.validUntil) return fail(res, 400, `Novi termin mora biti u periodu važenja članarine (do ${fmtD(st.validUntil)}).`); }
+  const r = db.transaction(() => {
+    if (db.prepare("SELECT 1 FROM bookings WHERE userEmail=? AND date=? AND start=? AND status='zakazano'").get(b.userEmail, date, start))
+      return { code: 409, error: "Već imate rezervaciju u tom terminu." };
+    if (countAt(date, start) >= capacity(kindAt(date, start, c) || kind, c)) return { code: 409, error: "Novi termin je popunjen. Izaberite drugi." };
+    db.prepare("UPDATE bookings SET date=?, start=?, reminderSent=0, fixed=0 WHERE id=?").run(date, start, b.id);
+    return null;
+  }).immediate();
+  if (r) return fail(res, r.code, r.error);
+  const nb = db.prepare("SELECT * FROM bookings WHERE id=?").get(b.id);
+  logAction(req.user.email, b.userEmail, "promenjen termin", bookingText(b) + " → " + fmtD(date) + " " + start);
+  const u = db.prepare("SELECT * FROM users WHERE email=?").get(b.userEmail);
+  if (u) {
+    sendMail(u.email, "Termin promenjen - Ritual Pilates Studio", `Zdravo ${u.ime},\n\numesto termina ${fmtD(b.date)} u ${b.start} zakazan je: ${bookingText(nb)}.\n\nRitual Pilates Studio`);
+    sendMail(studioEmail(), "Promena termina: " + u.ime + " " + u.prezime, `${u.ime} ${u.prezime} (${u.telefon}) je pomerio/la termin ${fmtD(b.date)} u ${b.start} → ${bookingText(nb)}.`);
+  }
+  notifyWaitlist(b.date, b.start);
+  res.json({ booking: nb });
 });
 
 /* ---- lista čekanja: kad se popunjen termin oslobodi, zainteresovani dobijaju mejl ---- */
@@ -446,6 +517,56 @@ app.post("/api/packages/:id/fixed/clear", auth, (req, res) => {
   res.json({ cancelled: fut.length });
 });
 
+/* ---- mesečna članarina koju klijent sam bira pri zakazivanju: 8 ili 12 termina, dani u nedelji i vreme za ceo mesec.
+        Paket nastaje odmah (važi mesec dana od prvog treninga), uplata se evidentira u studiju (admin → Klijenti). ---- */
+const planItems = c => c.catalog.filter(x => !x.trial && x.total >= 8);
+app.post("/api/plans", auth, (req, res) => {
+  const c = cfg(), body = req.body || {};
+  const item = planItems(c).find(x => x.id === body.catalogId);
+  if (body.preview === true && !body.days) return res.json({ items: planItems(c), options: fixedOptions({ cat: item ? item.cat : (body.cat === "individualni" ? "individualni" : "grupni") }, c) });
+  if (!item) return fail(res, 400, "Izaberite članarinu od 8 ili 12 termina.");
+  const active = activePackage(req.user.email, item.cat, c);
+  if (active) return fail(res, 409, `Već imate članarinu „${active.name}” sa ${active.remaining} neiskorišćenih termina (važi do ${fmtD(active.validUntil)}). Termine zakazujete iz nje.`);
+  const days = [...new Set((Array.isArray(body.days) ? body.days : []).map(Number).filter(d => d >= 0 && d <= 6))].sort();
+  const type = item.cat === "grupni" ? "grupni" : (body.type === "duo" ? "duo" : "individualni");
+  const opts = fixedOptions({ cat: item.cat }, c);
+  if (!days.length) return fail(res, 400, "Izaberite bar jedan dan u nedelji.");
+  const time = String(body.time || "");
+  if (!validTime(time)) return fail(res, 400, "Izaberite vreme.");
+  if (!days.some(d => opts[d].includes(time))) return fail(res, 400, "U izabrane dane nema termina u to vreme.");
+  // početak: prvi izabrani dan od sutra (ili od datuma koji je klijent izabrao)
+  let from = validDate(body.from) && body.from > today() ? body.from : addDays(today(), 1);
+  for (let i = 0; i < 7 && !days.includes(parseD(from).getDay()); i++) from = addDays(from, 1);
+  if (from > addDays(today(), c.bookAheadDays - 1)) return fail(res, 400, "Termini se zakazuju najviše " + c.bookAheadDays + " dana unapred.");
+  const p = { id: newId(), userEmail: req.user.email, catalogId: item.id, name: item.name, cat: item.cat, total: item.total, price: item.price, paidAt: from,
+    unpaid: 1, paidOn: null, payMethod: payMethodOf(body.payMethod), adjust: 0, extendDays: 0, freezeDays: 0, note: "", created: nowIso(), createdBy: req.user.email };
+  const f = { days, time, type, from };
+  const planned = planFixed(p, f, c), fits = planned.plan.filter(x => x.ok).length;
+  if (body.preview) return res.json({ ...planned, from, fits, total: item.total, price: item.price, name: item.name });
+  if (!fits) return fail(res, 400, "Nema slobodnih termina po ovom obrascu. Izaberite druge dane ili vreme.");
+  const made = [], skipped = [];
+  db.transaction(() => {
+    db.prepare(`INSERT INTO packages(id,userEmail,catalogId,name,cat,total,price,paidAt,unpaid,paidOn,payMethod,adjust,extendDays,freezeDays,note,created,createdBy,fixed)
+      VALUES(@id,@userEmail,@catalogId,@name,@cat,@total,@price,@paidAt,@unpaid,@paidOn,@payMethod,@adjust,@extendDays,@freezeDays,@note,@created,@createdBy,@fixed)`).run({ ...p, fixed: JSON.stringify(f) });
+    for (const x of planned.plan) {
+      if (!x.ok) { if (x.reason !== "već zakazano") skipped.push(x); continue; }
+      const r = createBooking({ email: p.userEmail, date: x.date, start: x.start, type, by: req.user.email, fixed: true });
+      if (r.error) skipped.push({ ...x, reason: r.error }); else made.push(r.booking);
+    }
+    logAction(req.user.email, p.userEmail, "članarina", `${item.name}: ${fixedText(f)} od ${fmtD(from)}, zakazano ${made.length}${skipped.length ? ", preskočeno " + skipped.length : ""}; ${PAY[p.payMethod]}, nije plaćeno`);
+  })();
+  const out = pkgOut(db.prepare("SELECT * FROM packages WHERE id=?").get(p.id), c);
+  const u = db.prepare("SELECT * FROM users WHERE email=?").get(p.userEmail);
+  if (u) {
+    const list = made.map(b => "- " + fmtD(b.date) + " u " + b.start).join("\n");
+    sendMail(u.email, "Vaša članarina i termini - Ritual Pilates Studio",
+      `Zdravo ${u.ime},\n\nizabrali ste: ${item.name} (${item.price} rsd), ${fixedText(f)}.\nČlanarina važi od ${fmtD(from)} do ${fmtD(out.validUntil)}.\n\nZakazani termini:\n${list}${skipped.length ? "\n\nNije zakazano (popunjeno ili van rasporeda): " + skipped.map(x => fmtD(x.date)).join(", ") + ". Te termine možete zakazati pojedinačno u aplikaciji." : ""}${out.remaining ? "\n\nPreostalo za pojedinačno zakazivanje: " + out.remaining + "." : ""}\n\n${p.payMethod === "racun" ? "Izabrali ste uplatu na račun. " + paymentText(item.price, c) : "Izabrali ste plaćanje u studiju pri dolasku (" + fmtRsd(item.price) + " RSD). Do uplate uz članarinu stoji napomena „nije plaćeno”."}\n\nSvaki termin možete promeniti ili otkazati najkasnije ${c.cancelHours}h ranije; kasnije otkazan ili propušten trening računa se kao iskorišćen.\n\nRitual Pilates Studio`);
+    sendMail(studioEmail(), "Nova članarina: " + u.ime + " " + u.prezime,
+      `${u.ime} ${u.prezime} (${u.telefon}, ${u.email}) je izabrao/la ${item.name} (${item.price} rsd): ${fixedText(f)}, od ${fmtD(from)} do ${fmtD(out.validUntil)}.\nZakazano ${made.length} termina${skipped.length ? ", preskočeno " + skipped.length : ""}.\nNačin plaćanja: ${PAY[p.payMethod]} - još nije plaćeno. Kad uplata stigne, evidentirajte je u Admin → Klijenti.`);
+  }
+  res.json({ pkg: out, made, skipped, plan: planned.plan });
+});
+
 /* ---- admin: raspored ---- */
 app.get("/api/admin/day", auth, admin, (req, res) => {
   const date = validDate(req.query.date) ? req.query.date : today();
@@ -504,6 +625,11 @@ app.post("/api/admin/bookings/:id", auth, admin, (req, res) => {
     logAction(req.user.email, b.userEmail, "premešteno", bookingText(b) + " → " + fmtD(date) + " " + start);
     notifyWaitlist(b.date, b.start);
   }
+  if ((req.body || {}).paid !== undefined) {
+    const paid = (req.body || {}).paid ? 1 : 0;
+    db.prepare("UPDATE bookings SET paid=? WHERE id=?").run(paid, b.id);
+    logAction(req.user.email, b.userEmail, "plaćanje", bookingText(b) + (paid ? ": plaćeno" + (b.price ? " " + fmtRsd(b.price) + " RSD" : "") : ": označeno kao neplaćeno"));
+  }
   if (pkgId !== undefined) {
     if (pkgId && !db.prepare("SELECT 1 FROM packages WHERE id=? AND userEmail=?").get(pkgId, b.userEmail)) return fail(res, 400, "Paket ne pripada ovom klijentu.");
     db.prepare("UPDATE bookings SET pkgId=? WHERE id=?").run(pkgId || null, b.id);
@@ -552,11 +678,11 @@ app.post("/api/admin/packages", auth, admin, (req, res) => {
   if (!db.prepare("SELECT 1 FROM users WHERE email=?").get(em)) return fail(res, 404, "Klijent nije pronađen.");
   if (!item) return fail(res, 400, "Izaberite paket.");
   if (!validDate(paidAt)) return fail(res, 400, "Unesite datum uplate.");
-  const p = { id: newId(), userEmail: em, catalogId: item.id, name: item.name, cat: item.cat, total: item.total, price: item.price, paidAt,
+  const p = { id: newId(), userEmail: em, catalogId: item.id, name: item.name, cat: item.cat, total: item.total, price: item.price, paidAt, unpaid: 0, paidOn: paidAt,
     adjust: 0, extendDays: 0, freezeDays: 0, note: String(note || "").slice(0, 500), created: nowIso(), createdBy: req.user.email };
   db.transaction(() => {
-    db.prepare(`INSERT INTO packages(id,userEmail,catalogId,name,cat,total,price,paidAt,adjust,extendDays,freezeDays,note,created,createdBy)
-      VALUES(@id,@userEmail,@catalogId,@name,@cat,@total,@price,@paidAt,@adjust,@extendDays,@freezeDays,@note,@created,@createdBy)`).run(p);
+    db.prepare(`INSERT INTO packages(id,userEmail,catalogId,name,cat,total,price,paidAt,unpaid,paidOn,adjust,extendDays,freezeDays,note,created,createdBy)
+      VALUES(@id,@userEmail,@catalogId,@name,@cat,@total,@price,@paidAt,@unpaid,@paidOn,@adjust,@extendDays,@freezeDays,@note,@created,@createdBy)`).run(p);
     // Već zakazani termini bez paketa iz perioda važenja ulaze u novi paket.
     const exp = pkgStats(p, c).validUntil;
     const loose = db.prepare("SELECT id FROM bookings WHERE userEmail=? AND type=? AND pkgId IS NULL AND trial=0 AND status IN ('zakazano','kasno') AND date>=? AND date<=? ORDER BY date,start").all(em, item.cat, paidAt, exp);
@@ -572,11 +698,15 @@ app.post("/api/admin/packages/:id", auth, admin, (req, res) => {
   if (b.adjustDelta) { const d = Math.max(-50, Math.min(50, parseInt(b.adjustDelta, 10) || 0)); p.adjust = (p.adjust || 0) + d; changes.push(d > 0 ? `+${d} iskorišćen ručno` : `${-d} vraćen u paket`); }
   if (b.extendDays !== undefined) { p.extendDays = Math.max(0, Math.min(c.maxExtend, parseInt(b.extendDays, 10) || 0)); changes.push("produženje " + p.extendDays + " d"); }
   if (b.freezeDays !== undefined) { p.freezeDays = Math.max(0, Math.min(c.maxFreeze, parseInt(b.freezeDays, 10) || 0)); changes.push("zamrzavanje " + p.freezeDays + " d"); }
-  if (b.paidAt !== undefined) { if (!validDate(b.paidAt)) return fail(res, 400, "Neispravan datum uplate."); p.paidAt = b.paidAt; changes.push("datum uplate " + fmtD(b.paidAt)); }
+  if (b.paidAt !== undefined) { if (!validDate(b.paidAt)) return fail(res, 400, "Neispravan datum početka."); p.paidAt = b.paidAt; changes.push("važi od " + fmtD(b.paidAt)); }
+  if (b.paid !== undefined) {
+    p.unpaid = b.paid ? 0 : 1; p.paidOn = b.paid ? (validDate(b.paidOn) ? b.paidOn : today()) : null;
+    changes.push(b.paid ? "uplata evidentirana " + fmtD(p.paidOn) : "označeno kao neplaćeno");
+  }
   if (b.total !== undefined) { p.total = Math.max(1, Math.min(100, parseInt(b.total, 10) || p.total)); changes.push("ukupno " + p.total); }
   if (b.note !== undefined) p.note = String(b.note).slice(0, 500);
-  db.prepare("UPDATE packages SET adjust=?, extendDays=?, freezeDays=?, paidAt=?, total=?, note=? WHERE id=?")
-    .run(p.adjust, p.extendDays, p.freezeDays, p.paidAt, p.total, p.note, p.id);
+  db.prepare("UPDATE packages SET adjust=?, extendDays=?, freezeDays=?, paidAt=?, unpaid=?, paidOn=?, total=?, note=? WHERE id=?")
+    .run(p.adjust, p.extendDays, p.freezeDays, p.paidAt, p.unpaid ? 1 : 0, p.paidOn, p.total, p.note, p.id);
   if (changes.length) logAction(req.user.email, p.userEmail, "paket", p.name + ": " + changes.join(", ") + (b.reason ? " (" + String(b.reason).slice(0, 200) + ")" : ""));
   res.json({ pkg: pkgOut(p, c) });
 });
@@ -586,7 +716,7 @@ app.post("/api/admin/packages/:id/delete", auth, admin, (req, res) => {
   db.transaction(() => {
     db.prepare("UPDATE bookings SET pkgId=NULL WHERE pkgId=?").run(p.id);
     db.prepare("DELETE FROM packages WHERE id=?").run(p.id);
-    logAction(req.user.email, p.userEmail, "paket obrisan", p.name + ", uplaćeno " + fmtD(p.paidAt));
+    logAction(req.user.email, p.userEmail, "paket obrisan", p.name + ", važio od " + fmtD(p.paidAt));
   })();
   res.json({ ok: true });
 });
@@ -610,6 +740,11 @@ app.post("/api/admin/settings", auth, admin, (req, res) => {
     for (const k of ["from", "to"]) if (b.promo[k] !== undefined) p[k] = validDate(b.promo[k]) ? b.promo[k] : "";
     if (b.promo.image !== undefined && /^\/img\/[\w./-]+$/.test(String(b.promo.image))) p.image = String(b.promo.image);
     c.promo = p;
+  }
+  if (b.payment && typeof b.payment === "object") {
+    const p = c.payment || {};
+    for (const k of ["account", "recipient", "purpose"]) if (b.payment[k] !== undefined) p[k] = String(b.payment[k]).trim().slice(0, 120);
+    c.payment = p;
   }
   if (Array.isArray(b.adminEmails)) c.adminEmails = [...new Set(b.adminEmails.map(x => String(x).trim().toLowerCase()).filter(x => validEmail(x) && !ADMIN_EMAILS.includes(x)))].slice(0, 20);
   if (Array.isArray(b.catalog)) for (const it of b.catalog) {

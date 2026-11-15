@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "studio": {
     "name": "Ritual Pilates Studio",
     "address": "Skenderbegova 53, Dorćol, Beograd",
@@ -11,7 +11,6 @@
   "bookAheadDays": 90,
   "minutes": 55,
   "cancelHours": 12,
-  "validDays": 30,
   "maxExtend": 7,
   "maxFreeze": 14,
   "week": {
@@ -78,6 +77,11 @@
     }
   },
   "individualNote": "Individualni i duo treninzi se zakazuju po dogovoru sa studiom.",
+  "payment": {
+    "account": "",
+    "recipient": "Ritual Pilates Studio",
+    "purpose": "Članarina - Ritual Pilates Studio"
+  },
   "promo": {
     "active": true,
     "from": "2026-11-01",
