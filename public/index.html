@@ -392,15 +392,15 @@ a .ci-v:hover { color: var(--olive); }
 [data-rise].in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { [data-rise] { opacity: 1; transform: none; transition: none; } }
 @media (max-width: 560px) { .map-frame { height: 240px; } .map-name b { font-size: 19px; } .map-foot { padding: 14px 16px; gap: 10px; } .map-foot .actions { width: 100%; } .map-foot .actions .btn { flex: 1; justify-content: center; } }
-/* radno vreme: dve fotografije studija kao blago zamućena pozadina koja prelazi u boju kartice */
-.hours-card { position: relative; overflow: hidden; isolation: isolate; padding-top: 160px; }
-.hours-bg { position: absolute; inset: 0; z-index: -1; display: grid; grid-template-columns: 1fr 1fr; }
-.hours-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; filter: blur(2px) saturate(.9); transform: scale(1.06); display: block; }
-.hours-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(248,243,232,.1) 0, rgba(248,243,232,.42) 95px, rgba(248,243,232,.9) 160px, rgba(248,243,232,.985) 215px, var(--paper) 280px); }
-@media (max-width: 560px) {
-  .hours-card { padding-top: 124px; }
-  .hours-bg::after { background: linear-gradient(180deg, rgba(248,243,232,.1) 0, rgba(248,243,232,.48) 70px, rgba(248,243,232,.9) 124px, rgba(248,243,232,.985) 170px, var(--paper) 230px); }
-}
+/* radno vreme: dve fotografije studija preko cele kartice, blago zamućene, sa mekim prelivom između njih i svetlim velom da tabela ostane čitljiva */
+.hours-card { position: relative; overflow: hidden; isolation: isolate; }
+.hours-bg { position: absolute; inset: 0; z-index: -1; background: var(--bg-deep); }
+.hours-bg img { position: absolute; top: 0; height: 100%; width: 62%; object-fit: cover; object-position: 50% 35%; filter: blur(3px) saturate(.92); transform: scale(1.08); display: block; }
+.hours-bg img:first-child { left: 0; -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent 100%); mask-image: linear-gradient(90deg, #000 55%, transparent 100%); }
+.hours-bg img:last-child { right: 0; -webkit-mask-image: linear-gradient(270deg, #000 55%, transparent 100%); mask-image: linear-gradient(270deg, #000 55%, transparent 100%); }
+.hours-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(248,243,232,.64) 0, rgba(248,243,232,.78) 40%, rgba(248,243,232,.72) 100%); }
+.hours-card .hours-t td { border-bottom-color: rgba(29,28,25,.1); }
+.hours-card .hours-t td:first-child { color: var(--ink); opacity: .82; }
 
 /* paketi */
 .pkg { background: var(--paper); border: 1px solid var(--line-soft); border-radius: 24px; padding: 24px; display: grid; gap: 12px; box-shadow: 0 30px 60px -45px rgba(29,28,25,.5); }
