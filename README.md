@@ -86,6 +86,9 @@ Na Render **Free** planu disk nije trajan — nalozi i rezervacije bi nestajali 
   evidentira uplatu
 - radno vreme na Kontaktu se računa iz rasporeda termina (npr. 08–11 i 18–21), pa je uvek usklađeno;
   Kontakt ima Google mapu sa dugmetom „Navigacija” i telefonom (adresa je ispod naziva, Instagram je u zaglavlju i podnožju)
+- kartice u meniju, „Zakaži termin” na naslovnoj i dugmad u zelenoj traci vode pravo na izabrani deo (odmah ispod zaglavlja)
+- listanje na telefonu i tabletu: bez paralakse i zamućenja, zrno pozadine je mala pločica, fotografije u karticama su manje verzije (`public/img/p/s`),
+  pozadine kartice „Radno vreme” su unapred zamućene; Admin → Klijenti ima dugme „Pretraži” (radi i Enter)
 - grupni čas do 4 osobe (podesivo); individualni i duo treninzi se zakazuju po dogovoru (upit stiže studiju mejlom)
 - lista čekanja: kad je termin popunjen, klijentkinja klikne „obavesti me“; čim neko otkaže, svi sa liste dobijaju mejl da je termin ponovo slobodan (mesto dobija ko prvi zakaže)
 - akcija: pop-up sa fotografijom i tekstom pri otvaranju; dok traje, probni trening se prikazuje kao besplatan

@@ -63,17 +63,18 @@ a { color: var(--olive); text-decoration-color: rgba(92,98,62,.35); text-underli
 ::selection { background: rgba(217,180,166,.45); }
 
 /* ambijent: toplo svetlo kao iza lukova */
-.ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; background:
+.ambient { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: 100lvh; z-index: -1; overflow: hidden; contain: strict; background:
   radial-gradient(55% 45% at 50% -5%, #fffdf5 0%, rgba(255,253,245,.6) 40%, transparent 75%),
   radial-gradient(40% 35% at 100% 70%, rgba(217,180,166,.18), transparent 70%),
   radial-gradient(45% 40% at 0% 90%, rgba(92,98,62,.16), transparent 70%),
   radial-gradient(35% 30% at 95% 15%, rgba(92,98,62,.12), transparent 70%),
   var(--bg); }
-.ambient svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ambient .grain { opacity: .5; mix-blend-mode: multiply; }
-.orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .5; animation: drift 30s ease-in-out infinite alternate; }
-.orb.a { width: 50vw; height: 50vw; left: 10vw; top: -20vw; background: #fffdf6; }
-.orb.b { width: 34vw; height: 34vw; right: -12vw; top: 48vh; background: #c9cfb0; animation-delay: -12s; animation-duration: 38s; }
+/* zrno je mala pločica (bez SVG filtera preko celog ekrana), svetla su gradijenti bez blur filtera, a lebde samo na računaru: ništa se ne preračunava dok se lista */
+.ambient::after { content: ""; position: absolute; inset: 0; background: url("data:image/png;base64,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") repeat; background-size: 80px 80px; }
+.orb { position: absolute; border-radius: 50%; opacity: .55; }
+.orb.a { width: 64vw; height: 64vw; left: 3vw; top: -27vw; background: radial-gradient(circle closest-side, #fffdf6 0%, rgba(255,253,246,.7) 45%, rgba(255,253,246,0) 100%); }
+.orb.b { width: 46vw; height: 46vw; right: -18vw; top: 42vh; background: radial-gradient(circle closest-side, #c9cfb0 0%, rgba(201,207,176,.7) 45%, rgba(201,207,176,0) 100%); }
+@media (hover: hover) and (min-width: 761px) { .orb { animation: drift 30s ease-in-out infinite alternate; } .orb.b { animation-delay: -12s; animation-duration: 38s; } }
 @keyframes drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(-5vw, 5vh, 0) scale(1.1); } }
 
 .wrap { max-width: 760px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
@@ -289,8 +290,8 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .summary { display: grid; gap: 4px; }
 .summary .big { font-family: var(--display); font-size: 31px; font-weight: 500; line-height: 1.15; }
 .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-label.f, div.f { display: grid; gap: 6px; font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); min-width: 0; }
-.input, label.f input, label.f select, label.f textarea { font: inherit; font-size: 15px; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink); background: var(--glow); border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; width: 100%; }
+label.f, div.f, form.f { display: grid; gap: 6px; font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); min-width: 0; }
+.input, label.f input, label.f select, label.f textarea, form.f input { font: inherit; font-size: 15px; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink); background: var(--glow); border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; width: 100%; }
 .input.small { width: auto; min-width: 110px; }
 label.check { display: flex; gap: 12px; align-items: flex-start; font-size: 13px; color: var(--ink-soft); }
 label.check input { margin-top: 4px; accent-color: var(--olive); }
@@ -409,10 +410,10 @@ a .ci-v:hover { color: var(--olive); }
 .wk-hint { font-size: 12px; color: var(--ink-mute); letter-spacing: .02em; }
 .wk-row .chips { gap: 6px; }
 @media (max-width: 560px) { .wk-row { grid-template-columns: 1fr; gap: 6px; padding: 8px 10px; } }
-/* radno vreme: dve fotografije studija preko cele kartice, blago zamućene, sa mekim prelivom između njih i svetlim velom da tabela ostane čitljiva */
+/* radno vreme: dve fotografije studija preko cele kartice (unapred zamućene, manje datoteke), sa mekim prelivom između njih i svetlim velom da tabela ostane čitljiva */
 .hours-card { position: relative; overflow: hidden; isolation: isolate; }
 .hours-bg { position: absolute; inset: 0; z-index: -1; background: var(--bg-deep); }
-.hours-bg img { position: absolute; top: 0; height: 100%; width: 62%; object-fit: cover; object-position: 50% 35%; filter: blur(3px) saturate(.92); transform: scale(1.08); display: block; }
+.hours-bg img { position: absolute; top: 0; height: 100%; width: 62%; object-fit: cover; object-position: 50% 35%; display: block; }
 .hours-bg img:first-child { left: 0; -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent 100%); mask-image: linear-gradient(90deg, #000 55%, transparent 100%); }
 .hours-bg img:last-child { right: 0; -webkit-mask-image: linear-gradient(270deg, #000 55%, transparent 100%); mask-image: linear-gradient(270deg, #000 55%, transparent 100%); }
 .hours-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(248,243,232,.64) 0, rgba(248,243,232,.78) 40%, rgba(248,243,232,.72) 100%); }
@@ -486,13 +487,24 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
   .week-row { grid-template-columns: 44px 1fr; }
   .week-row > :last-child { grid-column: 2; }
 }
+/* pretraga klijenata: polje + dugme u jednom redu */
+.search-row { display: flex; gap: 8px; align-items: stretch; }
+.search-row input { flex: 1; min-width: 0; -webkit-appearance: none; appearance: none; }
+.search-row input::-webkit-search-decoration { -webkit-appearance: none; }
+.search-row .btn { flex: none; display: inline-flex; align-items: center; gap: 8px; padding-block: 0; }
+/* ekrani na dodir (telefon, tablet): bez zamućenja ispod kartica, bez stalnog zumiranja fotografija i bez slojeva koji čekaju paralaksu, kraće pojavljivanje kartica - listanje ostaje glatko */
+@media (hover: none) {
+  nav.tabs { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(239,234,224,.97); }
+  .hero-full img, .hero-full .hero-media, .band-photo img { will-change: auto; }
+  .seg.seg-cards .ph img { transition: opacity .9s ease; transform: none; }
+  [data-rise] { transform: translateY(14px); transition-duration: .5s; }
+}
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
 <div class="ambient" aria-hidden="true">
   <div class="orb a"></div><div class="orb b"></div>
-  <svg class="grain"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .4 0 0 0 0 .38 0 0 0 0 .33 0 0 0 .08 0"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
 </div>
 <header class="top">
   <div class="wrap top-in">
@@ -686,7 +698,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
       </div>
     </div>
     <div class="card hours-card" data-rise>
-      <div class="hours-bg" aria-hidden="true"><img src="/img/trening.jpg" alt="" loading="lazy"><img src="/img/reformer.jpg" alt="" loading="lazy"></div>
+      <div class="hours-bg" aria-hidden="true"><img src="/img/radno-1.jpg" alt="" loading="lazy" decoding="async"><img src="/img/radno-2.jpg" alt="" loading="lazy" decoding="async"></div>
       <h3 class="hours-title">Radno vreme</h3><table class="hours-t" id="hours"><tbody></tbody></table>
     </div>
   </section>
@@ -731,7 +743,13 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
       <h2>Klijenti i paketi</h2>
       <p class="lead">Evidencija uplata, iskorišćenih i preostalih treninga. Svaka ručna izmena se upisuje u istoriju klijenta.</p>
     </div>
-    <label class="f" style="max-width:340px">Pretraga <input id="client-q" placeholder="Ime, e-mail ili telefon"></label>
+    <form class="f search" id="client-search" role="search" style="max-width:440px">
+      <label for="client-q">Pretraga</label>
+      <div class="search-row">
+        <input id="client-q" type="search" placeholder="Ime, e-mail ili telefon" enterkeyhint="search" autocomplete="off">
+        <button type="submit" class="btn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>Pretraži</button>
+      </div>
+    </form>
     <div class="list" id="client-list"></div>
   </section>
   <section data-view="klijent" hidden>
@@ -883,20 +901,22 @@ async function loadSlots() {
 }
 /* fotografije po vrsti treninga: svaka kartica ima svoje slike koje se smenjuju naizmenično */
 const TYPE_PHOTOS = {
-  grupni:       [["/img/p/p8.jpg", "50% 45%"], ["/img/p/p3.jpg", "50% 30%"], ["/img/p/p12.jpg", "50% 50%"]],
-  individualni: [["/img/p/p4.jpg", "55% 40%"], ["/img/p/p2.jpg", "50% 30%"], ["/img/p/p7.jpg", "60% 40%"]],
-  duo:          [["/img/p/p6.jpg", "50% 45%"], ["/img/p/p5.jpg", "50% 40%"], ["/img/p/p1.jpg", "50% 45%"]]
+  grupni:       [["/img/p/s/p8.jpg", "50% 45%"], ["/img/p/s/p3.jpg", "50% 30%"], ["/img/p/s/p12.jpg", "50% 50%"]],
+  individualni: [["/img/p/s/p4.jpg", "55% 40%"], ["/img/p/s/p2.jpg", "50% 30%"], ["/img/p/s/p7.jpg", "60% 40%"]],
+  duo:          [["/img/p/s/p6.jpg", "50% 45%"], ["/img/p/s/p5.jpg", "50% 40%"], ["/img/p/s/p1.jpg", "50% 45%"]]
 };
-const PHOTO = { idx: { grupni: 0, individualni: 1, duo: 2 }, turn: 0, timer: null };
+const PHOTO = { idx: { grupni: 0, individualni: 1, duo: 2 }, turn: 0, timer: null, scrolledAt: 0 };
+addEventListener("scroll", () => { PHOTO.scrolledAt = performance.now(); }, { passive: true });
 function photoBox(type) {
   const list = TYPE_PHOTOS[type], i = PHOTO.idx[type] % list.length;
   const img = (k, on) => { const [src, pos] = list[k]; return el("img", { src, alt: "", decoding: "async", loading: "lazy", class: on ? "on" : "", style: "object-position:" + pos }); };
   return el("span", { class: "ph", "aria-hidden": "true", "data-type": type }, img(i, true), img((i + 1) % list.length, false));
 }
 function rotatePhotos() {
-  if (document.hidden || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // slike se ne smenjuju dok se stranica lista niti dok kartice nisu na ekranu (bez trzaja pri listanju)
+  if (document.hidden || matchMedia("(prefers-reduced-motion: reduce)").matches || performance.now() - PHOTO.scrolledAt < 600) return;
   const type = ["grupni", "individualni", "duo"][PHOTO.turn++ % 3], box = document.querySelector(`#type-seg .ph[data-type="${type}"]`);
-  if (!box) return;
+  if (!box) return; const br = box.getBoundingClientRect(); if (!(br.bottom > 0 && br.top < innerHeight)) return;
   const list = TYPE_PHOTOS[type], imgs = box.querySelectorAll("img"), cur = imgs[0].classList.contains("on") ? 0 : 1, nxt = cur ^ 1;
   PHOTO.idx[type] = (PHOTO.idx[type] + 1) % list.length;
   const [src, pos] = list[PHOTO.idx[type]]; imgs[nxt].style.objectPosition = pos; imgs[nxt].src = src;
@@ -1385,8 +1405,8 @@ function renderPrices() {
   const c = S.pub.catalog, cap = S.pub.groupCapacity;
   if (!S.priceTab) S.priceTab = S.type === "grupni" ? "grupni" : "individualni";
   const seg = $("#price-seg"); seg.replaceChildren();
-  const SEG_PHOTO = { grupni: ["/img/p/p3.jpg", "50% 30%"], individualni: ["/img/p/p7.jpg", "60% 40%"] };
-  const BLOCK_PHOTO = { grupni: [["/img/p/p8.jpg", "50% 50%"], ["/img/p/p12.jpg", "50% 50%"], ["/img/p/p9.jpg", "50% 50%"]], individualni: [["/img/p/p2.jpg", "50% 35%"], ["/img/p/p10.jpg", "50% 50%"], ["/img/p/p5.jpg", "50% 40%"]] };
+  const SEG_PHOTO = { grupni: ["/img/p/s/p3.jpg", "50% 30%"], individualni: ["/img/p/s/p7.jpg", "60% 40%"] };
+  const BLOCK_PHOTO = { grupni: [["/img/p/s/p8.jpg", "50% 50%"], ["/img/p/s/p12.jpg", "50% 50%"], ["/img/p/s/p9.jpg", "50% 50%"]], individualni: [["/img/p/s/p2.jpg", "50% 35%"], ["/img/p/s/p10.jpg", "50% 50%"], ["/img/p/s/p5.jpg", "50% 40%"]] };
   const img = ([src, pos], cls) => el("img", { class: cls || "", src, alt: "", loading: "lazy", decoding: "async", style: "object-position:" + pos });
   for (const [id, label, desc] of [["grupni", "Grupni", "do " + cap + " osoba na reformerima"], ["individualni", "Individualni", "1 na 1 ili duo sa trenerom"]])
     seg.append(el("button", { type: "button", role: "tab", "aria-pressed": String(S.priceTab === id), "aria-selected": String(S.priceTab === id), onclick: () => { S.priceTab = id; renderPrices(); } },
@@ -1405,7 +1425,7 @@ function renderPrices() {
     el("span", { class: "go" }, "Zakaži"));
   $("#prices").replaceChildren(...blocks.map(([title, list, note, k]) => el("div", { class: "card price-group has-photo", "data-rise": true }, img(BLOCK_PHOTO[S.priceTab][k], "pg-photo"),
     el("div", { class: "pg-body" }, el("h3", {}, title), note ? el("p", { class: "price-note" }, note) : null, el("div", {}, list.map(row))))));
-  observeRise();
+  observeRise(!document.querySelector('section[data-view="cenovnik"]').hidden);
 }
 function renderPublic() {
   const c = S.pub.catalog;
@@ -1434,8 +1454,9 @@ function loadMap() { const m = $("#map"); if (m && S.mapSrc && m.getAttribute("s
 /* kartice se pojavljuju odozdo kada uđu u ekran */
 const riseIO = "IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches
   ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); riseIO.unobserve(e.target); } }), { rootMargin: "0px 0px -6% 0px", threshold: .06 }) : null;
-function observeRise() {
-  document.querySelectorAll("[data-rise]:not(.in)").forEach((e, i) => { if (!riseIO) { e.classList.add("in"); return; } if (!e.dataset.riseSeen) { e.dataset.riseSeen = "1"; e.style.transitionDelay = Math.min(i, 5) * 70 + "ms"; riseIO.observe(e); } });
+/* immediate: deo je već na ekranu (npr. promena kartice u cenovniku) - kartice se odmah prikažu, bez ponovnog „izranjanja” */
+function observeRise(immediate) {
+  document.querySelectorAll("[data-rise]:not(.in)").forEach((e, i) => { if (!riseIO || immediate) { e.classList.add("in"); return; } if (!e.dataset.riseSeen) { e.dataset.riseSeen = "1"; e.style.transitionDelay = Math.min(i, 5) * 70 + "ms"; riseIO.observe(e); } });
 }
 
 /* ---------- admin: raspored ---------- */
@@ -1523,6 +1544,7 @@ function renderClients() {
   }
 }
 $("#client-q").addEventListener("input", e => { S.q = e.target.value; renderClients(); });
+$("#client-search").addEventListener("submit", e => { e.preventDefault(); S.q = $("#client-q").value; renderClients(); $("#client-q").blur(); });
 // promena adrese (#klijent) sama poziva loadClient() kroz route(); direktan poziv samo ako smo već na toj kartici (inače se detalj iscrta dvaput)
 async function openClient(email) { S.client = email; if (location.hash === "#klijent") await loadClient(); else location.hash = "#klijent"; }
 async function loadClient() {
@@ -1673,15 +1695,26 @@ function route() {
   if (v === "zakazi") loadSlots();
   if (v === "kontakt") loadMap();
   observeRise();
+  if (S.jump) { S.jump = false; scrollToContent(); }
 }
 window.addEventListener("hashchange", route);
+// klik na karticu (tab), dugme u zaglavlju ili u zelenoj traci: stranica se pomera na početak izabranog dela, odmah ispod zaglavlja i kartica;
+// logo vraća na sam vrh. Ako je neki drugi kod već obradio klik (preventDefault), ovde se ništa ne radi.
+document.addEventListener("click", e => {
+  const a = e.target.closest("a[href^='#']"); if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey) return;
+  const v = a.getAttribute("href").slice(1), cur = location.hash.slice(1) || "zakazi";
+  if (a.closest(".logo-link")) { scrollTo({ top: 0, behavior: "smooth" }); return; }
+  if (!VIEWS.includes(v) || !a.closest("nav.tabs, #adm-tabs, .hero-full, .band")) return;
+  if (v === cur) scrollToContent(); else S.jump = true;
+});
 // Kada se korisnik vrati u aplikaciju, osveži „Moje termine“ (npr. studio je u međuvremenu upisao uplatu).
 document.addEventListener("visibilitychange", () => { if (!document.hidden && S.me && location.hash.startsWith("#moji")) loadMy(); });
 
 /* ---------- lagano pomeranje zelenila pri skrolu ---------- */
 (function () {
   const items = [...document.querySelectorAll("[data-speed]")];
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { document.querySelectorAll("[data-blur]").forEach(i => { i.style.opacity = "1"; i.style.transform = "none"; }); return; }
+  // na ekranima na dodir (telefon, tablet) nema pomeranja pri listanju: tamo kasni za prstom i slike „podrhtavaju”
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || matchMedia("(hover: none)").matches) { document.querySelectorAll("[data-blur]").forEach(i => { i.style.opacity = "1"; i.style.transform = "none"; }); return; }
   const base = items.map(e => getComputedStyle(e).transform === "none" ? "" : getComputedStyle(e).transform);
   let ticking = false;
   const blurs = [...document.querySelectorAll("[data-blur]")];
