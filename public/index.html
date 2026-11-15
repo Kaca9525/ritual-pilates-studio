@@ -270,7 +270,7 @@ a .ci-v:hover { color: var(--olive); }
 .hours-t tr.today td { color: var(--olive-deep); }
 .hours-t tr.today td:first-child::after { content: "danas"; margin-left: 8px; font-size: 9px; letter-spacing: .14em; color: var(--paper); background: var(--olive); border-radius: 999px; padding: 2px 7px; vertical-align: 1px; }
 .hours-t td.closed { color: var(--ink-mute); font-style: italic; font-weight: 400; }
-.foot-list .hrs { display: flex; justify-content: space-between; gap: 10px; }
+.foot-list .hrs { display: flex; justify-content: flex-start; gap: 8px; font-variant-numeric: tabular-nums; } .foot-list .hrs b { min-width: 42px; }
 .hours b { font-weight: 500; min-width: 40px; color: var(--ink-soft); font-family: var(--sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding-top: 5px; }
 .todo { color: var(--blush-deep); }
 .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border-radius: 26px; overflow: hidden; box-shadow: 0 30px 60px -45px rgba(29,28,25,.6); }
@@ -1018,7 +1018,7 @@ function renderPublic() {
     st.email ? row("mail", "E-mail", st.email, "mailto:" + st.email) : null,
     row("ig", "Instagram", ig ? "@" + ig : todo("Uskoro"), ig ? "https://www.instagram.com/" + ig + "/" : null)].filter(Boolean));
   $("#hours tbody").replaceChildren(...hoursRows.map(r => el("tr", { class: r.i === todayI ? "today" : "" }, el("td", {}, DAYS_LONG[r.i]), r.open ? el("td", {}, r.open + " – " + r.close) : el("td", { class: "closed" }, "zatvoreno"))));
-  const hours = hoursRows.map(r => el("div", { class: "hrs" }, el("b", {}, DAYS[r.i]), r.open ? r.open + "–" + r.close : "zatvoreno"));
+  const hours = hoursRows.map(r => el("div", { class: "hrs" }, el("b", {}, DAYS[r.i] + ":"), r.open ? r.open + "–" + r.close : "zatvoreno"));
   const fc = $("#foot-contact"), fh = $("#foot-hours");
   if (fc) fc.replaceChildren(...[el("div", {}, st.address || ""), st.phone ? el("div", {}, el("a", { href: "tel:" + st.phone.replace(/\s/g, "") }, st.phone)) : null,
     st.email ? el("div", {}, el("a", { href: "mailto:" + st.email }, st.email)) : null,
