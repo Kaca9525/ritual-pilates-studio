@@ -206,6 +206,65 @@ app.get(["/", "/index.html"], (req, res) => {
   const origin = (process.env.SITE_URL || req.protocol + "://" + req.get("host")).replace(/\/$/, "");
   res.type("html").send(indexHtml.replace(/__ORIGIN__/g, origin));
 });
+/* ---- mapa studija: slika okoline iz OpenStreetMap pločica (bez Google ključa), pravi se na serveru i čuva u DATA_DIR ---- */
+const MAP_JPG = path.join(DATA_DIR, "mapa.jpg"), MAP_META = path.join(DATA_DIR, "mapa.json"), MAP_STATIC = path.join(__dirname, "public", "img", "mapa.jpg");
+const MAP_UA = "ritual-pilates-studio-site/1.0 (static map" + (process.env.SITE_URL ? "; " + process.env.SITE_URL : "") + ")";
+const parseCoords = s => { const m = String(s || "").match(/^\s*(-?\d{1,2}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)\s*$/); return m && Math.abs(+m[1]) <= 90 && Math.abs(+m[2]) <= 180 ? { lat: +m[1], lon: +m[2] } : null; };
+function mapInfo() {
+  let meta = null; try { meta = JSON.parse(fs.readFileSync(MAP_META, "utf8")); } catch {}
+  if (meta && fs.existsSync(MAP_JPG)) return { ok: true, builtAt: meta.builtAt || "", found: meta.found || "", exact: meta.exact !== false, lat: meta.lat, lon: meta.lon };
+  if (fs.existsSync(MAP_STATIC)) return { ok: true, builtAt: "", found: "", exact: true };
+  return { ok: false };
+}
+async function mapFetch(url, binary) {
+  const r = await fetch(url, { headers: { "User-Agent": MAP_UA, "Accept-Language": "sr,en" }, signal: AbortSignal.timeout(20000) });
+  if (!r.ok) throw new Error(url.split("?")[0] + " → " + r.status);
+  return binary ? Buffer.from(await r.arrayBuffer()) : r.json();
+}
+async function geocodeAddress(address) {
+  const parts = address.split(",").map(x => x.trim()).filter(Boolean), num = ((parts[0] || "").match(/\d+[a-z]?/i) || [""])[0].toLowerCase();
+  const queries = [...new Set([address, parts.length > 2 ? parts[0] + ", " + parts[parts.length - 1] : "", parts[0] ? parts[0] + ", Beograd, Srbija" : ""].filter(Boolean))];
+  for (let i = 0; i < queries.length; i++) {
+    if (i) await new Promise(r => setTimeout(r, 1100)); // Nominatim: najviše jedan upit u sekundi
+    const res = await mapFetch("https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&countrycodes=rs&q=" + encodeURIComponent(queries[i]));
+    const exact = res.find(r => num && String((r.address || {}).house_number || "").toLowerCase() === num), pick = exact || res[0];
+    if (pick) return { lat: +pick.lat, lon: +pick.lon, found: pick.display_name || "", exact: !!exact, query: queries[i] };
+  }
+  throw new Error("Adresa nije pronađena na OpenStreetMap-u: " + address);
+}
+let mapBuilding = null;
+function buildMap(by) {
+  if (mapBuilding) return mapBuilding;
+  mapBuilding = (async () => {
+    const { PNG } = require("pngjs"), jpeg = require("jpeg-js"), st = cfg().studio, address = String(st.address || "").trim();
+    const manual = parseCoords(st.coords);
+    const geo = manual ? { ...manual, found: "ručno unete koordinate", exact: true } : await geocodeAddress(address);
+    const Z = 17, T = 256, W = 1600, H = 800, n = 2 ** Z, latR = geo.lat * Math.PI / 180;
+    const cx = (geo.lon + 180) / 360 * n * T, cy = (1 - Math.log(Math.tan(latR) + 1 / Math.cos(latR)) / Math.PI) / 2 * n * T, x0 = cx - W / 2, y0 = cy - H / 2;
+    const out = Buffer.alloc(W * H * 4, 255); let tiles = 0;
+    for (let tx = Math.floor(x0 / T); tx <= Math.floor((x0 + W - 1) / T); tx++) for (let ty = Math.floor(y0 / T); ty <= Math.floor((y0 + H - 1) / T); ty++) {
+      if (tiles) await new Promise(r => setTimeout(r, 100));
+      const png = PNG.sync.read(await mapFetch(`https://tile.openstreetmap.org/${Z}/${tx}/${ty}.png`, true)), ox = Math.round(tx * T - x0), oy = Math.round(ty * T - y0);
+      for (let y = 0; y < png.height; y++) {
+        const dy = oy + y; if (dy < 0 || dy >= H) continue;
+        for (let x = 0; x < png.width; x++) { const dx = ox + x; if (dx < 0 || dx >= W) continue; const si = (y * png.width + x) * 4; png.data.copy(out, (dy * W + dx) * 4, si, si + 3); }
+      }
+      tiles++;
+    }
+    // mirnije boje (manje zasićenja, blag topli ton) da se mapa uklopi u sajt
+    for (let i = 0; i < out.length; i += 4) {
+      const r = out[i], g = out[i + 1], b = out[i + 2], l = .299 * r + .587 * g + .114 * b;
+      out[i] = Math.round((l + (r - l) * .55) * .9 + 24.3); out[i + 1] = Math.round((l + (g - l) * .55) * .9 + 23.8); out[i + 2] = Math.round((l + (b - l) * .55) * .9 + 23); out[i + 3] = 255;
+    }
+    const jpg = jpeg.encode({ data: out, width: W, height: H }, 84);
+    const meta = { ...geo, address, zoom: Z, size: [W, H], tiles, builtAt: nowIso(), by, source: "© OpenStreetMap contributors" };
+    fs.writeFileSync(MAP_JPG, jpg.data); fs.writeFileSync(MAP_META, JSON.stringify(meta));
+    console.log("Mapa studija je napravljena:", meta.found || address);
+    return meta;
+  })().finally(() => { mapBuilding = null; });
+  return mapBuilding;
+}
+app.get("/img/mapa.jpg", (req, res, next) => fs.existsSync(MAP_JPG) ? res.sendFile(MAP_JPG, { maxAge: 864e5 }) : next());
 app.use(express.static(path.join(__dirname, "public")));
 
 /* admin: adrese iz ADMIN_EMAILS (okruženje) + adrese koje admin doda u Podešavanjima („Pristup adminu”, čuvaju se u bazi) */
@@ -225,7 +284,7 @@ app.get("/api/public", (req, res) => {
   const c = cfg();
   res.json({ studio: c.studio, groupCapacity: c.groupCapacity, bookAheadDays: c.bookAheadDays, minutes: c.minutes,
     cancelHours: c.cancelHours, maxExtend: c.maxExtend, maxFreeze: c.maxFreeze,
-    week: c.week, catalog: c.catalog, individualNote: c.individualNote || "", promo: promoActive(c), payment: paymentInfo(c), me: me(req) });
+    week: c.week, catalog: c.catalog, individualNote: c.individualNote || "", promo: promoActive(c), payment: paymentInfo(c), map: mapInfo(), me: me(req) });
 });
 app.get("/api/slots", (req, res) => {
   const type = TYPES[req.query.type] ? req.query.type : "grupni";
@@ -724,8 +783,9 @@ app.post("/api/admin/packages/:id/delete", auth, admin, (req, res) => {
 /* ---- admin: podešavanja ---- */
 app.get("/api/admin/settings", auth, admin, (req, res) => res.json({ ...cfg(), envAdmins: ADMIN_EMAILS }));
 app.post("/api/admin/settings", auth, admin, (req, res) => {
-  const b = req.body || {}, c = cfg();
+  const b = req.body || {}, c = cfg(), mapKey = (c.studio.address || "") + "|" + (c.studio.coords || "");
   if (b.studio) for (const k of ["name", "address", "phone", "email", "instagram"]) if (b.studio[k] !== undefined) c.studio[k] = String(b.studio[k]).trim().slice(0, 200);
+  if (b.studio && b.studio.coords !== undefined) c.studio.coords = parseCoords(b.studio.coords) ? String(b.studio.coords).trim() : "";
   if (b.groupCapacity !== undefined) c.groupCapacity = Math.max(1, Math.min(30, parseInt(b.groupCapacity, 10) || c.groupCapacity));
   if (b.bookAheadDays !== undefined) c.bookAheadDays = Math.max(1, Math.min(120, parseInt(b.bookAheadDays, 10) || c.bookAheadDays));
   if (b.week) for (const d of ["0","1","2","3","4","5","6"]) if (b.week[d]) {
@@ -753,7 +813,12 @@ app.post("/api/admin/settings", auth, admin, (req, res) => {
   }
   saveCfg(c);
   logAction(req.user.email, null, "podešavanja", "izmenjena podešavanja studija");
+  if ((c.studio.address || "") + "|" + (c.studio.coords || "") !== mapKey) buildMap(req.user.email).catch(e => console.error("Mapa:", e.message));
   res.json(c);
+});
+app.post("/api/admin/map", auth, admin, async (req, res) => {
+  try { await buildMap(req.user.email); logAction(req.user.email, null, "podešavanja", "osvežena mapa na Kontaktu"); res.json(mapInfo()); }
+  catch (e) { fail(res, 502, "Mapa nije napravljena: " + e.message); }
 });
 app.get("/api/admin/backup", auth, admin, (req, res) => {
   res.setHeader("Content-Disposition", `attachment; filename="ritual-backup-${today()}.json"`);
@@ -777,5 +842,8 @@ async function runReminders() {
 setInterval(() => runReminders().catch(e => console.error(e)), 10 * 60 * 1000).unref();
 
 app.get("/zdravlje", (req, res) => res.json({ ok: true }));
-if (require.main === module) app.listen(PORT, () => console.log("Ritual rezervacije - http://localhost:" + PORT));
+if (require.main === module) {
+  app.listen(PORT, () => console.log("Ritual rezervacije - http://localhost:" + PORT));
+  if (process.env.NODE_ENV === "production" && !fs.existsSync(MAP_JPG)) buildMap("server").catch(e => console.error("Mapa:", e.message));
+}
 module.exports = { app, db };

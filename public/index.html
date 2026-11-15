@@ -376,20 +376,35 @@ a .ci-v:hover { color: var(--olive); }
 .hours b { font-weight: 500; min-width: 40px; color: var(--ink-soft); font-family: var(--sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding-top: 5px; }
 .todo { color: var(--blush-deep); }
 .hours-t .hb { display: block; }
-/* kontakt: Google mapa sa navigacijom i „Detalji” (adresa, telefon, Instagram u tekstu) */
+/* kontakt: slika mape (OpenStreetMap, pravi je server) sa čiodom na studiju, Navigacija i telefon kao u Google mapama */
 .map-card { border-radius: 26px; overflow: hidden; background: var(--paper); border: 1px solid var(--line-soft); box-shadow: 0 30px 60px -45px rgba(29,28,25,.5); }
 .map-frame { position: relative; height: 320px; background: var(--bg-deep); }
-.map-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+.map-frame > a.map-open { position: absolute; inset: 0; display: block; overflow: hidden; }
+.map-frame img { width: 100%; height: 100%; object-fit: none; object-position: center; display: block; }
+.map-frame img[hidden] { display: none; }
+.map-pin { position: absolute; left: 50%; top: 50%; width: 36px; height: 48px; transform: translate(-50%, -100%); color: var(--olive); filter: drop-shadow(0 10px 10px rgba(29,28,25,.28)); pointer-events: none; }
+.map-pin svg { width: 100%; height: 100%; display: block; }
+.map-pin::after { content: ""; position: absolute; left: 50%; bottom: -5px; width: 12px; height: 12px; border-radius: 50%; background: rgba(74,88,62,.35); transform: translateX(-50%); animation: map-pulse 2.4s ease-out infinite; }
+@keyframes map-pulse { 0% { transform: translateX(-50%) scale(.6); opacity: .9; } 100% { transform: translateX(-50%) scale(3.2); opacity: 0; } }
+.map-credit { position: absolute; right: 8px; bottom: 6px; font-size: 10px; letter-spacing: .02em; color: var(--ink-soft); background: rgba(255,255,255,.72); padding: 2px 7px; border-radius: 999px; text-decoration: none; }
+.map-empty { position: absolute; inset: 0; display: grid; place-items: center; font-size: 13px; color: var(--ink-soft); background: var(--bg-deep); }
+.map-tel { white-space: nowrap; }
+.map-tel svg { width: 16px; height: 16px; vertical-align: -3px; margin-right: 6px; }
 .map-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; }
 .map-name { display: grid; gap: 2px; min-width: 0; }
 .map-name b { font-family: var(--display); font-size: 22px; font-weight: 500; line-height: 1.1; }
 .map-name span { font-size: 13px; color: var(--ink-soft); }
-.contact-more { border-radius: 0; border: 0; border-top: 1px solid var(--line-soft); box-shadow: none; }
 /* kartice se pojavljuju odozdo dok se skroluje */
 [data-rise] { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
 [data-rise].in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { [data-rise] { opacity: 1; transform: none; transition: none; } }
-@media (max-width: 560px) { .map-frame { height: 240px; } .map-name b { font-size: 19px; } .map-foot { padding: 14px 16px; } }
+@media (max-width: 560px) {
+  .map-frame { height: 240px; } .map-name b { font-size: 19px; } .map-foot { padding: 14px 16px; gap: 10px; }
+  /* na telefonu mapa je malo umanjena da pokaže širu okolinu */
+  .map-frame img { width: 118%; height: 118%; margin: -9% 0 0 -9%; transform: scale(.85); }
+  .map-foot .actions { width: 100%; } .map-foot .actions .btn { flex: 1; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) { .map-pin::after { animation: none; } }
 .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border-radius: 26px; overflow: hidden; box-shadow: 0 30px 60px -45px rgba(29,28,25,.6); }
 .gallery figure { margin: 0; position: relative; overflow: hidden; aspect-ratio: 4 / 3; background: var(--bg-deep); }
 .gallery img { position: absolute; inset: -10% 0; width: 100%; height: 120%; object-fit: cover; object-position: 50% 30%; display: block; }
@@ -646,15 +661,21 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
       <p class="lead">Reformer pilates, grupni, individualni i duo treninzi.</p>
     </div>
     <div class="map-card" data-rise>
-      <div class="map-frame"><iframe id="map" title="Mapa: Ritual Pilates Studio" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+      <div class="map-frame">
+        <a class="map-open" id="map-link" href="#" target="_blank" rel="noopener" aria-label="Otvori lokaciju studija u Google mapama">
+          <img id="map-img" alt="Mapa okoline studija" hidden>
+          <span class="map-empty" id="map-empty">Mapa se priprema…</span>
+          <span class="map-pin" aria-hidden="true"><svg viewBox="0 0 36 48"><path d="M18 1C8.6 1 1 8.6 1 18c0 12 17 29 17 29s17-17 17-29C35 8.6 27.4 1 18 1z" fill="currentColor"/><circle cx="18" cy="18" r="6.5" fill="#f6f1e8"/></svg></span>
+        </a>
+        <a class="map-credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a>
+      </div>
       <div class="map-foot">
         <div class="map-name"><b id="map-title"></b><span id="map-addr"></span></div>
         <div class="actions">
           <a class="btn" id="map-nav" href="#" target="_blank" rel="noopener">Navigacija</a>
-          <button type="button" class="btn ghost" id="map-more" aria-expanded="false" aria-controls="contact-more">Detalji</button>
+          <a class="btn ghost map-tel" id="map-tel" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg><span></span></a>
         </div>
       </div>
-      <div class="card contact-more" id="contact-more" hidden><h3 class="label">Studio</h3><div class="ci" id="contact"></div></div>
     </div>
     <div class="card" data-rise><h3 class="label">Radno vreme</h3><table class="hours-t" id="hours"><tbody></tbody></table></div>
     <div class="gallery" aria-label="Fotografije studija" data-rise>
@@ -1379,22 +1400,16 @@ function renderPublic() {
   renderPrices();
   const st = S.pub.studio, todo = t => el("span", { class: "todo" }, t);
   const hoursRows = [1, 2, 3, 4, 5, 6, 0].map(i => ({ i, blocks: hourBlocks(i) }));
-  // mapa i navigacija (Google mape), „Detalji” otvara adresu, telefon i Instagram u tekstu
+  // mapa (slika sa servera, OpenStreetMap), klik otvara Google mape; Navigacija i telefon kao u Google kartici mesta
   const q = encodeURIComponent((st.name || "Ritual Pilates Studio") + ", " + (st.address || "Beograd"));
-  S.mapSrc = "https://www.google.com/maps?q=" + q + "&z=16&hl=sr&output=embed";
   $("#map-title").textContent = st.name || "Ritual Pilates Studio"; $("#map-addr").textContent = st.address || "";
   $("#map-nav").href = "https://www.google.com/maps/dir/?api=1&destination=" + q;
-  if (!document.querySelector('section[data-view="kontakt"]').hidden) loadMap();
+  $("#map-link").href = "https://www.google.com/maps/search/?api=1&query=" + q;
+  const tel = $("#map-tel"); tel.hidden = !st.phone; tel.href = "tel:" + (st.phone || "").replace(/[^\d+]/g, ""); tel.lastElementChild.textContent = st.phone || "";
+  const mp = S.pub.map || {}, mi = $("#map-img"), src = "/img/mapa.jpg" + (mp.builtAt ? "?v=" + encodeURIComponent(mp.builtAt) : "");
+  if (mp.ok) { if (mi.getAttribute("src") !== src) mi.src = src; mi.hidden = false; $("#map-empty").hidden = true; mi.onerror = () => { mi.hidden = true; $("#map-empty").hidden = false; }; }
+  else { mi.hidden = true; $("#map-empty").hidden = false; }
   const todayI = new Date().getDay();
-  const ig = st.instagram ? st.instagram.replace(/^@/, "") : "";
-  const svg = d => { const e = document.createElementNS("http://www.w3.org/2000/svg", "svg"); e.setAttribute("viewBox", "0 0 24 24"); e.setAttribute("fill", "none"); e.setAttribute("stroke", "currentColor"); e.setAttribute("stroke-width", "1.6"); e.setAttribute("stroke-linecap", "round"); e.setAttribute("stroke-linejoin", "round"); e.setAttribute("aria-hidden", "true"); e.innerHTML = d; return e; };
-  const ICO = { pin: '<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/>', tel: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>', mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>', ig: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>' };
-  const row = (ico, k, v, href) => { const body = el("div", {}, el("span", { class: "ci-k" }, k), el("span", { class: "ci-v" }, v)); return el("div", { class: "ci-row" }, el("span", { class: "ci-ico" }, svg(ICO[ico])), href ? el("a", { href, target: href.startsWith("http") ? "_blank" : null, rel: href.startsWith("http") ? "noopener" : null }, body) : body); };
-  $("#contact").replaceChildren(...[
-    row("pin", "Adresa", st.address || todo("Uskoro"), st.address ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(st.address) : null),
-    row("tel", "Telefon", st.phone || todo("Uskoro"), st.phone ? "tel:" + st.phone.replace(/\s/g, "") : null),
-    st.email ? row("mail", "E-mail", st.email, "mailto:" + st.email) : null,
-    row("ig", "Instagram", ig ? "@" + ig : todo("Uskoro"), ig ? "https://www.instagram.com/" + ig + "/" : null)].filter(Boolean));
   $("#hours tbody").replaceChildren(...hoursRows.map(r => el("tr", { class: r.i === todayI ? "today" : "" }, el("td", {}, DAYS_LONG[r.i]),
     r.blocks.length ? el("td", {}, r.blocks.map(b => el("span", { class: "hb" }, b.open + " – " + b.close))) : el("td", { class: "closed" }, "zatvoreno"))));
   const hours = hoursRows.map(r => el("div", { class: "hrs" }, el("b", {}, DAYS[r.i] + ":"), r.blocks.length ? r.blocks.map(b => b.open + "–" + b.close).join(" · ") : "zatvoreno"));
@@ -1405,11 +1420,6 @@ function renderPublic() {
   if (fh) fh.replaceChildren(...hours.map(h => h.cloneNode(true)));
 }
 
-function loadMap() { const m = $("#map"); if (m && S.mapSrc && m.getAttribute("src") !== S.mapSrc) m.src = S.mapSrc; }
-$("#map-more").addEventListener("click", () => {
-  const box = $("#contact-more"), btn = $("#map-more"); box.hidden = !box.hidden;
-  btn.setAttribute("aria-expanded", String(!box.hidden)); btn.textContent = box.hidden ? "Detalji" : "Sakrij detalje";
-});
 /* kartice se pojavljuju odozdo kada uđu u ekran */
 const riseIO = "IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches
   ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); riseIO.unobserve(e.target); } }), { rootMargin: "0px 0px -6% 0px", threshold: .06 }) : null;
@@ -1582,7 +1592,15 @@ async function loadSettings() {
   const [lAddr, addr] = inp("Adresa", c.studio.address), [lTel, tel] = inp("Telefon", c.studio.phone), [lMail, mail] = inp("E-mail studija", c.studio.email, { type: "email" }),
     [lIg, ig] = inp("Instagram", c.studio.instagram), [lCap, cap] = inp("Mesta na grupnom času", c.groupCapacity, { type: "number", min: 1, max: 30 }),
     [lAhead, ahead] = inp("Zakazivanje unapred (dana)", c.bookAheadDays, { type: "number", min: 1, max: 60 }),
-    [lNote, note] = inp("Poruka za individualne/duo (po dogovoru)", c.individualNote || "");
+    [lNote, note] = inp("Poruka za individualne/duo (po dogovoru)", c.individualNote || ""),
+    [lCo, coords] = inp("Koordinate za mapu (opciono)", c.studio.coords || "", { placeholder: "npr. 44.8265, 20.4620 - prazno: automatski po adresi" });
+  const mapSt = (S.pub && S.pub.map) || {};
+  const mapBtn = el("button", { type: "button", class: "btn ghost" }, "Osveži mapu");
+  mapBtn.onclick = async () => {
+    mapBtn.disabled = true; mapBtn.textContent = "Pravim mapu…";
+    try { const m = await api("/api/admin/map", {}); toast("Mapa je osvežena" + (m.found ? ": " + m.found : ".")); S.pub = await api("/api/public"); renderPublic(); loadSettings(); }
+    catch (e) { toast(e.message); mapBtn.disabled = false; mapBtn.textContent = "Osveži mapu"; }
+  };
   const pay = c.payment || {};
   const [lPR, pRec] = inp("Primalac", pay.recipient || ""), [lPA, pAcc] = inp("Tekući račun", pay.account || "", { placeholder: "npr. 160-0000000000000-00" }), [lPP, pPur] = inp("Svrha uplate", pay.purpose || "");
   const pr = c.promo || {};
@@ -1602,6 +1620,10 @@ async function loadSettings() {
   });
   const prices = c.catalog.map(x => { const i = el("input", { class: "input small", type: "number", min: 0, value: x.price, "aria-label": x.name }); return { id: x.id, i, row: el("div", { class: "price" }, el("span", {}, x.name), el("span", { class: "dur" }, x.total > 1 ? x.total + " termina" : "55 min"), i) }; });
   f.append(el("h3", {}, "Studio"), el("div", { class: "fields" }, lAddr, lTel, lMail, lIg, lCap, lAhead, lNote),
+    el("h3", {}, "Mapa na Kontaktu"), el("p", { class: "note" }, mapSt.ok
+      ? "Mapa je napravljena po adresi studija" + (mapSt.found ? " (" + mapSt.found + ")" : "") + ". Kad promenite adresu, mapa se sama osveži. Ako čioda nije na pravom mestu, upišite koordinate iz Google mapa (desni klik na mesto → prva stavka)."
+      : "Mapa još nije napravljena. Sačuvajte podešavanja ili kliknite „Osveži mapu”."),
+    el("div", { class: "fields" }, lCo), el("div", { class: "actions" }, mapBtn),
     el("h3", {}, "Podaci za uplatu na račun"), el("p", { class: "note" }, "Klijent pri rezervaciji bira uplatu na račun ili plaćanje u studiju; ovi podaci idu u mejl i u aplikaciju. Dok je račun prazan, nudi se samo plaćanje u studiju."),
     el("div", { class: "fields" }, lPR, lPA, lPP),
     el("h3", {}, "Akcija (pop-up na otvaranju)"), el("label", { class: "check" }, pOn, " Akcija je uključena"),
@@ -1616,7 +1638,7 @@ async function loadSettings() {
   f.onsubmit = async e => {
     e.preventDefault();
     const wk = {}; for (const d in week) wk[d] = { g: times(week[d].g.value), p: times(week[d].p.value) };
-    const r = await act(() => api("/api/admin/settings", { studio: { address: addr.value, phone: tel.value, email: mail.value, instagram: ig.value.replace(/^@/, "") },
+    const r = await act(() => api("/api/admin/settings", { studio: { address: addr.value, phone: tel.value, email: mail.value, instagram: ig.value.replace(/^@/, ""), coords: coords.value },
       groupCapacity: cap.value, bookAheadDays: ahead.value, week: wk, catalog: prices.map(p => ({ id: p.id, price: p.i.value })), individualNote: note.value, adminEmails: admins.value.split(/[\s,;]+/).filter(Boolean),
       payment: { recipient: pRec.value, account: pAcc.value, purpose: pPur.value },
       promo: { active: pOn.checked, title: pTitle.value, text: pText.value, button: pBtn.value, from: pFrom.value, to: pTo.value, image: pImg.value } }), "Podešavanja su sačuvana.");
@@ -1650,7 +1672,6 @@ function route() {
   if (v === "klijent") loadClient();
   if (v === "podesavanja") loadSettings();
   if (v === "zakazi") loadSlots();
-  if (v === "kontakt") loadMap();
   observeRise();
 }
 window.addEventListener("hashchange", route);
