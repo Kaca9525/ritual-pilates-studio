@@ -58,7 +58,8 @@ Na Render **Free** planu disk nije trajan — nalozi i rezervacije bi nestajali 
 
 ## Prvi koraci posle postavljanja
 
-1. **Registracija** sa adresom iz `ADMIN_EMAILS` → nalog je automatski admin
+1. **Registracija** sa adresom iz `ADMIN_EMAILS` → nalog je automatski admin; u meniju se pojavi kartica **Admin** (Raspored, Klijenti, Podešavanja)
+   - još adresa sa admin pristupom: Admin → Podešavanja → „Pristup adminu” (osoba se registruje tom adresom)
 2. Admin → **Podešavanja**: raspored, broj mesta na grupnom času, cene, kontakt, akcija (pop-up pri otvaranju)
 3. Admin → **Klijenti**: posle svake uplate evidentirajte paket (datum uplate pokreće 30 dana važenja)
 4. Admin → **Raspored**: dnevni pregled, „Kasno otkazao“ (računa se kao iskorišćen), premeštanje, ručni upis

@@ -178,7 +178,9 @@ app.get(["/", "/index.html"], (req, res) => {
 });
 app.use(express.static(path.join(__dirname, "public")));
 
-const userOut = u => u && ({ email: u.email, ime: u.ime, prezime: u.prezime, telefon: u.telefon, admin: ADMIN_EMAILS.includes(u.email) });
+/* admin: adrese iz ADMIN_EMAILS (okruženje) + adrese koje admin doda u Podešavanjima („Pristup adminu”, čuvaju se u bazi) */
+const isAdminEmail = e => { e = String(e || "").toLowerCase(); return ADMIN_EMAILS.includes(e) || (cfg().adminEmails || []).includes(e); };
+const userOut = u => u && ({ email: u.email, ime: u.ime, prezime: u.prezime, telefon: u.telefon, admin: isAdminEmail(u.email) });
 function me(req) {
   const email = verify(req.cookies[COOKIE]);
   return email ? userOut(db.prepare("SELECT * FROM users WHERE email=?").get(email)) : null;
@@ -514,7 +516,7 @@ app.post("/api/admin/bookings/:id", auth, admin, (req, res) => {
 app.get("/api/admin/clients", auth, admin, (req, res) => {
   const c = cfg();
   const users = db.prepare("SELECT email,ime,prezime,telefon,created,note FROM users ORDER BY ime, prezime").all();
-  res.json(users.map(u => ({ ...u, admin: ADMIN_EMAILS.includes(u.email),
+  res.json(users.map(u => ({ ...u, admin: isAdminEmail(u.email),
     packages: db.prepare("SELECT * FROM packages WHERE userEmail=? ORDER BY paidAt DESC").all(u.email).map(p => pkgOut(p, c)),
     upcoming: db.prepare("SELECT COUNT(*) c FROM bookings WHERE userEmail=? AND status='zakazano' AND date>=?").get(u.email, today()).c,
     visits: db.prepare("SELECT COUNT(*) c FROM bookings WHERE userEmail=? AND status IN ('zakazano','kasno') AND date<=?").get(u.email, today()).c })));
@@ -590,7 +592,7 @@ app.post("/api/admin/packages/:id/delete", auth, admin, (req, res) => {
 });
 
 /* ---- admin: podešavanja ---- */
-app.get("/api/admin/settings", auth, admin, (req, res) => res.json(cfg()));
+app.get("/api/admin/settings", auth, admin, (req, res) => res.json({ ...cfg(), envAdmins: ADMIN_EMAILS }));
 app.post("/api/admin/settings", auth, admin, (req, res) => {
   const b = req.body || {}, c = cfg();
   if (b.studio) for (const k of ["name", "address", "phone", "email", "instagram"]) if (b.studio[k] !== undefined) c.studio[k] = String(b.studio[k]).trim().slice(0, 200);
@@ -609,6 +611,7 @@ app.post("/api/admin/settings", auth, admin, (req, res) => {
     if (b.promo.image !== undefined && /^\/img\/[\w./-]+$/.test(String(b.promo.image))) p.image = String(b.promo.image);
     c.promo = p;
   }
+  if (Array.isArray(b.adminEmails)) c.adminEmails = [...new Set(b.adminEmails.map(x => String(x).trim().toLowerCase()).filter(x => validEmail(x) && !ADMIN_EMAILS.includes(x)))].slice(0, 20);
   if (Array.isArray(b.catalog)) for (const it of b.catalog) {
     const x = c.catalog.find(y => y.id === it.id);
     if (x && it.price !== undefined) x.price = Math.max(0, parseInt(it.price, 10) || 0);

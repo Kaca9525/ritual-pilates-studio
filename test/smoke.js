@@ -85,6 +85,10 @@ const dstr = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.ge
   // podešavanja
   r = await call("a", "/api/admin/settings", { studio: { phone: "011" }, groupCapacity: 6, catalog: [{ id: "g1", price: 2200 }] });
   assert.equal(r.data.groupCapacity, 6); assert.equal(r.data.catalog.find(x => x.id === "g1").price, 2200);
+  // dodatni admin nalozi iz podešavanja
+  r = await call("a", "/api/admin/settings", { adminEmails: ["K1@test.rs ", "nije-mejl", "admin@test.rs"] }); assert.deepEqual(r.data.adminEmails, ["k1@test.rs"]);
+  assert.equal((await call("x1", "/api/me")).data.me.admin, true); assert.equal((await call("x1", "/api/admin/clients")).status, 200);
+  r = await call("a", "/api/admin/settings", { adminEmails: [] }); assert.equal((await call("x1", "/api/me")).data.me.admin, false); assert.equal((await call("x1", "/api/admin/clients")).status, 403);
   // fiksni termini: nova klijentkinja sa paketom od 8, pon/sre/pet
   await call("f", "/api/register", { ime: "Fiksna", prezime: "T", email: "fiksna@test.rs", telefon: "2", pw: "lozinka1", consent });
   r = await call("a", "/api/admin/packages", { email: "fiksna@test.rs", catalogId: "g8", paidAt: dstr(new Date()) }); assert.equal(r.status, 200);

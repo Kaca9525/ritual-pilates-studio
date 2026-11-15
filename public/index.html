@@ -117,6 +117,12 @@ nav.tabs .wrap::-webkit-scrollbar { display: none; }
 nav.tabs a { flex: none; text-decoration: none; color: var(--ink-soft); font-family: var(--display); font-size: 19px; font-weight: 500; padding: 7px 14px; border-radius: 999px; transition: color .25s, background .25s; }
 nav.tabs a:hover { color: var(--ink); }
 nav.tabs a[aria-current="page"] { color: var(--paper); background: var(--olive-deep); }
+/* admin panel: jedna kartica „Admin” u meniju, unutra pod-kartice */
+.adm-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 24px; padding: 8px 10px; background: var(--paper); border: 1px solid var(--line-soft); border-radius: 999px; }
+.adm-tabs .eyebrow { margin: 0 10px 0 12px; }
+.adm-tabs a { text-decoration: none; color: var(--ink-soft); font-family: var(--display); font-size: 18px; font-weight: 500; padding: 6px 14px; border-radius: 999px; }
+.adm-tabs a[aria-current="page"] { color: var(--paper); background: var(--olive-deep); }
+@media (max-width: 560px) { .adm-tabs { border-radius: 22px; } .adm-tabs .eyebrow { width: 100%; margin: 4px 0 2px 12px; } }
 :focus-visible { outline: 2px solid var(--olive); outline-offset: 3px; border-radius: 4px; }
 
 main { padding-block: 38px 70px; }
@@ -300,6 +306,20 @@ button.price .go { font-size: 10px; letter-spacing: .2em; text-transform: upperc
 button.price:hover .go { background: var(--olive); }
 @media (max-width: 560px) { button.price { grid-template-columns: 1fr auto; } button.price .dur { display: none; } button.price .go { grid-column: 2; justify-self: end; } button.price .amt { grid-column: 1; text-align: left; } }
 .price-note { font-size: 12.5px; color: var(--ink-soft); margin: 0; }
+/* cenovnik: kartice sa fotografijama studija */
+.seg.seg-photo button { padding: 0; overflow: hidden; display: grid; grid-template-columns: 108px 1fr; align-items: stretch; gap: 0; border-radius: 22px; }
+.seg.seg-photo .ph { position: relative; min-height: 96px; background: var(--bg-deep); }
+.seg.seg-photo .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.seg.seg-photo .tx { padding: 16px 18px; display: grid; gap: 4px; align-content: center; }
+.price-group.has-photo { grid-template-columns: 150px minmax(0, 1fr); column-gap: 24px; align-items: stretch; }
+.price-group .pg-photo { width: 100%; height: 100%; min-height: 190px; object-fit: cover; border-radius: 18px; display: block; background: var(--bg-deep); }
+.price-group.has-photo .price .dur { display: none; }
+.price-group .pg-body { display: grid; gap: 8px; align-content: start; min-width: 0; }
+@media (max-width: 760px) {
+  .price-group.has-photo { grid-template-columns: 1fr; row-gap: 14px; }
+  .price-group .pg-photo { aspect-ratio: 16 / 7; height: auto; min-height: 0; }
+  .seg.seg-photo button { grid-template-columns: 84px 1fr; }
+}
 .price .dur { font-size: 10px; letter-spacing: .14em; color: var(--ink-mute); text-transform: uppercase; }
 .price .amt { font-family: var(--display); font-size: 25px; font-weight: 500; text-align: right; }
 .price .amt small { font-family: var(--sans); font-size: 9px; letter-spacing: .14em; color: var(--ink-soft); margin-left: 4px; text-transform: uppercase; }
@@ -443,9 +463,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
     <a href="#cenovnik" data-tab="cenovnik">Cenovnik</a>
     <a href="#pravilnik" data-tab="pravilnik">Pravilnik</a>
     <a href="#kontakt" data-tab="kontakt">Kontakt</a>
-    <a href="#raspored" data-tab="raspored" class="admin-tab" hidden>Raspored</a>
-    <a href="#klijenti" data-tab="klijenti" class="admin-tab" hidden>Klijenti</a>
-    <a href="#podesavanja" data-tab="podesavanja" class="admin-tab" hidden>Podešavanja</a>
+    <a href="#raspored" data-tab="admin" class="admin-tab" hidden>Admin</a>
   </div>
 </nav>
 
@@ -545,7 +563,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
       <h2>Cenovnik</h2>
       <p class="lead">Svi treninzi traju 55 minuta. Paketi važe 30 dana od datuma uplaćene članarine. Izaberite vrstu treninga, pa kliknite na cenu da zakažete.</p>
     </div>
-    <div class="seg seg-2" id="price-seg" role="tablist" aria-label="Vrsta treninga"></div>
+    <div class="seg seg-2 seg-photo" id="price-seg" role="tablist" aria-label="Vrsta treninga"></div>
     <div id="prices" class="stack"></div>
   </section>
 
@@ -600,6 +618,12 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
   </section>
 
   <!-- ADMIN: RASPORED -->
+  <nav class="adm-tabs" id="adm-tabs" hidden aria-label="Admin panel">
+    <span class="eyebrow">Admin panel</span>
+    <a href="#raspored" data-adm="raspored">Raspored</a>
+    <a href="#klijenti" data-adm="klijenti">Klijenti</a>
+    <a href="#podesavanja" data-adm="podesavanja">Podešavanja</a>
+  </nav>
   <section data-view="raspored" hidden>
     <div>
       <h2>Raspored</h2>
@@ -738,7 +762,7 @@ const S = { pub: null, me: null, type: "grupni", slots: null, day: null, selecte
 /* ---------- nalog ---------- */
 function renderAccount() {
   const a = $("#account"); a.replaceChildren();
-  if (S.me) a.append(el("span", {}, S.me.ime), S.me.admin ? el("a", { href: "#raspored", title: "Admin panel: raspored, klijenti, podešavanja" }, "Admin") : null, el("button", { class: "link", type: "button", onclick: logout }, "Odjava"));
+  if (S.me) a.append(...[el("span", {}, S.me.ime), S.me.admin ? el("a", { href: "#raspored", title: "Admin panel: raspored, klijenti, podešavanja" }, "Admin") : null, el("button", { class: "link", type: "button", onclick: logout }, "Odjava")].filter(Boolean));
   else a.append(el("a", { href: "#prijava", "data-auth": "login" }, "Prijava"), " · ", el("a", { href: "#prijava", "data-auth": "register" }, "Registracija"));
   document.querySelectorAll(".admin-tab").forEach(t => t.hidden = !(S.me && S.me.admin));
 }
@@ -1106,21 +1130,26 @@ function renderPrices() {
   const c = S.pub.catalog, cap = S.pub.groupCapacity;
   if (!S.priceTab) S.priceTab = S.type === "grupni" ? "grupni" : "individualni";
   const seg = $("#price-seg"); seg.replaceChildren();
+  const SEG_PHOTO = { grupni: ["/img/p/p3.jpg", "50% 30%"], individualni: ["/img/p/p7.jpg", "60% 40%"] };
+  const BLOCK_PHOTO = { grupni: [["/img/p/p8.jpg", "50% 50%"], ["/img/p/p12.jpg", "50% 50%"], ["/img/p/p9.jpg", "50% 50%"]], individualni: [["/img/p/p2.jpg", "50% 35%"], ["/img/p/p10.jpg", "50% 50%"], ["/img/p/p5.jpg", "50% 40%"]] };
+  const img = ([src, pos], cls) => el("img", { class: cls || "", src, alt: "", loading: "lazy", decoding: "async", style: "object-position:" + pos });
   for (const [id, label, desc] of [["grupni", "Grupni", "do " + cap + " osoba na reformerima"], ["individualni", "Individualni", "1 na 1 ili duo sa trenerom"]])
-    seg.append(el("button", { type: "button", role: "tab", "aria-pressed": String(S.priceTab === id), "aria-selected": String(S.priceTab === id), onclick: () => { S.priceTab = id; renderPrices(); } }, el("b", {}, label), el("span", {}, desc)));
+    seg.append(el("button", { type: "button", role: "tab", "aria-pressed": String(S.priceTab === id), "aria-selected": String(S.priceTab === id), onclick: () => { S.priceTab = id; renderPrices(); } },
+      el("span", { class: "ph", "aria-hidden": "true" }, img(SEG_PHOTO[id])), el("span", { class: "tx" }, el("b", {}, label), el("span", {}, desc))));
   const grp = S.priceTab === "grupni";
   const items = c.filter(x => grp ? x.cat === "grupni" : x.cat !== "grupni");
-  const blocks = [["Probni trening", items.filter(x => x.trial), S.pub.promo ? (S.pub.promo.text || "") + " Akcija važi do " + fmtShort(S.pub.promo.to) + "." : "Prvi dolazak, jednokratno."],
-    [grp ? "Pojedinačni grupni čas" : "Pojedinačni čas", items.filter(x => !x.trial && x.total === 1), null],
-    ["Mesečne članarine", items.filter(x => !x.trial && x.total > 1), "Paketi važe 30 dana od uplate. Uplata u studiju, termini se zakazuju ovde."]].filter(([, l]) => l.length);
+  const blocks = [["Probni trening", items.filter(x => x.trial), S.pub.promo ? (S.pub.promo.text || "") + " Akcija važi do " + fmtShort(S.pub.promo.to) + "." : "Prvi dolazak, jednokratno.", 0],
+    [grp ? "Pojedinačni grupni čas" : "Pojedinačni čas", items.filter(x => !x.trial && x.total === 1), null, 1],
+    ["Mesečne članarine", items.filter(x => !x.trial && x.total > 1), "Paketi važe 30 dana od uplate. Uplata u studiju, termini se zakazuju ovde.", 2]].filter(([, l]) => l.length);
   const go = x => { S.type = TYPES[x.cat] ? x.cat : (grp ? "grupni" : "individualni"); S.selected = null; S.day = null; $("#f-trial").checked = !!x.trial;
     location.hash = "#zakazi"; scrollToContent(); };
   const row = x => el("button", { type: "button", class: "price", onclick: () => go(x), "aria-label": x.name + ", " + fmtRsd(x.price) + " dinara, zakaži" },
-    el("span", {}, el("span", { class: "nm" }, x.name), x.total > 1 ? el("span", { class: "per" }, x.total + " × 55 min · " + fmtRsd(Math.round(x.price / x.total)) + " rsd po terminu") : null),
+    el("span", {}, el("span", { class: "nm" }, x.name)),
     el("span", { class: "dur" }, x.total > 1 ? x.total + " termina" : "55 min"),
     x.trial && S.pub.promo ? el("span", { class: "amt" }, "besplatno", el("small", {}, "akcija")) : el("span", { class: "amt" }, fmtRsd(x.price), el("small", {}, "rsd")),
     el("span", { class: "go" }, "Zakaži"));
-  $("#prices").replaceChildren(...blocks.map(([title, list, note]) => el("div", { class: "card price-group" }, el("h3", {}, title), note ? el("p", { class: "price-note" }, note) : null, el("div", {}, list.map(row)))));
+  $("#prices").replaceChildren(...blocks.map(([title, list, note, k]) => el("div", { class: "card price-group has-photo" }, img(BLOCK_PHOTO[S.priceTab][k], "pg-photo"),
+    el("div", { class: "pg-body" }, el("h3", {}, title), note ? el("p", { class: "price-note" }, note) : null, el("div", {}, list.map(row))))));
 }
 function renderPublic() {
   const c = S.pub.catalog;
@@ -1317,6 +1346,7 @@ async function loadSettings() {
   const pImg = el("select", { class: "input" }, Array.from({ length: 12 }, (_, i) => el("option", { value: "/img/p/p" + (i + 1) + ".jpg", selected: pr.image === "/img/p/p" + (i + 1) + ".jpg" }, "Fotografija " + (i + 1))));
   const pPrev = el("img", { src: pr.image || "/img/p/p8.jpg", alt: "", style: "width:120px;aspect-ratio:4/5;object-fit:cover;border-radius:12px" });
   pImg.onchange = () => { pPrev.src = pImg.value; };
+  const admins = el("textarea", { class: "input", rows: 2, placeholder: "npr. trener@gmail.com" }, (c.adminEmails || []).join("\n"));
   const week = {};
   const weekRows = [1, 2, 3, 4, 5, 6, 0].map(d => {
     const w = c.week[d] || { g: [], p: [] };
@@ -1324,10 +1354,12 @@ async function loadSettings() {
     week[d] = { g, p };
     return el("div", { class: "week-row" }, el("b", {}, DAYS[d]), g, p);
   });
-  const prices = c.catalog.map(x => { const i = el("input", { class: "input small", type: "number", min: 0, value: x.price, "aria-label": x.name }); return { id: x.id, i, row: el("div", { class: "price" }, el("span", {}, x.name), el("span", { class: "dur" }, x.total + " × 55 min"), i) }; });
+  const prices = c.catalog.map(x => { const i = el("input", { class: "input small", type: "number", min: 0, value: x.price, "aria-label": x.name }); return { id: x.id, i, row: el("div", { class: "price" }, el("span", {}, x.name), el("span", { class: "dur" }, x.total > 1 ? x.total + " termina" : "55 min"), i) }; });
   f.append(el("h3", {}, "Studio"), el("div", { class: "fields" }, lAddr, lTel, lMail, lIg, lCap, lAhead, lNote),
     el("h3", {}, "Akcija (pop-up na otvaranju)"), el("label", { class: "check" }, pOn, " Akcija je uključena"),
     el("div", { class: "fields" }, lPT, lPB, lPF, lPTo), lPX, el("div", { style: "display:flex;gap:14px;align-items:center" }, el("label", { class: "f", style: "flex:1" }, "Fotografija", pImg), pPrev),
+    el("h3", {}, "Pristup adminu"), el("p", { class: "note" }, "Stalni admin: " + ((c.envAdmins || []).join(", ") || "-") + " (podešeno na serveru). Ovde dodajte adrese koje takođe treba da vide admin panel; osoba se registruje tom adresom i odmah dobija pristup."),
+    el("label", { class: "f" }, "Dodatni admin nalozi (po jedna adresa u redu)", admins),
     el("h3", {}, "Nedeljni raspored"), el("p", { class: "note" }, "Vremena početka odvojena zarezom. Prva kolona su grupni časovi, druga individualni i duo termini."),
     el("div", { class: "week" }, el("div", { class: "week-row head" }, el("span", {}), el("small", {}, "Grupni"), el("small", {}, "Individualni / duo")), weekRows),
     el("h3", {}, "Cene"), el("div", {}, prices.map(p => p.row)),
@@ -1337,7 +1369,7 @@ async function loadSettings() {
     e.preventDefault();
     const wk = {}; for (const d in week) wk[d] = { g: times(week[d].g.value), p: times(week[d].p.value) };
     const r = await act(() => api("/api/admin/settings", { studio: { address: addr.value, phone: tel.value, email: mail.value, instagram: ig.value.replace(/^@/, "") },
-      groupCapacity: cap.value, bookAheadDays: ahead.value, week: wk, catalog: prices.map(p => ({ id: p.id, price: p.i.value })), individualNote: note.value,
+      groupCapacity: cap.value, bookAheadDays: ahead.value, week: wk, catalog: prices.map(p => ({ id: p.id, price: p.i.value })), individualNote: note.value, adminEmails: admins.value.split(/[\s,;]+/).filter(Boolean),
       promo: { active: pOn.checked, title: pTitle.value, text: pText.value, button: pBtn.value, from: pFrom.value, to: pTo.value, image: pImg.value } }), "Podešavanja su sačuvana.");
     if (r) { S.pub = await api("/api/public"); renderPublic(); loadSlots(); loadSettings(); }
   };
@@ -1358,8 +1390,10 @@ function route() {
   if (ADMIN_VIEWS.includes(v) && !(S.me && S.me.admin)) v = S.me ? "zakazi" : "prijava";
   if (v === "prijava" && S.me && S.authMode !== "reset") v = "moji-termini";
   document.querySelectorAll("section[data-view]").forEach(s => s.hidden = s.dataset.view !== v);
-  const tab = v === "klijent" ? "klijenti" : v;
+  const tab = ADMIN_VIEWS.includes(v) ? "admin" : v;
   document.querySelectorAll("#tabs a").forEach(a => a.dataset.tab === tab ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
+  const adm = $("#adm-tabs"), sub = v === "klijent" ? "klijenti" : v; adm.hidden = !ADMIN_VIEWS.includes(v);
+  adm.querySelectorAll("a").forEach(a => a.dataset.adm === sub ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
   if (v === "moji-termini") loadMy();
   if (v === "raspored") loadAdminDay();
   if (v === "klijenti") loadClients();
