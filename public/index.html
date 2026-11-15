@@ -224,9 +224,19 @@ a.row:hover { border-color: var(--line); }
 .pill.lock { background: rgba(163,73,58,.08); color: var(--danger); border-color: rgba(163,73,58,.25); }
 
 /* cenovnik */
+.seg.seg-2 { grid-template-columns: 1fr 1fr; }
 .price-group { gap: 8px; }
 .price { display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
 .price:last-child { border-bottom: 0; }
+button.price { font: inherit; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line-soft); color: var(--ink); cursor: pointer; grid-template-columns: 1fr auto auto auto; align-items: center; padding: 14px 10px; margin: 0 -10px; width: calc(100% + 20px); border-radius: 14px; transition: background .2s; }
+button.price:last-child { border-bottom: 0; }
+button.price:hover { background: var(--glow); }
+button.price .nm { font-family: var(--serif); font-size: 19px; font-weight: 500; display: block; }
+button.price .per { display: block; font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+button.price .go { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--paper); background: var(--olive-deep); border-radius: 999px; padding: 8px 12px; white-space: nowrap; }
+button.price:hover .go { background: var(--olive); }
+@media (max-width: 560px) { button.price { grid-template-columns: 1fr auto; } button.price .dur { display: none; } button.price .go { grid-column: 2; justify-self: end; } button.price .amt { grid-column: 1; text-align: left; } }
+.price-note { font-size: 12.5px; color: var(--ink-soft); margin: 0; }
 .price .dur { font-size: 10px; letter-spacing: .14em; color: var(--ink-mute); text-transform: uppercase; }
 .price .amt { font-family: var(--display); font-size: 25px; font-weight: 500; text-align: right; }
 .price .amt small { font-family: var(--sans); font-size: 9px; letter-spacing: .14em; color: var(--ink-soft); margin-left: 4px; text-transform: uppercase; }
@@ -317,7 +327,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 @media (max-width: 640px) { .foot-in { grid-template-columns: 1fr; gap: 22px; } }
 
 @media (max-width: 560px) {
-  .seg { grid-template-columns: 1fr; }
+  .seg, .seg.seg-2 { grid-template-columns: 1fr; }
   .seg button { grid-template-columns: auto 1fr; align-items: baseline; column-gap: 12px; }
   .fields { grid-template-columns: 1fr; }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -470,8 +480,9 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
   <section data-view="cenovnik" hidden>
     <div>
       <h2>Cenovnik</h2>
-      <p class="lead">Svi treninzi traju 55 minuta. Paketi važe 30 dana od datuma uplaćene članarine.</p>
+      <p class="lead">Svi treninzi traju 55 minuta. Paketi važe 30 dana od datuma uplaćene članarine. Izaberite vrstu treninga, pa kliknite na cenu da zakažete.</p>
     </div>
+    <div class="seg seg-2" id="price-seg" role="tablist" aria-label="Vrsta treninga"></div>
     <div id="prices" class="stack"></div>
   </section>
 
@@ -966,13 +977,30 @@ function bookingRow(b, subParts, right) {
 }
 
 /* ---------- cenovnik i kontakt ---------- */
+/* Cenovnik je interaktivan: tab Grupni / Individualni, klik na cenu vodi na zakazivanje te vrste treninga */
+function renderPrices() {
+  const c = S.pub.catalog, cap = S.pub.groupCapacity;
+  if (!S.priceTab) S.priceTab = S.type === "grupni" ? "grupni" : "individualni";
+  const seg = $("#price-seg"); seg.replaceChildren();
+  for (const [id, label, desc] of [["grupni", "Grupni", "do " + cap + " osoba na reformerima"], ["individualni", "Individualni", "1 na 1 ili duo sa trenerom"]])
+    seg.append(el("button", { type: "button", role: "tab", "aria-pressed": String(S.priceTab === id), "aria-selected": String(S.priceTab === id), onclick: () => { S.priceTab = id; renderPrices(); } }, el("b", {}, label), el("span", {}, desc)));
+  const grp = S.priceTab === "grupni";
+  const items = c.filter(x => grp ? x.cat === "grupni" : x.cat !== "grupni");
+  const blocks = [["Probni trening", items.filter(x => x.trial), "Prvi dolazak, jednokratno."],
+    [grp ? "Pojedinačni grupni čas" : "Pojedinačni čas", items.filter(x => !x.trial && x.total === 1), null],
+    ["Mesečne članarine", items.filter(x => !x.trial && x.total > 1), "Paketi važe 30 dana od uplate. Uplata u studiju, termini se zakazuju ovde."]].filter(([, l]) => l.length);
+  const go = x => { S.type = TYPES[x.cat] ? x.cat : (grp ? "grupni" : "individualni"); S.selected = null; S.day = null; $("#f-trial").checked = !!x.trial;
+    location.hash = "#zakazi"; document.querySelector("nav.tabs").scrollIntoView({ behavior: "smooth", block: "start" }); };
+  const row = x => el("button", { type: "button", class: "price", onclick: () => go(x), "aria-label": x.name + ", " + fmtRsd(x.price) + " dinara, zakaži" },
+    el("span", {}, el("span", { class: "nm" }, x.name), x.total > 1 ? el("span", { class: "per" }, x.total + " × 55 min · " + fmtRsd(Math.round(x.price / x.total)) + " rsd po terminu") : null),
+    el("span", { class: "dur" }, x.total > 1 ? x.total + " termina" : "55 min"),
+    el("span", { class: "amt" }, fmtRsd(x.price), el("small", {}, "rsd")),
+    el("span", { class: "go" }, "Zakaži"));
+  $("#prices").replaceChildren(...blocks.map(([title, list, note]) => el("div", { class: "card price-group" }, el("h3", {}, title), note ? el("p", { class: "price-note" }, note) : null, el("div", {}, list.map(row)))));
+}
 function renderPublic() {
   const c = S.pub.catalog;
-  const groups = [["Probni pilates trening", c.filter(x => x.trial)], ["Grupni pilates trening", c.filter(x => !x.trial && x.cat === "grupni")],
-    ["Individualni pilates trening", c.filter(x => !x.trial && x.cat !== "grupni")]];
-  const short = x => x.trial ? TYPES[x.cat].label : x.total === 1 ? x.name : x.total + " termina";
-  $("#prices").replaceChildren(...groups.map(([title, items]) => el("div", { class: "card price-group" }, el("h3", {}, title),
-    el("div", {}, items.map(x => el("div", { class: "price" }, el("span", {}, short(x)), el("span", { class: "dur" }, "55 min"), el("span", { class: "amt" }, fmtRsd(x.price), el("small", {}, "rsd"))))))));
+  renderPrices();
   const st = S.pub.studio, todo = t => el("span", { class: "todo" }, t);
   const closeOf = hm => { const [h, m] = hm.split(":").map(Number); const x = Math.ceil((h * 60 + m + (S.pub.minutes || 55)) / 30) * 30; return pad(Math.floor(x / 60) % 24) + ":" + pad(x % 60); };
   const hoursRows = [1, 2, 3, 4, 5, 6, 0].map(i => {
