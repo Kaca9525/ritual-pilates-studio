@@ -448,20 +448,37 @@ app.post("/api/inquiry", auth, (req, res) => {
 });
 
 /* ---- fiksni termini uz paket od 8 ili 12 treninga ---- */
-const DAY_SHORT = ["ned", "pon", "uto", "sre", "čet", "pet", "sub"];
-const fixedText = f => f ? f.days.map(d => DAY_SHORT[d]).join(", ") + " u " + f.time : "";
+const DAY_SHORT = ["ned", "pon", "uto", "sre", "čet", "pet", "sub"], DAY_LONG = ["Nedelja", "Ponedeljak", "Utorak", "Sreda", "Četvrtak", "Petak", "Subota"], DAY_ORD = [1, 2, 3, 4, 5, 6, 0];
+// Obrazac: za svaki izabrani dan u nedelji svoje vreme (slots: [{d, t}]), npr. uto i čet u 19:00, sub u 09:00.
+// Stariji zapisi {days, time} (isto vreme u sve dane) čitaju se kao isti oblik.
+const fixedSlots = f => !f ? [] : (Array.isArray(f.slots) ? f.slots : (f.days || []).map(d => ({ d, t: f.time }))).slice().sort((a, b) => DAY_ORD.indexOf(a.d) - DAY_ORD.indexOf(b.d));
+const fixedText = f => { const g = []; for (const x of fixedSlots(f)) { const y = g.find(z => z.t === x.t); if (y) y.days.push(x.d); else g.push({ t: x.t, days: [x.d] }); } return g.map(x => x.days.map(d => DAY_SHORT[d]).join(", ") + " u " + x.t).join(" · "); };
+const fixedTimeOn = (f, date) => { const x = fixedSlots(f).find(z => z.d === parseD(date).getDay()); return x ? x.t : null; };
+// Iz zahteva: slots [{d, t}] ili stariji oblik days + time. Svaki izabrani dan mora imati taj termin u rasporedu.
+function parseSlots(body, opts) {
+  const legacy = !Array.isArray(body.slots);
+  const raw = legacy ? (Array.isArray(body.days) ? body.days.map(d => ({ d, t: body.time })) : []) : body.slots;
+  const map = new Map();
+  for (const x of raw) { const d = Number(x && (x.d ?? x.day)), t = String((x && (x.t ?? x.time)) || ""); if (Number.isInteger(d) && d >= 0 && d <= 6 && validTime(t)) map.set(d, t); }
+  let slots = DAY_ORD.filter(d => map.has(d)).map(d => ({ d, t: map.get(d) }));
+  if (legacy) slots = slots.filter(x => opts[x.d].includes(x.t)); // stari oblik: dani bez tog vremena se preskaču
+  if (!slots.length) return { error: "Izaberite bar jedan dan u nedelji i vreme za taj dan." };
+  const bad = slots.find(x => !opts[x.d].includes(x.t));
+  if (bad) return { error: DAY_LONG[bad.d] + " nema termin u " + bad.t + ". Izaberite drugo vreme za taj dan." };
+  return { slots };
+}
 // Planira narednih N termina po nedeljnom obrascu, u okviru važenja paketa.
 function planFixed(p, f, c = cfg()) {
   const st = pkgStats(p, c), type = f.type, kind = kindOf(type);
   const first = f.from && f.from > today() ? f.from : addDays(today(), 1);
   const plan = []; let need = st.remaining;
   for (let d = first; d <= st.validUntil && need > 0; d = addDays(d, 1)) {
-    if (!f.days.includes(parseD(d).getDay())) continue;
-    const inSched = slotsFor(d, kind, c).includes(f.time);
-    const mine = db.prepare("SELECT 1 FROM bookings WHERE userEmail=? AND date=? AND start=? AND status='zakazano'").get(p.userEmail, d, f.time);
-    const full = inSched && countAt(d, f.time) >= capacity(kindAt(d, f.time, c) || kind, c);
+    const t = fixedTimeOn(f, d); if (!t) continue;
+    const inSched = slotsFor(d, kind, c).includes(t);
+    const mine = db.prepare("SELECT 1 FROM bookings WHERE userEmail=? AND date=? AND start=? AND status='zakazano'").get(p.userEmail, d, t);
+    const full = inSched && countAt(d, t) >= capacity(kindAt(d, t, c) || kind, c);
     const reason = !inSched ? "nema termina u rasporedu" : mine ? "već zakazano" : full ? "popunjeno" : null;
-    plan.push({ date: d, start: f.time, ok: !reason, reason });
+    plan.push({ date: d, start: t, ok: !reason, reason });
     if (!reason || mine) need--;
   }
   return { plan, remaining: st.remaining, validUntil: st.validUntil };
@@ -476,13 +493,10 @@ app.post("/api/packages/:id/fixed", auth, (req, res) => {
   if (!p || (!req.user.admin && p.userEmail !== req.user.email)) return fail(res, 404, "Paket nije pronađen.");
   if (p.total < 8) return fail(res, 400, "Fiksni termini važe za pakete od 8 ili 12 treninga.");
   const c = cfg(), body = req.body || {};
-  if (body.preview === true && !body.days) return res.json({ options: fixedOptions(p, c), fixed: p.fixed ? JSON.parse(p.fixed) : null });
-  const days = [...new Set((Array.isArray(body.days) ? body.days : []).map(Number).filter(d => d >= 0 && d <= 6))].sort();
+  if (body.preview === true && !body.days && !body.slots) return res.json({ options: fixedOptions(p, c), fixed: p.fixed ? JSON.parse(p.fixed) : null });
   const type = p.cat === "grupni" ? "grupni" : (body.type === "duo" ? "duo" : "individualni");
-  const f = { days, time: String(body.time || ""), type, from: validDate(body.from) ? body.from : null };
-  if (!days.length) return fail(res, 400, "Izaberite bar jedan dan u nedelji.");
-  if (!validTime(f.time)) return fail(res, 400, "Izaberite vreme.");
-  if (!days.some(d => fixedOptions(p, c)[d].includes(f.time))) return fail(res, 400, "U izabrane dane nema termina u to vreme.");
+  const ps = parseSlots(body, fixedOptions(p, c)); if (ps.error) return fail(res, 400, ps.error);
+  const f = { slots: ps.slots, type, from: validDate(body.from) ? body.from : null };
   const st = pkgStats(p, c);
   if (st.expired || st.remaining <= 0) return fail(res, 400, "Paket nema preostalih treninga ili je istekao.");
   const planned = planFixed(p, f, c);
@@ -517,30 +531,26 @@ app.post("/api/packages/:id/fixed/clear", auth, (req, res) => {
   res.json({ cancelled: fut.length });
 });
 
-/* ---- mesečna članarina koju klijent sam bira pri zakazivanju: 8 ili 12 termina, dani u nedelji i vreme za ceo mesec.
+/* ---- mesečna članarina koju klijent sam bira pri zakazivanju: 8 ili 12 termina, za svaki dan u nedelji svoje vreme, za ceo mesec.
         Paket nastaje odmah (važi mesec dana od prvog treninga), uplata se evidentira u studiju (admin → Klijenti). ---- */
 const planItems = c => c.catalog.filter(x => !x.trial && x.total >= 8);
 app.post("/api/plans", auth, (req, res) => {
   const c = cfg(), body = req.body || {};
   const item = planItems(c).find(x => x.id === body.catalogId);
-  if (body.preview === true && !body.days) return res.json({ items: planItems(c), options: fixedOptions({ cat: item ? item.cat : (body.cat === "individualni" ? "individualni" : "grupni") }, c) });
+  if (body.preview === true && !body.days && !body.slots) return res.json({ items: planItems(c), options: fixedOptions({ cat: item ? item.cat : (body.cat === "individualni" ? "individualni" : "grupni") }, c) });
   if (!item) return fail(res, 400, "Izaberite članarinu od 8 ili 12 termina.");
   const active = activePackage(req.user.email, item.cat, c);
   if (active) return fail(res, 409, `Već imate članarinu „${active.name}” sa ${active.remaining} neiskorišćenih termina (važi do ${fmtD(active.validUntil)}). Termine zakazujete iz nje.`);
-  const days = [...new Set((Array.isArray(body.days) ? body.days : []).map(Number).filter(d => d >= 0 && d <= 6))].sort();
   const type = item.cat === "grupni" ? "grupni" : (body.type === "duo" ? "duo" : "individualni");
-  const opts = fixedOptions({ cat: item.cat }, c);
-  if (!days.length) return fail(res, 400, "Izaberite bar jedan dan u nedelji.");
-  const time = String(body.time || "");
-  if (!validTime(time)) return fail(res, 400, "Izaberite vreme.");
-  if (!days.some(d => opts[d].includes(time))) return fail(res, 400, "U izabrane dane nema termina u to vreme.");
+  const ps = parseSlots(body, fixedOptions({ cat: item.cat }, c)); if (ps.error) return fail(res, 400, ps.error);
+  const slots = ps.slots, slotDays = slots.map(x => x.d);
   // početak: prvi izabrani dan od sutra (ili od datuma koji je klijent izabrao)
   let from = validDate(body.from) && body.from > today() ? body.from : addDays(today(), 1);
-  for (let i = 0; i < 7 && !days.includes(parseD(from).getDay()); i++) from = addDays(from, 1);
+  for (let i = 0; i < 7 && !slotDays.includes(parseD(from).getDay()); i++) from = addDays(from, 1);
   if (from > addDays(today(), c.bookAheadDays - 1)) return fail(res, 400, "Termini se zakazuju najviše " + c.bookAheadDays + " dana unapred.");
   const p = { id: newId(), userEmail: req.user.email, catalogId: item.id, name: item.name, cat: item.cat, total: item.total, price: item.price, paidAt: from,
     unpaid: 1, paidOn: null, payMethod: payMethodOf(body.payMethod), adjust: 0, extendDays: 0, freezeDays: 0, note: "", created: nowIso(), createdBy: req.user.email };
-  const f = { days, time, type, from };
+  const f = { slots, type, from };
   const planned = planFixed(p, f, c), fits = planned.plan.filter(x => x.ok).length;
   if (body.preview) return res.json({ ...planned, from, fits, total: item.total, price: item.price, name: item.name });
   if (!fits) return fail(res, 400, "Nema slobodnih termina po ovom obrascu. Izaberite druge dane ili vreme.");

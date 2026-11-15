@@ -178,6 +178,7 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .arrange textarea { min-height: 90px; resize: vertical; }
 /* akcija: pop-up na otvaranju */
 .modal.promo { padding: 0; overflow: hidden; width: min(100%, 440px); gap: 0; }
+.modal.wide { width: min(100%, 560px); }
 .promo-img { position: relative; aspect-ratio: 4 / 3; background: var(--bg-deep); }
 .promo-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .promo-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(35,38,28,.55), rgba(35,38,28,0) 60%); }
@@ -187,7 +188,7 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .promo-body .actions { gap: 10px; }
 .promo-x, .modal-x { position: absolute; top: 12px; right: 12px; z-index: 2; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(248,243,232,.9); color: var(--ink); font-size: 20px; line-height: 1; cursor: pointer; }
 .modal-x { background: var(--bg); border: 1px solid var(--line-soft); }
-.modal.rules-box { width: min(100%, 600px); max-height: calc(100dvh - 32px); overflow: auto; gap: 18px; padding: 26px 24px 24px; }
+.modal.rules-box { width: min(100%, 600px); gap: 18px; padding: 26px 24px 24px; }
 .rules-box .mcal-top { padding-right: 44px; }
 .rules-box .rules { display: grid; }
 .rules-box .rules h3 { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--olive-deep); margin: 0; }
@@ -208,7 +209,7 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .datebtn-chev { font-family: var(--display); font-size: 22px; color: var(--ink-soft); transform: rotate(90deg); }
 .modal-root { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 16px; }
 .modal-bg { position: absolute; inset: 0; background: rgba(35,38,28,.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-.modal { position: relative; width: min(100%, 380px); background: var(--paper); border: 1px solid var(--line-soft); border-radius: 26px; padding: 22px; display: grid; gap: 12px; box-shadow: 0 40px 80px -30px rgba(35,38,28,.6); animation: rise .25s ease both; }
+.modal { position: relative; width: min(100%, 380px); max-height: calc(100dvh - 32px); overflow: auto; background: var(--paper); border: 1px solid var(--line-soft); border-radius: 26px; padding: 22px; display: grid; gap: 12px; box-shadow: 0 40px 80px -30px rgba(35,38,28,.6); animation: rise .25s ease both; }
 .mcal-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .mcal-head b { font-family: var(--display); font-size: 24px; font-weight: 500; text-transform: capitalize; }
 .mcal-top { display: grid; gap: 4px; }
@@ -288,7 +289,7 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .summary { display: grid; gap: 4px; }
 .summary .big { font-family: var(--display); font-size: 31px; font-weight: 500; line-height: 1.15; }
 .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-label.f { display: grid; gap: 6px; font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); min-width: 0; }
+label.f, div.f { display: grid; gap: 6px; font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); min-width: 0; }
 .input, label.f input, label.f select, label.f textarea { font: inherit; font-size: 15px; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink); background: var(--glow); border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; width: 100%; }
 .input.small { width: auto; min-width: 110px; }
 label.check { display: flex; gap: 12px; align-items: flex-start; font-size: 13px; color: var(--ink-soft); }
@@ -396,6 +397,18 @@ a .ci-v:hover { color: var(--olive); }
 [data-rise].in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { [data-rise] { opacity: 1; transform: none; transition: none; } }
 @media (max-width: 560px) { .map-frame { height: 240px; } .map-name b { font-size: 19px; } .map-foot { padding: 14px 16px; gap: 10px; } .map-foot .actions { width: 100%; } .map-foot .actions .btn { flex: 1; justify-content: center; } }
+/* nedeljni birač: red za svaki dan, uključi dan pa izaberi vreme baš za taj dan */
+.wk { display: grid; gap: 8px; font-size: 13px; font-weight: 400; letter-spacing: normal; text-transform: none; color: var(--ink); }
+.wk-row { display: grid; grid-template-columns: 150px 1fr; gap: 10px; align-items: center; padding: 8px 12px; border: 1px solid var(--line-soft); border-radius: 16px; background: rgba(255,255,255,.35); }
+.wk-row.on { background: var(--paper); border-color: rgba(92,98,62,.4); }
+.wk-day { font: inherit; text-align: left; background: transparent; border: 0; padding: 6px 0; cursor: pointer; color: var(--ink-soft); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+.wk-day::before { content: ""; width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid var(--olive); flex: none; transition: background .15s; }
+.wk-day[aria-pressed="true"] { color: var(--ink); }
+.wk-day[aria-pressed="true"]::before { background: var(--olive); box-shadow: inset 0 0 0 3px var(--paper); }
+.wk-day:disabled { opacity: .45; cursor: default; }
+.wk-hint { font-size: 12px; color: var(--ink-mute); letter-spacing: .02em; }
+.wk-row .chips { gap: 6px; }
+@media (max-width: 560px) { .wk-row { grid-template-columns: 1fr; gap: 6px; padding: 8px 10px; } }
 /* radno vreme: dve fotografije studija preko cele kartice, blago zamućene, sa mekim prelivom između njih i svetlim velom da tabela ostane čitljiva */
 .hours-card { position: relative; overflow: hidden; isolation: isolate; }
 .hours-bg { position: absolute; inset: 0; z-index: -1; background: var(--bg-deep); }
@@ -770,6 +783,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 const $ = s => document.querySelector(s);
 const DAYS = ["Ned","Pon","Uto","Sre","Čet","Pet","Sub"];
 const DAYS_LONG = ["nedelja","ponedeljak","utorak","sreda","četvrtak","petak","subota"];
+const DAYS_ACC = ["nedelju", "ponedeljak", "utorak", "sredu", "četvrtak", "petak", "subotu"];
 const MONTHS = ["jan","feb","mar","apr","maj","jun","jul","avg","sep","okt","nov","dec"];
 const TYPES = {
   grupni:       { label: "Grupni",       kind: "g", desc: cap => "do " + cap + " osoba na reformerima" },
@@ -965,52 +979,46 @@ function planForm(item) {
   const kind = TYPES[S.type].kind, opts = {}; for (let d = 0; d < 7; d++) opts[d] = ((S.pub.week[String(d)] || {})[kind] || []).slice().sort();
   const tomorrow = addDays(dstr(new Date()), 1);
   const lastPkg = S.my && S.my.packages.filter(p => p.cat === S.type).sort((a, b) => b.validUntil.localeCompare(a.validUntil))[0];
-  const dflt = { days: lastPkg && lastPkg.fixed ? lastPkg.fixed.days.slice() : [], time: lastPkg && lastPkg.fixed ? lastPkg.fixed.time : "",
+  const dflt = { slots: lastPkg && lastPkg.fixed ? Object.fromEntries(fixedSlots(lastPkg.fixed).filter(x => opts[x.d].includes(x.t)).map(x => [x.d, x.t])) : {},
     from: lastPkg && !lastPkg.expired && lastPkg.validUntil >= tomorrow ? addDays(lastPkg.validUntil, 1) : tomorrow };
-  if (!S.planDraft || S.planDraft.type !== S.type) S.planDraft = { type: S.type, ...dflt };
+  if (!S.planDraft || S.planDraft.type !== S.type || !S.planDraft.slots) S.planDraft = { type: S.type, ...dflt };
   const st = S.planDraft;
-  const dayChips = el("div", { class: "chips big" }), timeChips = el("div", { class: "chips big" }), timeNote = el("p", { class: "note" });
   const fromIn = el("input", { class: "input", type: "date", value: st.from, min: tomorrow });
   const planUl = el("ul", { class: "plan" }), sum = el("p", { class: "plan-sum" });
   const payHost = el("div"), drawPay = () => payHost.replaceChildren(payChoice(drawPay)); drawPay();
   const rulesIn = el("input", { type: "checkbox" });
   const btn = el("button", { class: "btn", type: "button" }, "Potvrdi članarinu i termine");
   let plan = null;
+  const chosen = () => Object.entries(st.slots).filter(([, t]) => t).map(([d, t]) => ({ d: +d, t }));
   const preview = () => {
     planUl.replaceChildren();
-    if (!st.days.length || !st.time) { plan = null; sum.textContent = "Izaberite dane i vreme da vidite termine za ceo mesec."; return; }
-    let from = st.from; for (let i = 0; i < 7 && !st.days.includes(parseD(from).getDay()); i++) from = addDays(from, 1);
+    const sl0 = chosen(), pendingDay = Object.keys(st.slots).find(d => !st.slots[d]);
+    if (!sl0.length) { plan = null; sum.textContent = pendingDay ? "Izaberite vreme za " + DAYS_ACC[pendingDay] + "." : "Uključite dane u nedelji i za svaki izaberite vreme, pa ćete videti termine za ceo mesec."; return; }
+    const timeOn = d => { const x = sl0.find(y => y.d === parseD(d).getDay()); return x ? x.t : null; };
+    let from = st.from; for (let i = 0; i < 7 && !timeOn(from); i++) from = addDays(from, 1);
     const validUntil = addMonths(from, 1), list = []; let need = item.total;
     for (let d = from; d <= validUntil && need > 0; d = addDays(d, 1)) {
-      if (!st.days.includes(parseD(d).getDay())) continue;
-      const day = S.slots.days.find(x => x.date === d), sl = day && day.slots.find(x => x.start === st.time);
+      const t = timeOn(d); if (!t) continue;
+      const day = S.slots.days.find(x => x.date === d), sl = day && day.slots.find(x => x.start === t);
       const reason = !sl ? "nema termina u rasporedu" : sl.mine ? "već zakazano" : sl.past ? "prošao" : sl.taken >= sl.cap ? "popunjeno" : null;
-      list.push({ date: d, start: st.time, ok: !reason, reason }); if (!reason || reason === "već zakazano") need--;
+      list.push({ date: d, start: t, ok: !reason, reason }); if (!reason || reason === "već zakazano") need--;
     }
     plan = { from, validUntil, list };
     const ok = list.filter(x => x.ok).length, full = list.filter(x => x.reason === "popunjeno").length, rest = item.total - ok;
     planUl.replaceChildren(...list.map(x => el("li", { class: x.ok ? "" : "skip" }, el("span", {}, fmtDayLong(x.date) + " · " + x.start), el("span", {}, x.ok ? "✓" : x.reason))));
-    sum.replaceChildren(el("b", {}, "Zakazuje se " + ok + " od " + item.total + " termina"), " · članarina važi od " + fmtDate(from) + " do " + fmtDate(validUntil) +
-      (rest > 0 ? " Još " + rest + (rest === 1 ? " termin" : " termina") + " zakazujete pojedinačno u kalendaru" + (full ? " (" + full + " popunjeno)" : "") + "." : ""));
+    sum.replaceChildren(el("b", {}, "Zakazuje se " + ok + " od " + item.total + " termina"), " · " + fixedText({ slots: sl0 }) + " · članarina važi od " + fmtDate(from) + " do " + fmtDate(validUntil) +
+      (rest > 0 ? " Još " + rest + (rest === 1 ? " termin" : " termina") + " zakazujete pojedinačno u kalendaru" + (full ? " (" + full + " popunjeno)" : "") + "." : "") +
+      (pendingDay !== undefined ? " Izaberite vreme za " + DAYS_ACC[pendingDay] + "." : ""));
   };
-  const render = () => {
-    dayChips.replaceChildren(...DAY_ORDER.map(d => el("button", { type: "button", "aria-pressed": String(st.days.includes(d)), disabled: !opts[d].length,
-      onclick: () => { st.days = st.days.includes(d) ? st.days.filter(x => x !== d) : [...st.days, d]; render(); } }, DAYS[d])));
-    const common = st.days.length ? st.days.map(d => opts[d]).reduce((a, b) => a.filter(t => b.includes(t))) : [];
-    const union = [...new Set(st.days.flatMap(d => opts[d]))].sort(), times = common.length ? common : union;
-    if (st.time && !times.includes(st.time)) st.time = "";
-    timeChips.replaceChildren(...(times.length ? times.map(t => el("button", { type: "button", "aria-pressed": String(st.time === t), onclick: () => { st.time = t; render(); } }, t)) : [el("span", { class: "note" }, "Prvo izaberite dane.")]));
-    timeNote.textContent = st.days.length && !common.length ? "Izabrani dani nemaju zajedničko vreme (npr. utorak i četvrtak imaju samo večernje termine). Termin se zakazuje samo u dane kada postoji izabrano vreme." : "";
-    st.from = fromIn.value || tomorrow;
-    preview();
-  };
+  const render = () => { st.from = fromIn.value || tomorrow; preview(); };
+  const picker = weekPicker(opts, st, render);
   fromIn.onchange = render;
   btn.onclick = async () => {
-    if (!plan || !plan.list.some(x => x.ok)) { toast("Izaberite dane i vreme sa slobodnim terminima."); return; }
+    if (!plan || !plan.list.some(x => x.ok)) { toast("Izaberite dane i vreme za svaki dan, sa slobodnim terminima."); return; }
     if (!S.pay) { toast("Izaberite način plaćanja."); return; }
     if (!rulesIn.checked) { toast("Potvrdite da znate pravila otkazivanja."); return; }
     btn.disabled = true;
-    const r = await act(() => api("/api/plans", { catalogId: item.id, days: st.days, time: st.time, from: st.from, payMethod: S.pay }));
+    const r = await act(() => api("/api/plans", { catalogId: item.id, slots: chosen(), from: st.from, payMethod: S.pay }));
     btn.disabled = false; if (!r) { loadSlots(); return; }
     const pm = S.pay; S.plan = null; S.planDraft = null; S.pay = null;
     toast("Članarina je izabrana: zakazano " + r.made.length + " termina." + (r.skipped.length ? " " + r.skipped.length + " preskočeno (popunjeno)." : ""));
@@ -1020,8 +1028,8 @@ function planForm(item) {
   };
   const card = el("div", { class: "card plan-form" },
     el("h3", {}, item.total + " termina mesečno · " + fmtRsd(item.price) + " rsd"),
-    el("p", { class: "note" }, "Izaberite dane u nedelji i vreme. Termini se rezervišu za ceo mesec, npr. ponedeljak, sreda i petak u 19:00. Svaki termin kasnije možete promeniti ili otkazati najkasnije " + S.pub.cancelHours + "h ranije."),
-    el("label", { class: "f" }, "Dani u nedelji", dayChips), el("label", { class: "f" }, "Vreme", timeChips), timeNote,
+    el("p", { class: "note" }, "Uključite dane u koje dolazite i za svaki dan izaberite vreme, npr. utorak i četvrtak u 19:00, subota u 09:00. Isti raspored se ponavlja svake nedelje do kraja članarine. Svaki termin kasnije možete promeniti ili otkazati najkasnije " + S.pub.cancelHours + "h ranije."),
+    el("div", { class: "f" }, el("span", {}, "Dani i vreme"), picker),
     el("label", { class: "f", style: "max-width:260px" }, "Prvi trening od", fromIn), sum, planUl,
     ...(S.me ? [el("div", {}, el("h3", { class: "label" }, "Plaćanje"), payHost),
         el("label", { class: "check" }, rulesIn, " Znam da se svaki termin može promeniti ili otkazati najkasnije " + S.pub.cancelHours + "h ranije, a da se kasnije otkazan ili propušten trening računa kao iskorišćen."), btn]
@@ -1231,7 +1239,26 @@ addEventListener("keydown", e => { if (e.key === "Escape" && !$("#modal-gen").hi
 
 /* ---------- fiksni termini uz paket 8/12 ---------- */
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
-const fixedText = f => f.days.slice().sort((a, b) => DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b)).map(d => DAYS[d].toLowerCase()).join(", ") + " u " + f.time;
+// obrazac: za svaki dan svoje vreme (slots [{d, t}]); stariji zapisi {days, time} se čitaju isto
+const fixedSlots = f => !f ? [] : (Array.isArray(f.slots) ? f.slots : (f.days || []).map(d => ({ d, t: f.time }))).slice().sort((a, b) => DAY_ORDER.indexOf(a.d) - DAY_ORDER.indexOf(b.d));
+const fixedText = f => { const g = []; for (const x of fixedSlots(f)) { const y = g.find(z => z.t === x.t); if (y) y.days.push(x.d); else g.push({ t: x.t, days: [x.d] }); } return g.map(x => x.days.map(d => DAYS[d].toLowerCase()).join(", ") + " u " + x.t).join(" · "); };
+/* nedeljni birač: st.slots = { dan: vreme }; dan bez vremena ("") je uključen ali još bez izbora */
+function weekPicker(opts, st, onChange) {
+  const box = el("div", { class: "wk" });
+  const draw = () => box.replaceChildren(...DAY_ORDER.map(d => {
+    const times = opts[d] || [], on = st.slots[d] !== undefined;
+    const dayBtn = el("button", { type: "button", class: "wk-day", "aria-pressed": String(on), disabled: !times.length, onclick: () => {
+      if (on) delete st.slots[d];
+      else { const last = Object.values(st.slots).filter(Boolean).pop(); st.slots[d] = times.includes(last) ? last : (times.length === 1 ? times[0] : ""); }
+      draw(); onChange();
+    } }, DAYS_LONG[d]);
+    const chips = el("div", { class: "chips" }, !times.length ? [el("span", { class: "wk-hint" }, "nema termina")]
+      : on ? times.map(t => el("button", { type: "button", "aria-pressed": String(st.slots[d] === t), onclick: () => { st.slots[d] = t; draw(); onChange(); } }, t))
+      : [el("span", { class: "wk-hint" }, times.map(t => t.replace(/:00$/, "h")).join(" · "))]);
+    return el("div", { class: "wk-row" + (on ? " on" : "") }, dayBtn, chips);
+  }));
+  draw(); return box;
+}
 function fixedRow(p, reload) {
   if (p.total < 8 || p.expired) return null;
   if (p.fixed) return el("div", { class: "fixed-row" }, el("span", { class: "pill" }, "Fiksni termini: " + fixedText(p.fixed)),
@@ -1245,24 +1272,14 @@ function fixedRow(p, reload) {
 }
 async function openFixed(p, reload) {
   const o = await act(() => api("/api/packages/" + p.id + "/fixed", { preview: true })); if (!o) return;
-  const st = { days: [], time: "", type: p.cat === "grupni" ? "grupni" : "individualni", from: addDays(dstr(new Date()), 1), force: false };
-  const timeSel = el("select", { class: "input", "aria-label": "Vreme", onchange: e => { st.time = e.target.value; plan.replaceChildren(); } });
-  const chips = el("div", { class: "chips" }, DAY_ORDER.map(d => el("button", { type: "button", "aria-pressed": "false", disabled: !o.options[d].length, onclick: e => {
-    const on = e.currentTarget.getAttribute("aria-pressed") !== "true"; e.currentTarget.setAttribute("aria-pressed", String(on));
-    st.days = on ? [...st.days, d] : st.days.filter(x => x !== d); fillTimes(); plan.replaceChildren();
-  } }, DAYS[d])));
-  const fillTimes = () => {
-    const times = [...new Set(st.days.flatMap(d => o.options[d]))].sort();
-    timeSel.replaceChildren(el("option", { value: "" }, times.length ? "izaberite vreme" : "prvo izaberite dane"), ...times.map(t => el("option", { value: t, selected: t === st.time }, t + "–" + endOf(t))));
-    if (!times.includes(st.time)) st.time = ""; timeSel.value = st.time;
-  };
-  fillTimes();
+  const st = { slots: {}, type: p.cat === "grupni" ? "grupni" : "individualni", from: addDays(dstr(new Date()), 1), force: false };
+  const picker = weekPicker(o.options, st, () => plan.replaceChildren());
   const typeSel = p.cat !== "grupni" ? el("select", { class: "input", onchange: e => st.type = e.target.value }, el("option", { value: "individualni" }, "Individualni"), el("option", { value: "duo" }, "Duo")) : null;
   const from = el("input", { class: "input", type: "date", value: st.from, min: st.from, max: p.validUntil, onchange: e => { st.from = e.target.value; plan.replaceChildren(); } });
   const force = S.me && S.me.admin ? el("label", { class: "check" }, el("input", { type: "checkbox", onchange: e => st.force = e.target.checked }), " Upiši i kada je termin popunjen (preko kapaciteta)") : null;
   const plan = el("ul", { class: "plan" });
   const info = el("p", { class: "note" }, "Zakazuje se narednih " + p.remaining + " treninga po ovom obrascu, do isteka paketa (" + fmtDate(p.validUntil) + "). Svaki termin možete posle pojedinačno otkazati po pravilniku.");
-  const body = () => ({ days: st.days, time: st.time, type: st.type, from: st.from, force: st.force });
+  const body = () => ({ slots: Object.entries(st.slots).filter(([, t]) => t).map(([d, t]) => ({ d: +d, t })), type: st.type, from: st.from, force: st.force });
   const preview = el("button", { class: "btn ghost", type: "button", onclick: async () => {
     const r = await act(() => api("/api/packages/" + p.id + "/fixed", { ...body(), preview: true })); if (!r) return;
     plan.replaceChildren(...(r.plan.length ? r.plan.map(x => el("li", { class: x.ok ? "" : "skip" }, el("span", {}, fmtDayLong(x.date) + " · " + x.start), el("span", {}, x.ok ? "✓" : x.reason)))
@@ -1274,9 +1291,10 @@ async function openFixed(p, reload) {
   } }, "Potvrdi fiksne termine");
   openModal(el("div", { class: "mcal-head" }, el("b", {}, "Fiksni termini"), el("button", { type: "button", class: "mcal-nav", "data-close": true, "aria-label": "Zatvori" }, "×")),
     el("p", { class: "note", style: "margin:0" }, p.name + " · preostalo " + p.remaining),
-    el("label", { class: "f" }, "Dani u nedelji", chips),
-    el("div", { class: "fields" }, el("label", { class: "f" }, "Vreme", timeSel), typeSel ? el("label", { class: "f" }, "Vrsta", typeSel) : null, el("label", { class: "f" }, "Od datuma", from)),
+    el("div", { class: "f" }, el("span", {}, "Dani i vreme"), picker),
+    el("div", { class: "fields" }, typeSel ? el("label", { class: "f" }, "Vrsta", typeSel) : null, el("label", { class: "f" }, "Od datuma", from)),
     force, info, plan, el("div", { class: "actions", style: "justify-content:flex-end" }, preview, confirm));
+  $("#modal-gen-box").classList.add("wide");
 }
 
 // Pitanje posle uplate: automatska rezervacija svih termina u iste dane i vreme?
@@ -1286,7 +1304,7 @@ function askFixed(p, reload, who) {
   const done = () => { try { localStorage.setItem(askedKey(p.id), "1"); } catch {} };
   openModal(el("div", { class: "mcal-head" }, el("b", {}, "Fiksni termini?"), el("button", { type: "button", class: "mcal-nav", "data-close": true, "aria-label": "Zatvori", onclick: done }, "×")),
     el("p", { style: "margin:0" }, (who ? who + " je uplatio/la " : "Uplaćen je ") + p.name.toLowerCase() + ". Želite li automatsku rezervaciju svih uplaćenih termina u tačno određene dane u nedelji, u određeno vreme?"),
-    el("p", { class: "note", style: "margin:0" }, "Na primer: ponedeljak, sreda i petak u 18:00. Svaki termin se kasnije može pojedinačno otkazati ili pomeriti."),
+    el("p", { class: "note", style: "margin:0" }, "Na primer: utorak i četvrtak u 19:00, subota u 09:00. Svaki termin se kasnije može pojedinačno otkazati ili pomeriti."),
     el("div", { class: "actions", style: "justify-content:flex-end" },
       el("button", { class: "btn ghost", type: "button", onclick: () => { done(); closeModal(); } }, who ? "Ne sada" : "Ne, zakazivaću sam/a"),
       el("button", { class: "btn", type: "button", onclick: () => { done(); openFixed(p, reload); } }, "Da, izaberi dane")));

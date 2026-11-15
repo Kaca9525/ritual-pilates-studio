@@ -14,6 +14,7 @@ async function call(who, url, body) {
 }
 const pad = n => String(n).padStart(2, "0");
 const dstr = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const parseD = x => { const [y, m, d] = x.split("-").map(Number); return new Date(y, m - 1, d); };
 const addMonths = (s, n) => { const [y, m, d] = s.split("-").map(Number); const last = new Date(y, m - 1 + n + 1, 0).getDate(); return dstr(new Date(y, m - 1 + n, Math.min(d, last))); };
 const hoursUntil = (date, start) => (new Date(date + "T" + start) - Date.now()) / 36e5;
 (async () => {
@@ -102,7 +103,7 @@ const hoursUntil = (date, start) => (new Date(date + "T" + start) - Date.now()) 
   assert.ok(r.data.plan.length >= 8, "plan " + r.data.plan.length);
   r = await call("f", "/api/packages/" + fp.id + "/fixed", { days: [1, 3, 5], time: ft }); assert.equal(r.status, 200, JSON.stringify(r.data));
   assert.equal(r.data.made.length + r.data.skipped.length, r.data.made.length ? r.data.made.length + r.data.skipped.length : 0); assert.ok(r.data.made.length >= 6, "made " + r.data.made.length);
-  let fmy = (await call("f", "/api/my")).data; assert.equal(fmy.packages[0].sched, r.data.made.length); assert.deepEqual(fmy.packages[0].fixed.days, [1, 3, 5]);
+  let fmy = (await call("f", "/api/my")).data; assert.equal(fmy.packages[0].sched, r.data.made.length); assert.deepEqual(fmy.packages[0].fixed.slots.map(x => x.d), [1, 3, 5]); assert.ok(fmy.packages[0].fixed.slots.every(x => x.t === ft));
   assert.ok(fmy.bookings.every(b => [1, 3, 5].includes(new Date(b.date + "T12:00:00").getDay()) && b.start === ft && b.fixed === 1));
   r = await call("f", "/api/packages/" + fp.id + "/fixed", { days: [2], time: ft }); assert.equal(r.status, 400); // nema preostalih
   r = await call("f", "/api/packages/" + fp.id + "/fixed/clear", {}); assert.equal(r.status, 200); assert.ok(r.data.cancelled >= 5);
@@ -121,9 +122,19 @@ const hoursUntil = (date, start) => (new Date(date + "T" + start) - Date.now()) 
   r = await call("m", "/api/plans", { catalogId: "g8", days: [1, 3, 5], time: pt, payMethod: "racun" }); assert.equal(r.status, 200, JSON.stringify(r.data));
   const mp = r.data.pkg;
   assert.equal(mp.unpaid, 1); assert.equal(mp.payMethod, "racun"); assert.ok(r.data.made.length >= 6, "made " + r.data.made.length); assert.equal(mp.sched, r.data.made.length);
-  assert.deepEqual(mp.fixed.days, [1, 3, 5]); assert.equal(mp.validUntil, addMonths(mp.paidAt, 1)); assert.equal(mp.paidAt, r.data.made[0].date);
+  assert.deepEqual(mp.fixed.slots.map(x => x.d), [1, 3, 5]); assert.equal(mp.validUntil, addMonths(mp.paidAt, 1)); assert.equal(mp.paidAt, r.data.made[0].date);
   assert.equal(mp.remaining, 8 - r.data.made.length);
   assert.equal((await call("f", "/api/plans", { catalogId: "g12", days: [1, 3, 5], time: pt, payMethod: "studio" })).status, 409, "ko ima neiskorišćene termine ne bira novu članarinu");
+  // za svaki dan svoje vreme: uto i čet uveče, subota ujutru
+  assert.equal((await call("s", "/api/register", { ime: "Slot", prezime: "Test", email: "slot@test.rs", telefon: "4", pw: "lozinka1", consent })).status, 200);
+  const optS = (await call("s", "/api/plans", { preview: true })).data.options, tue = optS["2"][optS["2"].length - 1], sat = optS["6"][0];
+  assert.ok(tue && sat && tue !== sat, "utorak uveče i subota ujutru imaju različita vremena");
+  r = await call("s", "/api/plans", { catalogId: "g8", slots: [{ d: 2, t: tue }, { d: 4, t: tue }, { d: 6, t: sat }], preview: true }); assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.ok(r.data.plan.length && r.data.plan.every(x => (parseD(x.date).getDay() === 6 ? x.start === sat : x.start === tue)), "svaki dan dobija svoje vreme");
+  r = await call("s", "/api/plans", { catalogId: "g8", slots: [{ d: 2, t: sat }], payMethod: "studio" }); assert.equal(r.status, 400, "utorak nema jutarnji termin");
+  r = await call("s", "/api/plans", { catalogId: "g8", slots: [{ d: 2, t: tue }, { d: 4, t: tue }, { d: 6, t: sat }], payMethod: "studio" }); assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.pkg.fixed.slots.length, 3); assert.ok(r.data.made.every(b => [2, 4, 6].includes(parseD(b.date).getDay())));
+  assert.ok(r.data.made.some(b => parseD(b.date).getDay() === 6 && b.start === sat), "subota u jutarnjem terminu");
   // klijent sam menja jedan termin (>=12h ranije): u periodu važenja može, van perioda ne može
   let mmy = (await call("m", "/api/my")).data;
   const mb = mmy.bookings.filter(b => hoursUntil(b.date, b.start) > 13).sort((a, b) => a.date.localeCompare(b.date))[0]; assert.ok(mb);

@@ -75,8 +75,9 @@ Na Render **Free** planu disk nije trajan — nalozi i rezervacije bi nestajali 
 
 - trening 55 min; zakazivanje do 14 dana unapred (podesivo)
 - otkazivanje najkasnije 12h pre termina; kasnije se računa kao iskorišćen
-- članarina: 8 ili 12 termina mesečno; klijentkinja bira dane u nedelji i vreme (npr. pon/sre/pet u 19h)
-  i termini se zakazuju za ceo mesec; pojedinačan termin može sama da promeni najkasnije 12h ranije
+- članarina: 8 ili 12 termina mesečno; klijentkinja za svaki dan u nedelji bira svoje vreme (npr. utorak
+  i četvrtak u 19h, subota u 9h) i isti raspored se ponavlja svake nedelje do kraja članarine; pojedinačan
+  termin može sama da promeni najkasnije 12h ranije
   (Moji termini → „Promeni”)
 - članarina važi mesec dana od prvog termina do istog datuma sledećeg meseca (17.11. → 17.12., bez obzira
   na broj dana u mesecu); admin može produžiti do 7 ili zamrznuti do 14 dana
