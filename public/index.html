@@ -173,7 +173,14 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .promo-body { padding: 22px 24px 24px; display: grid; gap: 14px; }
 .promo-body p { margin: 0; font-family: var(--serif); font-size: 21px; font-weight: 500; line-height: 1.3; }
 .promo-body .actions { gap: 10px; }
-.promo-x { position: absolute; top: 12px; right: 12px; z-index: 2; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(248,243,232,.9); color: var(--ink); font-size: 20px; line-height: 1; cursor: pointer; }
+.promo-x, .modal-x { position: absolute; top: 12px; right: 12px; z-index: 2; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(248,243,232,.9); color: var(--ink); font-size: 20px; line-height: 1; cursor: pointer; }
+.modal-x { background: var(--bg); border: 1px solid var(--line-soft); }
+.modal.rules-box { width: min(100%, 600px); max-height: calc(100dvh - 32px); overflow: auto; gap: 18px; padding: 26px 24px 24px; }
+.rules-box .mcal-top { padding-right: 44px; }
+.rules-box .rules { display: grid; }
+.rules-box .rules h3 { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--olive-deep); margin: 0; }
+.rules-box .rules ul { font-size: 17px; gap: 8px; }
+.rules-box .actions { position: sticky; bottom: -24px; margin: 0 -24px -24px; padding: 14px 24px 20px; background: linear-gradient(to top, var(--paper) 70%, transparent); }
 .seg button { font: inherit; text-align: left; padding: 18px 16px 14px; border: 1px solid var(--line-soft); border-radius: 22px; background: var(--paper); color: var(--ink); cursor: pointer; display: grid; gap: 4px; min-width: 0; transition: box-shadow .3s, border-color .25s, background .25s; }
 .seg button:hover { border-color: var(--line); }
 .seg button b { font-family: var(--display); font-size: 27px; font-weight: 500; line-height: 1; }
@@ -517,7 +524,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
         <label class="f">Telefon <input id="r-tel" type="tel" autocomplete="tel" placeholder="06x xxx xxxx" required></label>
         <label class="f">Lozinka <input id="r-pw" type="password" autocomplete="new-password" minlength="6" required></label>
       </div>
-      <label class="check"><input type="checkbox" id="r-consent"> Pročitao/la sam <a href="#pravilnik">pravilnik studija</a> i prihvatam ga.</label>
+      <label class="check"><input type="checkbox" id="r-consent"> Pročitao/la sam <a href="#pravilnik" id="r-rules">pravilnik studija</a> i prihvatam ga.</label>
       <button class="btn" type="submit">Napravi nalog</button>
       <p class="note">Već imate nalog? <a href="#prijava" data-auth="login">Prijavite se</a></p>
     </form>
@@ -731,7 +738,7 @@ const S = { pub: null, me: null, type: "grupni", slots: null, day: null, selecte
 /* ---------- nalog ---------- */
 function renderAccount() {
   const a = $("#account"); a.replaceChildren();
-  if (S.me) a.append(el("span", {}, S.me.ime + (S.me.admin ? " · admin" : "")), " ", el("button", { class: "link", type: "button", onclick: logout }, "Odjava"));
+  if (S.me) a.append(el("span", {}, S.me.ime), S.me.admin ? el("a", { href: "#raspored", title: "Admin panel: raspored, klijenti, podešavanja" }, "Admin") : null, el("button", { class: "link", type: "button", onclick: logout }, "Odjava"));
   else a.append(el("a", { href: "#prijava", "data-auth": "login" }, "Prijava"), " · ", el("a", { href: "#prijava", "data-auth": "register" }, "Registracija"));
   document.querySelectorAll(".admin-tab").forEach(t => t.hidden = !(S.me && S.me.admin));
 }
@@ -953,8 +960,18 @@ $("#confirm").addEventListener("submit", async e => {
 
 /* ---------- moji termini ---------- */
 /* ---------- opšti modal ---------- */
-function openModal(...kids) { const b = $("#modal-gen-box"); b.classList.remove("promo"); b.replaceChildren(...kids.filter(Boolean)); $("#modal-gen").hidden = false; b.querySelector("button,select,input")?.focus(); }
-function closeModal() { $("#modal-gen").hidden = true; }
+function openModal(...kids) { const b = $("#modal-gen-box"); b.className = "modal"; b.scrollTop = 0; b.replaceChildren(...kids.filter(Boolean)); $("#modal-gen").hidden = false; b.querySelector("button,select,input")?.focus(); }
+function closeModal() { $("#modal-gen").hidden = true; $("#modal-gen-box").className = "modal"; }
+/* pravilnik u pop-upu (sa registracije): X za zatvaranje, dugme štiklira saglasnost */
+function openRules() {
+  const body = el("div", { class: "rules" }); body.innerHTML = document.querySelector('section[data-view="pravilnik"] .rules').innerHTML;
+  const ok = el("button", { type: "button", class: "btn", onclick: () => { const c = $("#r-consent"); if (c) c.checked = true; closeModal(); toast("Hvala, pravilnik je prihvaćen."); } }, "Pročitao/la sam i prihvatam");
+  openModal(el("button", { type: "button", class: "modal-x", "data-close": true, "aria-label": "Zatvori" }, "×"),
+    el("div", { class: "mcal-top" }, el("h3", {}, "Pravilnik studija"), el("p", {}, "Ritual Pilates Studio · pročitajte pre registracije")),
+    body, el("div", { class: "actions" }, ok, el("button", { type: "button", class: "btn ghost", "data-close": true }, "Zatvori")));
+  $("#modal-gen-box").classList.add("rules-box"); $("#modal-gen-box").scrollTop = 0;
+}
+$("#r-rules").addEventListener("click", e => { e.preventDefault(); openRules(); });
 $("#modal-gen").addEventListener("click", e => { if (e.target.closest("[data-close]")) closeModal(); });
 addEventListener("keydown", e => { if (e.key === "Escape" && !$("#modal-gen").hidden) closeModal(); });
 
@@ -1413,7 +1430,7 @@ function showPromo() {
     el("div", { class: "promo-body" }, el("p", {}, p.text), el("div", { class: "actions" }, el("button", { type: "button", class: "btn", onclick: go }, p.button || "Zakaži probni trening"), el("button", { type: "button", class: "btn ghost", "data-close": true }, "Kasnije"))));
   $("#modal-gen-box").classList.add("promo");
 }
-$("#modal-gen").addEventListener("click", e => { if (e.target.closest("[data-close]")) $("#modal-gen-box").classList.remove("promo"); });
+
 (async function init() {
   try { S.pub = await api("/api/public"); } catch (e) { toast("Server nije dostupan. Osvežite stranicu."); return; }
   S.me = S.pub.me; renderAccount(); renderPublic();
