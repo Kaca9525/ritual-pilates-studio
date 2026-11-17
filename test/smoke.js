@@ -22,7 +22,12 @@ const hoursUntil = (date, start) => (new Date(date + "T" + start) - Date.now()) 
   { const rr = await call("a", "/api/register", { ime: "Admin", prezime: "Studio", email: "admin@test.rs", telefon: "1", pw: "lozinka1", consent }); assert.equal(rr.status, 200, JSON.stringify(rr.data)); }
   assert.equal((await call("k", "/api/register", { ime: "Ana", prezime: "Klijent", email: "ana@test.rs", telefon: "0601", pw: "lozinka1", consent })).status, 200);
   assert.equal((await call("k", "/api/register", { ime: "Ana", prezime: "Klijent", email: "ana@test.rs", telefon: "0601", pw: "lozinka1", consent })).status, 409);
+  // bez saglasnosti sa Uslovima korišćenja i Politikom privatnosti nema naloga
+  assert.equal((await call("n", "/api/register", { ime: "Bez", prezime: "Saglasnosti", email: "bez@test.rs", telefon: "9", pw: "lozinka1" })).status, 400);
+  assert.equal((await call("n", "/api/consent", {})).status, 401);
   const pub = (await call("k", "/api/public")).data; assert.equal(pub.me.email, "ana@test.rs"); assert.ok(!pub.me.admin);
+  assert.equal(pub.me.needConsent, false);
+  assert.equal((await call("k", "/api/consent", {})).data.me.needConsent, false);
   assert.equal((await call("a", "/api/me")).data.me.admin, true);
   // slobodan grupni termin bar 13h unapred
   const slots = (await call("k", "/api/slots?type=grupni")).data;

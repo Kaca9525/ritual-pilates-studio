@@ -95,6 +95,15 @@ Na Render **Free** planu disk nije trajan — nalozi i rezervacije bi nestajali 
 - lista čekanja: kad je termin popunjen, klijentkinja klikne „obavesti me“; čim neko otkaže, svi sa liste dobijaju mejl da je termin ponovo slobodan (mesto dobija ko prvi zakaže)
 - akcija: pop-up sa fotografijom i tekstom pri otvaranju; dok traje, probni trening se prikazuje kao besplatan
 - svaka ručna izmena se upisuje u istoriju klijenta
+- Uslovi korišćenja (`#uslovi`) i Politika privatnosti (`#privatnost`) su stranice u aplikaciji (linkovi u podnožju, u pretrazi
+  i u obaveštenju o kolačićima); tekst je obostrano poravnat, sa prečicama do poglavlja. Pri registraciji, pre otvaranja naloga,
+  iskače prozor sa oba dokumenta i dugmadima „Prihvatam / Ne prihvatam” (kao u BN); bez saglasnosti nalog se ne pravi.
+  Nalozi napravljeni ranije dobijaju isti prozor pri prvoj sledećoj poseti, a „Ne prihvatam” ih odjavljuje
+  (vreme saglasnosti se čuva u `users.legalConsent`)
+- kolačići i skladište pregledača: kolačić prijave `ritual` (httpOnly, 180 dana ili do odjave); u localStorage
+  `ritual-cookies-ok` (zatvoreno obaveštenje o kolačićima) i `ritual-fixed-asked-<paket>` (već ponuđeno automatsko
+  zakazivanje fiksnih termina); u sessionStorage `ritual-promo` (pop-up akcije jednom po poseti). Google mapa na Kontaktu
+  se učitava tek na klik „Prikaži mapu”, jer Google tada postavlja svoje kolačiće
 
 ## Sigurnost
 

@@ -55,7 +55,8 @@ if (!db.prepare("SELECT 1 FROM settings WHERE key='config'").get()) {
 }
 // Dopune šeme za postojeće baze (fiksni termini; članarina koju klijent sam izabere pre uplate).
 for (const [t, col, def] of [["packages", "fixed", "TEXT"], ["bookings", "fixed", "INTEGER DEFAULT 0"], ["packages", "unpaid", "INTEGER DEFAULT 0"], ["packages", "paidOn", "TEXT"], ["packages", "payMethod", "TEXT"],
-  ["bookings", "payMethod", "TEXT"], ["bookings", "paid", "INTEGER DEFAULT 0"], ["bookings", "price", "INTEGER"]])
+  ["bookings", "payMethod", "TEXT"], ["bookings", "paid", "INTEGER DEFAULT 0"], ["bookings", "price", "INTEGER"],
+  ["users", "legalConsent", "TEXT"]]) // legalConsent: kada je korisnik prihvatio Uslove korišćenja i Politiku privatnosti
   if (!db.prepare(`PRAGMA table_info(${t})`).all().some(x => x.name === col)) db.exec(`ALTER TABLE ${t} ADD COLUMN ${col} ${def}`);
 const cfg = () => JSON.parse(db.prepare("SELECT json FROM settings WHERE key='config'").get().json);
 const saveCfg = c => db.prepare("UPDATE settings SET json=? WHERE key='config'").run(JSON.stringify(c));
@@ -210,7 +211,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 /* admin: adrese iz ADMIN_EMAILS (okruženje) + adrese koje admin doda u Podešavanjima („Pristup adminu”, čuvaju se u bazi) */
 const isAdminEmail = e => { e = String(e || "").toLowerCase(); return ADMIN_EMAILS.includes(e) || (cfg().adminEmails || []).includes(e); };
-const userOut = u => u && ({ email: u.email, ime: u.ime, prezime: u.prezime, telefon: u.telefon, admin: isAdminEmail(u.email) });
+const userOut = u => u && ({ email: u.email, ime: u.ime, prezime: u.prezime, telefon: u.telefon, admin: isAdminEmail(u.email), needConsent: !u.legalConsent });
 function me(req) {
   const email = verify(req.cookies[COOKIE]);
   return email ? userOut(db.prepare("SELECT * FROM users WHERE email=?").get(email)) : null;
@@ -253,11 +254,11 @@ app.post("/api/register", (req, res) => {
   email = String(email || "").trim().toLowerCase(); telefon = String(telefon || "").trim();
   if (!ime || !prezime || !validEmail(email) || !telefon || String(pw || "").length < 6)
     return fail(res, 400, "Popunite ime, prezime, telefon i ispravan e-mail. Lozinka mora imati najmanje 6 karaktera.");
-  if (consent !== true) return fail(res, 400, "Potrebno je da potvrdite da ste pročitali pravilnik studija.");
+  if (consent !== true) return fail(res, 400, "Potrebno je da potvrdite da ste upoznati sa Uslovima korišćenja i Politikom privatnosti.");
   if (db.prepare("SELECT 1 FROM users WHERE email=?").get(email)) return fail(res, 409, "Nalog sa ovom e-mail adresom već postoji. Prijavite se.");
   const salt = crypto.randomBytes(12).toString("hex");
-  db.prepare("INSERT INTO users(email,ime,prezime,telefon,salt,hash,created,consent) VALUES(?,?,?,?,?,?,?,?)")
-    .run(email, ime, prezime, telefon, salt, scrypt(String(pw), salt), nowIso(), nowIso());
+  db.prepare("INSERT INTO users(email,ime,prezime,telefon,salt,hash,created,consent,legalConsent) VALUES(?,?,?,?,?,?,?,?,?)")
+    .run(email, ime, prezime, telefon, salt, scrypt(String(pw), salt), nowIso(), nowIso(), nowIso());
   setLogin(res, email);
   res.json({ me: userOut(db.prepare("SELECT * FROM users WHERE email=?").get(email)) });
 });
@@ -273,6 +274,11 @@ app.post("/api/login", (req, res) => {
 });
 app.post("/api/logout", (req, res) => { res.clearCookie(COOKIE); res.json({ ok: true }); });
 app.get("/api/me", (req, res) => res.json({ me: me(req) }));
+// nalozi napravljeni pre uvođenja Uslova korišćenja i Politike privatnosti prihvataju ih pri prvoj sledećoj poseti
+app.post("/api/consent", auth, (req, res) => {
+  db.prepare("UPDATE users SET legalConsent=? WHERE email=?").run(nowIso(), req.user.email);
+  res.json({ me: { ...req.user, needConsent: false } });
+});
 app.post("/api/profile", auth, (req, res) => {
   const telefon = String((req.body || {}).telefon || "").trim();
   if (!telefon) return fail(res, 400, "Unesite broj telefona.");
