@@ -600,6 +600,15 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 .foot-legal a { color: rgba(248,243,232,.82); text-decoration-color: rgba(248,243,232,.3); }
 .foot-legal a:hover { color: var(--paper); }
 .foot-legal + .foot-copy { margin-top: 18px; }
+/* obrasci za preuzimanje */
+.forms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-card { align-content: start; gap: 12px; }
+.form-card .form-ico { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--bg); color: var(--olive); }
+.form-card .form-ico svg { width: 24px; height: 24px; }
+.form-card h3 { font-family: var(--display); font-size: 25px; font-weight: 500; font-style: italic; letter-spacing: 0; text-transform: none; color: var(--olive-deep); line-height: 1.15; }
+.form-card .note { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+.form-card .btn { margin-top: 4px; }
+@media (max-width: 640px) { .forms-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -949,7 +958,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 <p>Ovi Uslovi korišćenja poslednji put izmenjeni su 1. decembra 2026. godine.</p>
 
     </article>
-    <div class="doc-foot"><a class="btn ghost" href="#privatnost">Politika privatnosti</a><a class="btn ghost" href="#pravilnik">Pravilnik studija</a></div>
+    <div class="doc-foot"><a class="btn ghost" href="#obrasci">Obrasci</a><a class="btn ghost" href="#privatnost">Politika privatnosti</a><a class="btn ghost" href="#pravilnik">Pravilnik studija</a></div>
   </section>
 
   <!-- POLITIKA PRIVATNOSTI -->
@@ -1013,6 +1022,29 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 
     </article>
     <div class="doc-foot"><a class="btn ghost" href="#uslovi">Uslovi korišćenja</a><a class="btn ghost" href="#pravilnik">Pravilnik studija</a></div>
+  </section>
+
+  <!-- OBRASCI -->
+  <section data-view="obrasci" hidden>
+    <div>
+      <h2>Obrasci</h2>
+      <p class="lead">Obrazac reklamacije i obrazac odustanka od ugovora, za preuzimanje.</p>
+    </div>
+    <div class="forms-grid">
+      <article class="card form-card">
+        <span class="form-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>
+        <h3>Obrazac reklamacije</h3>
+        <p class="note">Ako smatrate da Usluga nije pružena u skladu sa ugovorom. Popunjen obrazac pošaljite na <a href="mailto:ritualstudio99@gmail.com">ritualstudio99@gmail.com</a> ili ga predajte u Studiju (Uslovi korišćenja, tačka V.3.5).</p>
+        <a class="btn" href="/docs/obrazac-reklamacije.docx" download>Preuzmi obrazac</a>
+      </article>
+      <article class="card form-card">
+        <span class="form-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>
+        <h3>Obrazac odustanka od ugovora</h3>
+        <p class="note">Za odustanak od ugovora zaključenog na daljinu u roku od 14 dana. Popunjen obrazac pošaljite na <a href="mailto:ritualstudio99@gmail.com">ritualstudio99@gmail.com</a> ili poštom na adresu Studija (Uslovi korišćenja, tačka V.3.1).</p>
+        <a class="btn" href="/docs/obrazac-odustanka.docx" download>Preuzmi obrazac</a>
+      </article>
+    </div>
+    <div class="doc-foot"><a class="btn ghost" href="#uslovi">Uslovi korišćenja</a><a class="btn ghost" href="#privatnost">Politika privatnosti</a></div>
   </section>
 
   <!-- KONTAKT -->
@@ -1107,7 +1139,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
     <div><h3>Kontakt</h3><div id="foot-contact" class="foot-list"></div></div>
     <div><h3>Radno vreme</h3><div id="foot-hours" class="foot-list"></div></div>
   </div>
-  <div class="foot-legal" role="navigation" aria-label="Pravni dokumenti"><a href="#uslovi">Uslovi korišćenja</a><a href="#privatnost">Politika privatnosti</a><a href="#pravilnik">Pravilnik studija</a></div>
+  <div class="foot-legal" role="navigation" aria-label="Pravni dokumenti"><a href="#uslovi">Uslovi korišćenja</a><a href="#privatnost">Politika privatnosti</a><a href="#obrasci">Obrasci</a><a href="#pravilnik">Pravilnik studija</a></div>
   <p class="foot-copy">Ritual Pilates Studio · Skenderbegova 53, Dorćol, Beograd</p>
 </footer>
 <div class="modal-root" id="modal-gen" hidden>
@@ -2059,7 +2091,7 @@ async function loadSettings() {
 }
 
 /* ---------- navigacija ---------- */
-const VIEWS = ["zakazi", "moji-termini", "prijava", "cenovnik", "pravilnik", "uslovi", "privatnost", "kontakt", "raspored", "klijenti", "klijent", "podesavanja"];
+const VIEWS = ["zakazi", "moji-termini", "prijava", "cenovnik", "pravilnik", "uslovi", "privatnost", "obrasci", "kontakt", "raspored", "klijenti", "klijent", "podesavanja"];
 const ADMIN_VIEWS = ["raspored", "klijenti", "klijent", "podesavanja"];
 /* pomeri stranicu tako da sadržaj počne odmah ispod zaglavlja i kartica (tabova) */
 function scrollToContent() {
@@ -2101,6 +2133,7 @@ const PAGES = [
   { name: "Pravilnik studija", meta: "otkazivanje, kašnjenje, pomeranje termina", view: "pravilnik", kw: "pravilnik pravila otkazivanje otkaz otkazati kasnjenje pomeranje promena zamrzavanje produzenje uslovi" },
   { name: "Uslovi korišćenja", meta: "pravila korišćenja aplikacije i usluga", view: "uslovi", kw: "uslovi koriscenja pravila ugovor odustanak reklamacija povracaj novca refundacija otkazivanje paketi clanarina podaci o studiju pib" },
   { name: "Politika privatnosti", meta: "lični podaci i kolačići", view: "privatnost", kw: "politika privatnosti privatnost licni podaci podataka kolacici kolacic cookies gdpr brisanje naloga prava" },
+  { name: "Obrasci", meta: "obrazac reklamacije i obrazac odustanka", view: "obrasci", kw: "obrasci obrazac reklamacija reklamacije prigovor zalba odustanak odustanka raskid preuzmi" },
   { name: "Moji termini", meta: "vaše rezervacije i paket", view: "moji-termini", kw: "moji termini moje rezervacije paket preostalo stanje otkazi promeni nalog prijava" }
 ];
 function searchIndex() {
