@@ -1,0 +1,141 @@
+{
+"title": "Obrazac za reklamaciju",
+"blocks": [
+[
+"lead",
+"Dragi klijenti, vašu reklamaciju možete podneti usmeno u Studiju, telefonom, e-poštom ili poštom. Uz reklamaciju dostavite račun ili drugi dokaz o pruženoj usluzi. Više informacija nalazi se u Uslovima korišćenja."
+],
+[
+"h",
+"Prima (podaci o pružaocu usluge)"
+],
+[
+"table",
+[
+[
+"Poslovno ime",
+"MARINA IGNJATOVIĆ PR FITNES-PILATES STUDIO RITUAL PILATES STUDIO BEOGRAD (STARI GRAD)"
+],
+[
+"Adresa",
+"Skenderbegova broj 53, Stari Grad, 11158 Beograd"
+],
+[
+"E-pošta",
+"ritualstudio99@gmail.com"
+],
+[
+"Telefon",
+"+381 66 428 926"
+]
+],
+"filled"
+],
+[
+"h",
+"Podaci o potrošaču"
+],
+[
+"table",
+[
+"Ime i prezime",
+"Adresa",
+"Telefon",
+"E-adresa"
+]
+],
+[
+"h",
+"Usluga na koju se reklamacija odnosi"
+],
+[
+"checks",
+[
+"Individualni Trening",
+"Grupni Trening",
+"Probni Trening",
+"Paket treninga",
+"Članarina",
+"Obračun cene / račun",
+"Drugo: ______________________"
+]
+],
+[
+"table",
+[
+"Datum pružanja Usluge (ili Termina)",
+"Instruktor",
+"Broj i datum računa",
+"Uplaćeni iznos (RSD)"
+]
+],
+[
+"h",
+"Opis nedostatka"
+],
+[
+"p",
+"Opišite šta nije bilo u skladu sa ugovorom (npr. Trening nije održan ili je kraće trajao, pogrešno obračunata cena, neodgovarajuće prilagođavanje Treninga, članarina ili Paket nisu evidentirani):"
+],
+[
+"bigbox",
+"Opis"
+],
+[
+"h",
+"Vaš zahtev"
+],
+[
+"checks",
+[
+"Otklanjanje nedostatka (ponovno pružanje Usluge)",
+"Umanjenje cene",
+"Raskid ugovora uz povraćaj novca",
+"Ispravka pogrešno obračunate cene",
+"Drugo: ______________________"
+]
+],
+[
+"h",
+"Prilozi"
+],
+[
+"checks",
+[
+"Račun ili drugi dokaz o pruženoj usluzi",
+"Drugo: ______________________"
+]
+],
+[
+"h",
+"Kako želite da Vas obavestimo o odgovoru"
+],
+[
+"checks",
+[
+"E-pošta",
+"Telefon",
+"Pošta"
+]
+],
+[
+"table",
+[
+"Datum",
+"Potpis (samo ako se obrazac podnosi u papirnoj formi)"
+]
+],
+[
+"studio"
+],
+[
+"table",
+[
+"Broj reklamacije u evidenciji",
+"Datum prijema reklamacije",
+"Potvrda prijema izdata (datum i način)",
+"Prijem primio (ime i prezime)"
+]
+]
+]
+}

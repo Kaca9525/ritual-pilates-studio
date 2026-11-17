@@ -531,6 +531,86 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
   [data-rise] { transform: translateY(14px); transition-duration: .5s; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* pravni dokumenti: Uslovi korišćenja i Politika privatnosti (obostrano poravnat tekst) */
+.legal { gap: 0; }
+.card.legal { padding: 34px clamp(20px, 5vw, 46px) 34px; }
+.legal .doc-meta { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-transform: uppercase; color: var(--ink-mute); margin: 0 0 4px; text-align: left; }
+.legal h3 { font-family: var(--display); font-size: clamp(23px, 4.4vw, 29px); font-weight: 500; font-style: italic; letter-spacing: 0; text-transform: none; line-height: 1.15;
+  color: var(--olive-deep); margin: 28px 0 12px; padding-top: 24px; border-top: 1px solid var(--line-soft); text-align: left; scroll-margin-top: 150px; }
+.legal .doc-meta + h3, .legal > h3:first-child { margin-top: 12px; padding-top: 0; border-top: 0; }
+.legal h4 { display: flex; align-items: center; gap: 12px; font-size: 10.5px; font-weight: 500; letter-spacing: .24em; text-transform: uppercase; color: var(--olive); margin: 22px 0 10px; }
+.legal h4::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(215,168,91,.7), transparent); }
+.legal p, .legal li { text-align: justify; text-justify: inter-word; hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; font-size: 15px; line-height: 1.75; color: var(--ink); }
+.legal p { margin: 0 0 12px; }
+.legal ul { list-style: none; margin: 2px 0 14px; padding: 0; display: grid; gap: 8px; }
+.legal li { position: relative; padding-left: 22px; }
+.legal li::before { content: ""; position: absolute; left: 0; top: .9em; width: 10px; height: 1px; background: var(--sun); }
+.legal strong { color: var(--olive-deep); font-weight: 600; }
+.legal a { overflow-wrap: anywhere; }
+.doc-toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.doc-toc button { font: inherit; font-size: 12px; line-height: 1.3; text-align: left; border: 1px solid var(--line); background: rgba(248,243,232,.7); border-radius: 999px; padding: 7px 14px; cursor: pointer; color: var(--ink-soft); transition: border-color .2s, color .2s; }
+.doc-toc button:hover { border-color: var(--olive); color: var(--olive-deep); }
+.doc-foot { display: flex; flex-wrap: wrap; gap: 10px; }
+@media (max-width: 560px) {
+  .card.legal { padding: 26px 18px 24px; border-radius: 20px; }
+  .legal p, .legal li { font-size: 14px; line-height: 1.7; }
+  .legal li { padding-left: 16px; } .legal li::before { width: 8px; }
+  /* sadržaj u jednom redu koji se pomera prstom, da ne zauzima pola ekrana */
+  .doc-toc { flex-wrap: nowrap; overflow-x: auto; margin: 0 -20px; padding: 2px 20px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .doc-toc::-webkit-scrollbar { display: none; }
+  .doc-toc button { flex: none; white-space: nowrap; font-size: 11.5px; padding: 6px 12px; }
+  .modal.consent-box { padding: 22px 16px 18px; }
+  .doc-scroll { padding: 14px 14px 4px; max-height: 38vh; max-height: 38dvh; }
+  .doc-switch button { font-size: 9.5px; letter-spacing: .08em; padding: 10px 6px; }
+  .consent-box .mcal-top h3 { font-size: 25px; }
+  .consent-box .note { font-size: 12px; }
+  /* dugmad Prihvatam / Ne prihvatam uvek vidljiva na dnu prozora */
+  .consent-box .actions { position: sticky; bottom: -18px; z-index: 1; margin: 0 -16px -18px; padding: 12px 16px 16px; background: linear-gradient(to top, var(--paper) 78%, rgba(248,243,232,0)); }
+}
+/* saglasnost pri registraciji */
+.modal.consent-box { width: min(100%, 640px); gap: 14px; padding: 26px 24px 22px; }
+.consent-box .mcal-top h3 { font-family: var(--display); font-size: 28px; font-weight: 400; font-style: italic; letter-spacing: 0; text-transform: none; color: var(--ink); margin: 0 0 6px; }
+.doc-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--bg); padding: 4px; border-radius: 999px; }
+.doc-switch button { font: inherit; font-size: 10px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; border: 0; border-radius: 999px; padding: 11px 8px; background: transparent; color: var(--ink-soft); cursor: pointer; }
+.doc-switch button[aria-selected="true"] { background: var(--olive-deep); color: var(--paper); }
+.doc-scroll { max-height: min(44vh, 420px); overflow: auto; overscroll-behavior: contain; border: 1px solid var(--line-soft); border-radius: 18px; background: var(--glow); padding: 16px 20px 6px; }
+.doc-scroll p, .doc-scroll li { font-size: 14px; line-height: 1.7; }
+.doc-scroll h3 { scroll-margin-top: 0; }
+.consent-box .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.check .link-in, .cookie .link-in { font: inherit; background: none; border: 0; padding: 0; cursor: pointer; color: var(--olive); text-decoration: underline; text-decoration-color: rgba(92,98,62,.35); text-underline-offset: 3px; }
+/* obaveštenje o kolačićima */
+.cookie { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 30; width: min(390px, calc(100vw - 32px));
+  background: var(--olive-deep); color: var(--paper); border: 1px solid rgba(236,214,203,.35); border-radius: 20px; padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start;
+  font-size: 13px; line-height: 1.55; box-shadow: 0 30px 60px -25px rgba(29,28,25,.7); animation: rise .35s ease both; }
+.cookie > svg { flex: none; width: 28px; height: 28px; color: var(--sun); margin-top: 2px; }
+.cookie p { margin: 0 0 12px; color: rgba(248,243,232,.82); }
+.cookie p b { color: var(--paper); font-weight: 500; letter-spacing: .02em; }
+.cookie .link-in { color: #ecd6cb; text-decoration-color: rgba(236,214,203,.5); }
+.cookie .ok { font: inherit; font-size: 10px; font-weight: 500; letter-spacing: .24em; text-transform: uppercase; border: 1px solid var(--paper); border-radius: 999px; padding: 9px 22px; background: var(--paper); color: var(--olive-deep); cursor: pointer; }
+@media (max-width: 900px) { .cookie-on .toast { bottom: calc(170px + env(safe-area-inset-bottom, 0px)); } }
+/* mapa se učitava tek na klik (Google Maps postavlja svoje kolačiće) */
+.map-gate { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 12px; text-align: center; padding: 24px;
+  background: radial-gradient(60% 70% at 50% 35%, var(--glow), var(--bg-deep)); }
+.map-gate svg { width: 34px; height: 34px; color: var(--olive); }
+.map-gate p { max-width: 36ch; margin: 0; font-size: 13px; color: var(--ink-soft); }
+.map-gate .btn { justify-self: center; }
+/* pravni linkovi u podnožju */
+.foot-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; margin: 36px 0 0; padding: 0 20px; font-size: 12px; letter-spacing: .04em; }
+.foot-legal a { color: rgba(248,243,232,.82); text-decoration-color: rgba(248,243,232,.3); }
+.foot-legal a:hover { color: var(--paper); }
+.foot-legal + .foot-copy { margin-top: 18px; }
+/* obrasci za preuzimanje */
+.forms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-card { align-content: start; gap: 12px; }
+.form-card .form-ico { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--bg); color: var(--olive); }
+.form-card .form-ico svg { width: 24px; height: 24px; }
+.form-card h3 { font-family: var(--display); font-size: 25px; font-weight: 500; font-style: italic; letter-spacing: 0; text-transform: none; color: var(--olive-deep); line-height: 1.15; }
+.form-card .note { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+.form-card .btn { margin-top: 4px; }
+.form-dl { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.form-dl .btn.ghost { padding: 13px 20px; }
+@media (max-width: 640px) { .forms-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -664,7 +744,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
         <label class="f">Telefon <input id="r-tel" type="tel" autocomplete="tel" placeholder="06x xxx xxxx" required></label>
         <label class="f">Lozinka <input id="r-pw" type="password" autocomplete="new-password" minlength="6" required></label>
       </div>
-      <label class="check"><input type="checkbox" id="r-consent"> Pročitao/la sam <a href="#pravilnik" id="r-rules">pravilnik studija</a> i prihvatam ga.</label>
+      <label class="check"><input type="checkbox" id="r-consent"> <span>Potvrđujem da sam upoznat/a sa dokumentima <button type="button" class="link-in" data-consent="uslovi">Uslovi korišćenja</button> i <button type="button" class="link-in" data-consent="privatnost">Politika privatnosti</button> (uključujući odeljak o kolačićima), kao i sa <a href="#pravilnik" id="r-rules">pravilnikom studija</a>, i saglasan/na sam sa obradom podataka radi zakazivanja termina.</span></label>
       <button class="btn" type="submit">Napravi nalog</button>
       <p class="note">Već imate nalog? <a href="#prijava" data-auth="login">Prijavite se</a></p>
     </form>
@@ -724,6 +804,251 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
     </div>
   </section>
 
+  <!-- USLOVI KORIŠĆENJA -->
+  <section data-view="uslovi" hidden>
+    <div>
+      <h2>Uslovi korišćenja</h2>
+      <p class="lead">Ritual Pilates Studio · važe od 1. decembra 2026.</p>
+    </div>
+    <nav class="doc-toc" data-toc="doc-uslovi" aria-label="Sadržaj: Uslovi korišćenja"></nav>
+    <article class="card legal" id="doc-uslovi">
+<h3>I. Značenje pojmova</h3>
+<p>U ovim Uslovima korišćenja navedeni pojmovi imaju sledeće značenje:</p>
+<ul>
+<li><strong>„Uslovi korišćenja“</strong> – opšti uslovi korišćenja Aplikacije i posebni uslovi pružanja Usluga, dostupni u ovom dokumentu.</li>
+<li><strong>„Pružalac“, „Studio“, „Ritual“, „mi“</strong> – subjekt naveden u delu IV.</li>
+<li><strong>„Aplikacija“</strong> – web aplikacija i alati Studija, uključujući formu za kontakt i modul za online zakazivanje termina.</li>
+<li><strong>„Korisnik“, „Vi“</strong> – svako lice koje koristi Aplikaciju, zakazuje termin ili kupuje uslugu.</li>
+<li><strong>„Potrošač“</strong> – fizičko lice koje na tržištu pribavlja usluge u svrhe koje nisu namenjene njegovoj poslovnoj ili drugoj komercijalnoj delatnosti.</li>
+<li><strong>„Usluge“</strong> – probni, individualni i grupni Pilates treninzi koji se održavaju u prostorijama Studija, kao i paketi treninga i članarine.</li>
+<li><strong>„Trening“</strong> – pojedinačni individualni ili grupni Pilates trening.</li>
+<li><strong>„Termin“</strong> – dogovoreni datum i vreme održavanja Treninga.</li>
+<li><strong>„Paket“</strong> – unapred uplaćen određen broj Treninga.</li>
+<li><strong>„Članarina“</strong> – Usluga koja Korisniku daje pravo na Treninge u okviru jednog ciklusa članarine.</li>
+<li><strong>„Sadržaj Aplikacije“</strong> – tekstovi, fotografije, video zapisi, logotipi, grafika, dizajn i drugi materijali u Aplikaciji.</li>
+<li><strong>„Korisnički sadržaj“</strong> – svaki sadržaj koji Korisnik dostavi Studiju preko Aplikacije ili društvenih mreža (poruke, fotografije, komentari, recenzije).</li>
+</ul>
+<h3>II. Predmet, prihvatanje uslova i stupanje na snagu</h3>
+<p>Ovim Uslovima korišćenja uređuju se uslovi pod kojima Studio pruža Usluge Korisnicima, kao i uslovi korišćenja Aplikacije.</p>
+<p>Korišćenjem Aplikacije, slanjem upita, zakazivanjem Termina ili kupovinom Usluge, Korisnik potvrđuje da je pročitao ove Uslove korišćenja, da ih razume i da ih prihvata. Ako se ne slažete sa Uslovima korišćenja, molimo Vas da ne koristite Aplikaciju i da ne zakazujete Usluge.</p>
+<p>Uslovi korišćenja stupaju na snagu danom objavljivanja u Aplikaciji i primenjuju se do objavljivanja izmenjene verzije. Na pojedinačne ugovore o uslugama primenjuje se verzija Uslova korišćenja koja je važila u trenutku zaključenja ugovora.</p>
+<p>Ugovor o pružanju Usluge smatra se zaključenim kada Studio potvrdi Termin (putem Aplikacije, telefonom ili porukom) i Korisnik izvrši uplatu u skladu sa tačkom V.2.2, odnosno kada Korisnik uplati Paket ili Članarinu, u zavisnosti od toga šta nastupi prvo, i traje dok Usluga ne bude u potpunosti izvršena.</p>
+<h3>III. Opšti uslovi korišćenja Aplikacije</h3>
+<p><strong>1. Uzrast.</strong> Aplikaciju mogu koristiti i Usluge zakazivati lica starija od 15 godina. Lica starija od 15, a mlađa od 18 godina, mogu pohađati Treninge isključivo uz pisanu saglasnost roditelja ili staratelja, koji preuzima odgovornost za korišćenje Usluge. Prihvatanjem ovih Uslova potvrđujete da ste punoletni ili da imate saglasnost zakonskog zastupnika.</p>
+<p><strong>2. Registracija i zakazivanje.</strong> Za online zakazivanje koristi se Aplikacija, za čije je korišćenje potrebno otvaranje korisničkog naloga i unos traženih podataka.</p>
+<p><strong>3. Tačnost podataka.</strong> Korisnik garantuje da su podaci koje unosi (ime, kontakt telefon, e-adresa) tačni, potpuni i ažurni. Studio nije odgovoran za propuštene Termine ili izostanak obaveštenja usled netačno unetih podataka.</p>
+<p><strong>4. Bezbednost naloga.</strong> Korisnik je odgovoran za čuvanje pristupnih podataka i za sve radnje preduzete preko svog naloga. Dužan je da bez odlaganja obavesti Studio o svakom neovlašćenom korišćenju naloga.</p>
+<p><strong>5. Informativni sadržaji.</strong> Sadržaji u Aplikaciji i na društvenim mrežama Studija (o vežbanju, pokretu, ishrani i sl.) isključivo su informativnog karaktera i ne predstavljaju medicinski savet, dijagnozu niti lečenje. Pre započinjanja programa vežbanja, naročito kod postojećih zdravstvenih stanja, posavetujte se sa lekarom.</p>
+<p><strong>6. Tehnički uslovi.</strong> Za korišćenje Aplikacije potrebni su uređaj sa pristupom internetu i savremen internet pregledač. Troškove internet veze snosi Korisnik.</p>
+<h3>IV. Podaci o pružaocu usluge</h3>
+<p>U skladu sa Zakonom o elektronskoj trgovini i Zakonom o zaštiti potrošača, objavljujemo sledeće podatke:</p>
+<ul>
+<li><strong>Poslovno ime / naziv:</strong> MARINA IGNJATOVIĆ PR FITNES-PILATES STUDIO RITUAL PILATES STUDIO BEOGRAD (STARI GRAD)</li>
+<li><strong>Pravni oblik:</strong> preduzetnik</li>
+<li><strong>Sedište i adresa poslovnog prostora:</strong> Skenderbegova broj 53, Stari Grad, 11158 Beograd</li>
+<li><strong>PIB:</strong> 115465457</li>
+<li><strong>Matični broj:</strong> 68387361</li>
+<li><strong>Registar:</strong> upisan u registar Agencije za privredne registre (APR), broj rešenja o upisu БП 206244/2025 od 05.01.2026. godine</li>
+<li><strong>Šifra i opis pretežne delatnosti:</strong> 93.13 – Delatnost fitnes klubova</li>
+<li><strong>Telefon:</strong> +381 66 428 926</li>
+<li><strong>E-pošta:</strong> <a href="mailto:ritualstudio99@gmail.com">ritualstudio99@gmail.com</a></li>
+<li><strong>Društvene mreže:</strong> Instagram (@pilates__ritual)</li>
+<li><strong>PDV status:</strong> nije u sistemu PDV-a.</li>
+</ul>
+<h3>V. Posebni uslovi pružanja Usluga</h3>
+<h4>1. Opis Usluge, prava i obaveze Korisnika</h4>
+<p><strong>1.1. Opis Usluga.</strong> Studio pruža individualne i grupne Pilates Treninge u svojim prostorijama. Treninzi su rekreativnog karaktera i ne predstavljaju zdravstvenu uslugu, terapiju, fizikalni tretman niti rehabilitaciju. Vrste Treninga, trajanje, veličina grupe i raspored objavljeni su u Aplikaciji i dostupni u Studiju.</p>
+<p><strong>1.2. Cene i sadržaj Usluga.</strong> Opis, sadržaj i cena pojedinačnih Treninga, Paketa i Članarine objavljeni su u Aplikaciji i dostupni u Studiju i izraženi su u dinarima (RSD). Rezultati vežbanja zavise od individualnih karakteristika, redovnosti i angažovanja Korisnika; opisi rezultata nisu garancija konkretnog ishoda.</p>
+<p><strong>1.3. Zdravstveno stanje i prilagođavanje Treninga.</strong> Korisnik vežba u skladu sa sopstvenim zdravstvenim stanjem i mogućnostima i dužan je da poštuje uputstva instruktora. Korisnik nije dužan da Studiju dostavlja podatke o zdravstvenom stanju. Ukoliko je Trening potrebno prilagoditi zdravstvenom stanju (npr. trudnoća, povreda, operacija, hronično oboljenje, bol u leđima ili zglobovima), Korisnik se poziva da o tome na vreme obavesti instruktora, i to samo u meri u kojoj je to neophodno za bezbedno prilagođavanje vežbi. Ako Korisnik odluči da te podatke ne podeli, Studio ne može da prilagodi Trening zdravstvenom stanju o kome nije obavešten. Preporučuje se da se pre početka vežbanja Korisnik posavetuje sa lekarom, a Studio može zatražiti mišljenje lekara kada proceni da je to neophodno radi bezbednosti. Studio zadržava pravo da odbije ili prekine Trening ukoliko proceni da bi vežbanje moglo ugroziti zdravlje Korisnika ili drugih polaznika.</p>
+<p><strong>1.4. Zakazivanje i dolazak.</strong> Termin se zakazuje preko sistema za online zakazivanje u Aplikaciji, telefonom ili putem društvenih mreža. Molimo da na Trening dođete najmanje 5 minuta ranije. Kod grupnih Treninga ulazak nakon početka časa moguć je najkasnije 5 minuta nakon početka iz bezbednosnih razloga i radi poštovanja ostalih polaznika. Kašnjenje na individualni Trening skraćuje trajanje Treninga bez umanjenja cene.</p>
+<p><strong>1.5. Zakazivanje putem Aplikacije i plaćanje Termina.</strong> Zakazivanje putem Aplikacije vrši se u skladu sa opštim uslovima iz dela III. Termin se plaća unapred, u punom iznosu cene izabrane Usluge, u skladu sa tačkom V.2.2. Korisnik može da izabere da Termin plati i direktno u Studiju, na licu mesta, pre početka Treninga.</p>
+<p><strong>1.6. Otkazivanje i pomeranje Termina.</strong> Termin je moguće otkazati ili pomeriti najkasnije 12 sati pre zakazanog vremena, telefonom ili preko Aplikacije. Ako je Termin otkazan u tom roku, Korisniku se nudi novi Termin ili povraćaj uplaćenog iznosa. Kraći rok ne ostavlja dovoljno vremena da se upražnjeno mesto ponudi drugom Korisniku, što je posebno važno kod grupnih Treninga sa ograničenim brojem mesta. U slučaju otkazivanja nakon navedenog roka ili nedolaska bez obaveštenja, Studio zadržava pravo da: (a) smatra Termin iskorišćenim u okviru Paketa ili Članarine; (b) odbije zakazivanje novih Termina bez prethodne uplate.</p>
+<p><strong>1.7. Paketi treninga.</strong> Paketi (npr. paket od 8 ili 12 Treninga) plaćaju se unapred, u celosti, i koriste se prema dinamici koju dogovore Korisnik i Studio. Rok važenja Paketa je 1 (jedan) mesec od dana uplate. Neiskorišćeni Treninzi nakon isteka roka prestaju da važe. Izuzetno, rok se može produžiti uz dogovor i potvrdu Studija, na primer u slučaju bolesti ili povrede, uz prezentaciju odgovarajuće potvrde. Paket je lične prirode i ne može se ustupiti trećem licu bez saglasnosti Studija.</p>
+<p><strong>1.8. Članarina.</strong> Članarina daje pravo na Treninge u okviru mesečne članarine, u obimu koji je objavljen uz cenu pojedinačnog treninga, ili paketa, u skladu sa izabranom uslugom i u ciklusu od mesec dana. Neiskorišćeni Treninzi iz jednog mesečnog ciklusa prenose se u naredni ciklus u opravdanim slučajevima, u dogovoru sa ovlašćenim licem Studija. Članarina je lične prirode i ne može se ustupiti trećem licu.</p>
+<p><strong>1.9. Grupni Treninzi.</strong> Grupe imaju ograničen broj mesta - 4 mesta po terminu. Studio zadržava pravo da grupni Trening ne održi ukoliko se ne prijavi minimalan broj polaznika, o čemu će Korisnici biti obavešteni najkasnije 2 sata pre početka, uz ponudu novog Termina. Studio zadržava pravo da, iz opravdanih razloga, zameni instruktora ili promeni vreme i sadržaj Treninga.</p>
+<p><strong>1.10. Obaveze Korisnika.</strong> Korisnik je dužan da poštuje ove Uslove, pravila ponašanja u Studiju, uputstva instruktora i higijenske mere; da koristi opremu namenski i pažljivo; da nosi udobnu odeću i čarape sa protivklizačem (ili obuću predviđenu za Studio); da ne pristupa Treningu pod dejstvom alkohola ili psihoaktivnih supstanci; da ne ometa druge polaznike; da prekine vežbanje i obavesti instruktora ukoliko oseti bol, vrtoglavicu ili drugu nelagodnost; i da blagovremeno izmiruje obaveze plaćanja. Korisnik odgovara za štetu koju namerno ili nepažnjom prouzrokuje na opremi i prostorijama Studija. Korisnik koji ima znakove zaraznog oboljenja treba da se uzdrži od dolaska na Trening.</p>
+<p><strong>1.11. Fotografije i snimci.</strong> Fotografije i video zapisi Korisnika objavljuju se isključivo uz prethodnu izričitu pisanu saglasnost Korisnika, koja se može opozvati u bilo kom trenutku bez posledica po pružanje Usluga.</p>
+<p><strong>1.12.</strong> Studio zadržava pravo da ukloni sadržaj koji je u suprotnosti sa ovim Uslovima ili zakonom.</p>
+<h4>2. Cene, naplata, članarina i povraćaj sredstava</h4>
+<p><strong>2.1.</strong> Cene su izražene u dinarima (RSD) bez obračunatog PDV-a jer pružalac nije u sistemu PDV-a i važe u trenutku zaključenja ugovora. Studio zadržava pravo izmene cena; izmena ne utiče na već zaključene ugovore i plaćene Usluge.</p>
+<p><strong>2.2. Način plaćanja.</strong> Termini, Paketi i Članarina plaćaju se unapred, u punom iznosu. Plaćanje se može izvršiti uplatom na račun u skladu sa dobijenim instrukcijama, kao i direktno u Studiju, na licu mesta, gotovinom ili platnom karticom, pre početka Treninga.</p>
+<p><strong>2.3.</strong> Za sve uplate Studio izdaje fiskalni račun ili drugi dokument u skladu sa propisima o fiskalizaciji.</p>
+<p><strong>2.4. Cena Članarine i njena izmena.</strong> Cena Članarine za svaki ciklus jednaka je ceni važećoj na dan početka tog ciklusa. O izmeni cene Članarine Korisnik će biti obavešten najkasnije 30 dana pre početka ciklusa u kojem se nova cena primenjuje, uz mogućnost da otkaže automatsko obnavljanje u skladu sa tačkom V.1.8.</p>
+<p><strong>2.5. Povraćaj sredstava.</strong> Kada Korisnik ima pravo na povraćaj novca (otkazivanje Termina u roku iz tačke V.1.6, otkazivanje Treninga od strane Studija, nemogućnost pružanja Usluge ili opravdan odustanak), povraćaj se vrši istim sredstvom plaćanja kojim je izvršena uplata, bez nepotrebnog odlaganja, a najkasnije u roku od 14 dana od dana prijema izjave o odustanku ili od dana kada je utvrđeno pravo na povraćaj.</p>
+<p><strong>2.6.</strong> Ako Studio iz opravdanih razloga (bolest instruktora, kvar opreme, viša sila) otkaže ili promeni zakazani Termin, Korisniku se nudi novi Termin ili povraćaj uplaćenog iznosa za neiskorišćenu Uslugu.</p>
+<h4>3. Prava potrošača</h4>
+<p><strong>3.1. Pravo na odustanak (14 dana).</strong> Potrošač koji zaključi ugovor na daljinu (npr. putem Aplikacije ili telefonom) ima, u skladu sa Zakonom o zaštiti potrošača, pravo da odustane od ugovora u roku od 14 dana od dana zaključenja, bez navođenja razloga. Izjavu o odustanku možete poslati na e-adresu <a href="mailto:ritualstudio99@gmail.com">ritualstudio99@gmail.com</a> ili poštom na adresu Studija, korišćenjem obrasca za odustanak dostupnog na Aplikaciji ili bilo koje druge nedvosmislene izjave.</p>
+<p><strong>3.2. Izuzeci od prava na odustanak.</strong> Potrošač nema pravo na odustanak, između ostalog:</p>
+<ul>
+<li>kada je Usluga u potpunosti izvršena, ako je njeno izvršenje počelo uz prethodnu izričitu saglasnost potrošača i uz njegovu potvrdu da zna da će izgubiti pravo na odustanak nakon potpunog izvršenja;</li>
+<li>kada se radi o uslugama povezanim sa slobodnim aktivnostima (npr. Treninzi) i ugovor predviđa konkretan datum ili period izvršenja, kao što je pojedinačno zakazan i plaćen Termin;</li>
+<li>kada se radi o digitalnom sadržaju koji se ne isporučuje na trajnom nosaču podataka ako je isporuka počela uz izričitu saglasnost potrošača i njegovu potvrdu da time gubi pravo na odustanak;</li>
+<li>u drugim slučajevima predviđenim zakonom.</li>
+</ul>
+<p><strong>3.3.</strong> Ukoliko potrošač odustane od ugovora o usluzi čije je izvršenje počelo na njegov izričit zahtev tokom roka za odustanak, dužan je da plati srazmerni deo cene za do tada pružene Usluge. Za Pakete i Članarine bez unapred određenog datuma izvršenja, Treninzi mogu da počnu pre isteka roka za odustanak samo na izričit zahtev Korisnika, upućen na trajnom nosaču podataka (npr. e-poštom ili potvrdom/rezervacijom u Aplikaciji). Srazmerni iznos pružene Usluge obračunava se na osnovu ugovorene cene i ne može biti veći od tržišne vrednosti pruženih Usluga.</p>
+<p><strong>3.4. Ugovori zaključeni u poslovnim prostorijama.</strong> Za Usluge ugovorene i plaćene neposredno u prostorijama Studija pravo na odustanak iz tačke 3.1. ne primenjuje se, ali Potrošač zadržava sva prava iz osnova saobraznosti i reklamacije.</p>
+<p><strong>3.5. Reklamacije.</strong> Potrošač ima pravo da uloži reklamaciju ukoliko smatra da Usluga nije pružena u skladu sa ugovorom, zbog pogrešno obračunate cene i drugih nedostataka. Reklamaciju možete uložiti usmeno u prostorijama Studija Skenderbegova broj 53, 11158 Beograd, telefonom, pisanim putem na e-adresu: <a href="mailto:ritualstudio99@gmail.com">ritualstudio99@gmail.com</a> ili na drugom trajnom nosaču podataka, uz navođenje podataka o Korisniku, Usluzi, datumu pružanja i opisa nedostatka, uz dostavljanje računa ili drugog dokaza o pruženoj Usluzi. Obrazac reklamacije dostupan je u Studiju i na Aplikaciji. Studio odmah izdaje pisanu potvrdu ili elektronskim putem potvrđuje prijem reklamacije, odnosno saopštava broj pod kojim je zavedena u evidenciji primljenih reklamacija. Studio pisanim ili elektronskim putem odgovara Potrošaču bez odlaganja, a najkasnije u roku od 8 dana od dana prijema reklamacije. Odgovor sadrži odluku da li se reklamacija prihvata, obrazloženje ako se ne prihvata, izjašnjenje o zahtevu Potrošača i predlog u kom roku i kako će reklamacija biti rešena. Rok za rešavanje reklamacije ne može biti duži od 15 dana od dana njenog podnošenja. Potrošač je dužan da se o odgovoru Studija izjasni u roku od tri dana od prijema; ukoliko se ne izjasni, smatra se da nije saglasan sa predlogom. Ukoliko Studio iz objektivnih razloga ne može da reši reklamaciju u roku, rok se može produžiti samo jednom, uz obaveštenje i saglasnost Potrošača. Studio vodi evidenciju primljenih reklamacija. U slučaju opravdane reklamacije, Potrošač može zahtevati otklanjanje nedostatka, umanjenje cene, ponovno pružanje Usluge ili raskid ugovora uz povraćaj novca, u skladu sa zakonom.</p>
+<p><strong>3.6. Vansudsko rešavanje potrošačkih sporova.</strong> Ukoliko Potrošač nije zadovoljan ishodom reklamacije, može pokrenuti postupak vansudskog rešavanja potrošačkog spora pred ovlašćenim telom (posrednikom) upisanim u registar koji vodi ministarstvo nadležno za poslove zaštite potrošača, kao i obratiti se udruženjima za zaštitu potrošača.</p>
+<p><strong>3.7.</strong> Odredbe ovih Uslova ne isključuju niti ograničavaju prava koja potrošaču pripadaju po prinudnim propisima.</p>
+<h4>4. Ograničenje odgovornosti</h4>
+<p><strong>4.1.</strong> Cene, opisi i dostupnost Usluga mogu se menjati.</p>
+<p><strong>4.2.</strong> Studio nije odgovoran za štetu nastalu usled:</p>
+<ul>
+<li>netačnih, nepotpunih ili prećutanih podataka o zdravstvenom stanju koje je dao Korisnik, odnosno neobaveštavanja instruktora o stanju koje zahteva prilagođavanje Treninga;</li>
+<li>nepoštovanja uputstava instruktora pre, tokom i nakon Treninga, ili vežbanja suprotno njihovim preporukama;</li>
+<li>vežbanja uprkos nelagodnosti, bolu ili savetu lekara da se od vežbanja uzdrži;</li>
+<li>gubitka ili oštećenja ličnih stvari ostavljenih u prostorijama Studija, osim ako je šteta nastala namerno ili krajnjom nepažnjom Studija.</li>
+</ul>
+<p><strong>4.3.</strong> Individualni rezultati vežbanja variraju i ne mogu se garantovati.</p>
+<p><strong>4.4.</strong> U meri u kojoj to zakon dozvoljava, Studio ne odgovara za indirektne i posledične štete, izgubljenu dobit, izgubljene prilike ili slične štete nastale u vezi sa pružanjem Usluga, čak i ako je unapred obavešten o mogućnosti nastanka takve štete.</p>
+<p><strong>4.5.</strong> Ništa u ovim Uslovima ne isključuje odgovornost Studija koja se po zakonu i prinudnim propisima ne može isključiti ili ograničiti, uključujući odgovornost za štetu nastalu namerno ili krajnjom nepažnjom, kao i za povredu života i telesnog integriteta prouzrokovanu krivicom Studija.</p>
+<h3>VI. Korisnički sadržaj i licenca</h3>
+<p><strong>1.</strong> Korisnik zadržava sva prava na sadržaj koji dostavi Studiju (poruke, fotografije, recenzije, komentari).</p>
+<p><strong>2.</strong> Davanjem saglasnosti i slanjem Korisničkog sadržaja koji je namenjen objavljivanju (npr. recenzija, fotografije sa treninga) Korisnik daje Studiju izričitu saglasnost i neekskluzivnu, neprenosivu licencu da taj sadržaj, bez naknade, prikazuje, čuva i koristi u Aplikaciji i na zvaničnim društvenim mrežama Studija, uz opoziv u bilo kom trenutku pisanim zahtevom, osim za sadržaj koji je već objavljen u štampanim ili arhiviranim materijalima.</p>
+<p><strong>3.</strong> Korisnik garantuje da je nosilac prava na dostavljeni sadržaj ili da ima potrebnu dozvolu i da sadržaj ne krši prava trećih lica niti zakon.</p>
+<h3>VII. Zabranjena ponašanja</h3>
+<p>Korisniku je zabranjeno da:</p>
+<ul>
+<li>koristi Aplikaciju na način protivan zakonu, ovim Uslovima ili dobrim poslovnim običajima;</li>
+<li>unosi lažne, netačne ili tuđe podatke, ili se lažno predstavlja;</li>
+<li>pokušava neovlašćen pristup Aplikaciji, serverima, bazama podataka ili nalozima drugih lica;</li>
+<li>unosi ili širi viruse, zlonamerni kod ili sadržaj koji može oštetiti ili ometati rad Aplikacije;</li>
+<li>koristi automatizovane alate (botove, skripte, scraping) bez pisane saglasnosti Studija;</li>
+<li>masovno ili zlonamerno zakazuje Termine koje ne namerava da iskoristi;</li>
+<li>objavljuje ili šalje uvredljiv, pretnjujući, diskriminatorni, nezakonit ili obmanjujući sadržaj, kao i sadržaj kojim se povređuju prava trećih lica;</li>
+<li>kopira, umnožava, distribuira ili komercijalno koristi Sadržaj Aplikacije, uključujući programe vežbi i materijale Studija, bez prethodne pisane saglasnosti;</li>
+<li>snima, fotografiše ili emituje Treninge, osoblje ili druge Korisnike u prostorijama Studija bez saglasnosti svih prisutnih lica;</li>
+<li>vređa, uznemirava ili ugrožava bezbednost osoblja i drugih Korisnika.</li>
+</ul>
+<p>U slučaju kršenja zabrana Studio može ograničiti ili ukinuti pristup Aplikaciji, odbiti pružanje Usluge i preduzeti zakonom dozvoljene mere.</p>
+<h3>VIII. Intelektualna svojina</h3>
+<p><strong>1.</strong> Sadržaj Aplikacije, uključujući logotip, naziv, vizuelni identitet, tekstove, fotografije, video zapise, dizajn, strukturu i programski kod, zaštićen je autorskim i srodnim pravima i pripada Studiju, odnosno licima od kojih je Studio dobio pravo korišćenja.</p>
+<p><strong>2.</strong> Korisniku se daje ograničeno, neekskluzivno, neprenosivo pravo da Aplikaciju koristi isključivo za lične, nekomercijalne potrebe u skladu sa ovim Uslovima.</p>
+<p><strong>3.</strong> Programi vežbi, nastavni i video materijali, kao i tehnike rada Studija predstavljaju intelektualnu svojinu Studija i namenjeni su isključivo ličnoj upotrebi Korisnika. Njihovo umnožavanje, objavljivanje ili preprodaja nisu dozvoljeni bez pisane saglasnosti ovlašćenog lica Studija.</p>
+<p><strong>4.</strong> Nazivi brendova i proizvoda koji se pominju u Aplikaciji pripadaju njihovim vlasnicima.</p>
+<h3>IX. Ograničenje odgovornosti za Aplikaciju</h3>
+<p><strong>1.</strong> Aplikacija i informativni sadržaji pružaju se u stanju „kakvi jesu“. Ulažemo razumnu pažnju da informacije budu tačne i ažurne, ali ne garantujemo da su u svakom trenutku potpune i bez grešaka.</p>
+<p><strong>2.</strong> Studio nije odgovoran za štetu nastalu usled tehničkih smetnji, prekida internet veze ili rada servisa trećih lica (uključujući servise društvenih mreža), više sile, kao ni usled korišćenja linkova ka spoljnim sajtovima trećih lica.</p>
+<p><strong>3.</strong> U meri u kojoj zakon dozvoljava, Studio ne odgovara za indirektne i posledične štete nastale u vezi sa korišćenjem Aplikacije.</p>
+<h3>X. Raspoloživost, održavanje i suspenzija naloga</h3>
+<p><strong>1.</strong> Trudimo se da Aplikacija bude dostupna neprekidno, ali ne garantujemo pristup bez prekida ili grešaka. Studio može privremeno obustaviti rad Aplikacije ili pojedinih funkcija radi održavanja, unapređenja ili iz bezbednosnih razloga, a o planiranim dužim prekidima nastojaće da blagovremeno obavesti Korisnike.</p>
+<p><strong>2.</strong> Studio može privremeno ili trajno ograničiti ili ukinuti pristup Aplikaciji ili nalogu Korisnika, kao i odbiti zakazivanje, u slučaju kršenja ovih Uslova, zloupotrebe, ponovljenih neopravdanih nedolazaka ili ugrožavanja bezbednosti osoblja i drugih Korisnika. Korisnik će, kad je to moguće, biti obavešten o razlozima i imaće mogućnost da se izjasni.</p>
+<p><strong>3.</strong> Korisnik može u svakom trenutku prestati da koristi Aplikaciju, a brisanje naloga ili podataka može zatražiti slanjem zahteva na e-adresu iz dela XIV, uz poštovanje zakonskih rokova čuvanja dokumentacije.</p>
+<h3>XI. Zaštita podataka o ličnosti</h3>
+<p><strong>1.</strong> Studio obrađuje podatke o ličnosti u skladu sa Zakonom o zaštiti podataka o ličnosti i drugim primenjivim propisima. Detaljne informacije o vrstama podataka koji se prikupljaju, svrhama i pravnom osnovu obrade, rokovima čuvanja, primaocima podataka i pravima lica na koje se podaci odnose (pristup, ispravka, brisanje, ograničenje obrade, prenosivost, prigovor i opoziv saglasnosti) nalaze se u Politici privatnosti dostupnoj u Aplikaciji i u Studiju.</p>
+<p><strong>2.</strong> Podaci o zdravstvenom stanju predstavljaju naročito osetljive podatke. Studio ih ne zahteva kao uslov za korišćenje Usluga. Ukoliko ih Korisnik dobrovoljno saopšti radi prilagođavanja Treninga, obrađuju se isključivo u meri neophodnoj za bezbedno prilagođavanje vežbi, na osnovu izričite saglasnosti Korisnika, koju može opozvati u bilo kom trenutku, i u skladu sa Politikom privatnosti.</p>
+<p><strong>3.</strong> Ukoliko smatrate da su Vam povređena prava u vezi sa obradom podataka o ličnosti, možete se obratiti Studiju, a imate pravo da podnesete pritužbu Povereniku za informacije od javnog značaja i zaštitu podataka o ličnosti.</p>
+<h3>XII. Izmene Uslova i obaveštavanje Korisnika</h3>
+<p>Studio zadržava pravo da povremeno menja ove Uslove, naročito radi usklađivanja sa propisima, promenama u uslugama, poslovanju ili tehničkim funkcionalnostima.</p>
+<p>Izmenjeni Uslovi objavljuju se u Aplikaciji sa novim datumom poslednje izmene, a dostupni su i u Studiju. Studio o izmenama obaveštava Korisnika u Aplikaciji i na e-adresu najkasnije 30 dana pre početka primene izmena. Izmene koje se odnose na cenu ili sadržaj Članarine primenjuju se najranije od narednog ciklusa, a Korisnik ima pravo da otkaže Članarinu pre početka primene izmena. Ako se Korisnik ne slaže sa izmenama, može da prestane da koristi Aplikaciju; nastavak korišćenja nakon početka primene izmena smatra se prihvatanjem samo ako je Korisnik prethodno obavešten na ovaj način. Izmene ne utiču na prava stečena iz već zaključenih ugovora i plaćene Usluge.</p>
+<h3>XIII. Merodavno pravo, nadležni sud i završne odredbe</h3>
+<p>Na ove Uslove i na sve odnose između Studija i Korisnika primenjuje se pravo Republike Srbije. Sporove koji proisteknu iz ovih Uslova strane će nastojati da reše sporazumno. Ukoliko to nije moguće, za potrošačke sporove nadležan je sud određen zakonom, a za ostale sporove stvarno nadležni sud u Beogradu. Potrošač zadržava pravo na vansudsko rešavanje spora.</p>
+<p>Ukoliko se neka odredba ovih Uslova pokaže ništavom, nevažećom ili neprimenjivom, to ne utiče na punovažnost ostalih odredbi. Takva odredba biće zamenjena važećom odredbom koja je po dejstvu najbliža nameri originalne odredbe.</p>
+<p>Ovi Uslovi, zajedno sa Politikom privatnosti, kao i svim pojedinačnim potvrdama Termina, ponudama i pisanim dogovorima o Uslugama, čine celokupan sporazum između Studija i Korisnika. Propuštanje Studija da u određenom trenutku ostvari neko svoje pravo ne znači odricanje od tog prava. Korisnik ne može preneti svoja prava i obaveze iz ovih Uslova na treće lice bez pisane saglasnosti Studija.</p>
+<h3>XIV. Kontakt za pitanja i prigovore</h3>
+<p>Za sva pitanja, primedbe, prigovore, reklamacije i zahteve u vezi sa ovim Uslovima i Uslugama možete nas kontaktirati:</p>
+<ul>
+<li><strong>Ritual Pilates Studio</strong></li>
+<li><strong>Adresa:</strong> Skenderbegova br. 53, Beograd-Stari Grad</li>
+<li><strong>Telefon:</strong> +381 66 428 926</li>
+<li><strong>E-pošta:</strong> <a href="mailto:ritualstudio99@gmail.com">ritualstudio99@gmail.com</a></li>
+<li><strong>Instagram:</strong> Pilates__Ritual</li>
+<li><strong>Radno vreme:</strong> ponedeljak-petak: 08:00-21:00; subota 08:00-11:30.</li>
+</ul>
+<p>Na pisane upite odgovaramo u razumnom roku, a najkasnije u rokovima predviđenim zakonom.</p>
+<h3>Datum poslednje izmene</h3>
+<p>Ovi Uslovi korišćenja poslednji put izmenjeni su 1. decembra 2026. godine.</p>
+
+    </article>
+    <div class="doc-foot"><a class="btn ghost" href="#obrasci">Obrasci</a><a class="btn ghost" href="#privatnost">Politika privatnosti</a><a class="btn ghost" href="#pravilnik">Pravilnik studija</a></div>
+  </section>
+
+  <!-- POLITIKA PRIVATNOSTI -->
+  <section data-view="privatnost" hidden>
+    <div>
+      <h2>Politika privatnosti</h2>
+      <p class="lead">Koje podatke čuvamo, zašto i koja prava imate · od 1. decembra 2026.</p>
+    </div>
+    <nav class="doc-toc" data-toc="doc-privatnost" aria-label="Sadržaj: Politika privatnosti"></nav>
+    <article class="card legal" id="doc-privatnost">
+<p class="doc-meta">RITUAL PILATES STUDIO BEOGRAD</p>
+<p>Ovom Politikom privatnosti objašnjavamo koje podatke o ličnosti prikupljamo kada koristite našu web aplikaciju i usluge Ritual Pilates Studija (u daljem tekstu: Studio), zašto ih obrađujemo, koliko dugo ih čuvamo i koja prava imate.</p>
+<h3>1. Rukovalac podacima</h3>
+<p>Rukovalac podacima o ličnosti je MARINA IGNJATOVIĆ PR FITNES-PILATES STUDIO RITUAL PILATES STUDIO BEOGRAD (STARI GRAD), preduzetnik, MB: 68387361, PIB: 115465457, sa registrovanim sedištem na adresi Skenderbegova broj 53, Stari Grad, 11158 Beograd — u daljem tekstu „Studio“ ili „Rukovalac“, koji posluje kao Ritual Pilates Studio. Kontakt: <a href="mailto:ritualstudio99@gmail.com">ritualstudio99@gmail.com</a>, +381 66 428 926.</p>
+<h3>2. Koje podatke prikupljamo</h3>
+<p><strong>Prilikom registracije:</strong> ime, prezime, e-adresu, broj telefona i lozinku, koja se čuva isključivo u zaštićenom, nečitljivom obliku.</p>
+<p><strong>Prilikom zakazivanja:</strong> izabrane Treninge, Pakete i Članarine, željeni Termin i istoriju Vaših rezervacija, uključujući evidenciju prisustva i otkazivanja.</p>
+<p><strong>Prilikom pružanja usluga:</strong> podatke o zdravstvenom stanju koje nam dobrovoljno saopštite, a koji su neophodni da bi instruktor Trening na reformeru prilagodio Vašim potrebama i bezbedno ga izveo (npr. trudnoća, povreda, operacija, hronično oboljenje, bol u leđima ili zglobovima). Ne zahtevamo ove podatke kao uslov za korišćenje usluga i prikupljamo ih samo u meri koja je za prilagođavanje Treninga neophodna.</p>
+<p><strong>Podatke o plaćanjima i transakcijama:</strong> evidenciju uplata za Termine, Pakete i Članarine, račune i druge informacije potrebne za računovodstvene i finansijske poslove. Podatke o platnoj kartici ne čuvamo.</p>
+<p><strong>Podatke iz komunikacije:</strong> informacije koje nam dostavite putem e-pošte, telefona, društvenih mreža ili drugih komunikacionih kanala.</p>
+<p><strong>Fotografije i video zapise,</strong> isključivo kada za to dobijemo Vašu prethodnu izričitu pisanu saglasnost, za potrebe promocije Studija.</p>
+<p><strong>Podatke o reklamacijama i prigovorima:</strong> informacije koje dostavite prilikom podnošenja reklamacije, opis Usluge na koju se odnosi, razloge nezadovoljstva, relevantnu komunikaciju i dokumentaciju potrebnu za razmatranje, rešavanje i evidentiranje reklamacije.</p>
+<p><strong>Druge lične podatke</strong> koje nam dobrovoljno dostavite u vezi sa realizacijom naših usluga i korišćenjem Aplikacije.</p>
+<p>Prikupljamo i obrađujemo isključivo podatke koji su relevantni i neophodni za konkretne, opravdane i zakonite svrhe.</p>
+<h3>3. Svrha i pravni osnov obrade</h3>
+<p>Podatke obrađujemo radi pružanja Usluga, vođenja Vašeg naloga u Aplikaciji, upravljanja rezervacijama, slanja potvrda i podsetnika o Terminima e-poštom, kontakta u vezi sa zakazanim Uslugama, praćenja Paketa i Članarina i njihovog obnavljanja, evidentiranja uplata, vođenja poslovne dokumentacije i ispunjavanja zakonskih obaveza.</p>
+<p>U zavisnosti od svrhe, pravni osnov može biti izvršenje ugovora ili preduzimanje radnji na Vaš zahtev pre zaključenja ugovora, Vaša saglasnost, ispunjavanje zakonskih obaveza ili naš legitimni interes za organizaciju i unapređenje poslovanja, pod uslovom da takav interes ne preteže nad Vašim pravima i slobodama.</p>
+<p>Zdravstvene podatke, kao posebno osetljive, obrađujemo isključivo na osnovu Vašeg izričitog pristanka, samo radi prilagođavanja Treninga i uz ispunjenje dodatnih uslova propisanih zakonom. Pristanak možete povući u bilo kom trenutku, a odbijanje da podatke podelite ne utiče na Vaše pravo da koristite Usluge, ali Studio u tom slučaju ne može da prilagodi Trening Vašem zdravstvenom stanju.</p>
+<h3>4. Uzrast korisnika</h3>
+<p>Aplikaciju mogu koristiti lica starija od 15 godina. Lica starija od 15, a mlađa od 18 godina, mogu pohađati Treninge uz saglasnost roditelja ili staratelja. Ukoliko ste mlađi od 18 godina, zamolite roditelja ili staratelja da nas kontaktira na <a href="mailto:ritualstudio99@gmail.com">ritualstudio99@gmail.com</a> ili +381 66 428 926, kako bi se Termin i vrsta Usluge dogovorili uz njegovu saglasnost.</p>
+<h3>5. Pristup podacima i deljenje podataka trećim licima</h3>
+<p>Vaše podatke ne prodajemo niti delimo sa trećim licima u marketinške svrhe. Pristup imaju samo ovlašćene osobe Studija (instruktori i administracija), a zdravstvenim podacima pristupa samo instruktor koji Vam prilagođava Trening.</p>
+<p>Podatke možemo učiniti dostupnim pouzdanim poslovnim partnerima i pružaocima usluga, isključivo u meri u kojoj je to neophodno za rad Studija: pružaocima IT usluga, hostinga i usluge slanja e-pošte, održavanja Aplikacije, računovodstvenih i knjigovodstvenih usluga i obrade plaćanja. Lične podatke možemo dostaviti nadležnim državnim organima i drugim ovlašćenim subjektima kada smo na to obavezni zakonom ili kada postoji drugi odgovarajući pravni osnov.</p>
+<h3>6. Rok čuvanja</h3>
+<p>Podatke čuvamo onoliko dugo koliko je potrebno za svrhe zbog kojih su prikupljeni i dok postoji Vaš nalog. Na Vaš zahtev podaci se brišu, osim onih koje smo zakonski dužni da čuvamo, kao što su računovodstvene evidencije. Zdravstvene podatke koje ste nam saopštili brišemo kada prestane potreba za prilagođavanjem Treninga, odnosno na Vaš zahtev ili po opozivu saglasnosti.</p>
+<p>Po isteku propisanog ili opravdanog roka čuvanja, odnosno kada podaci više nisu potrebni za zakonitu svrhu, lični podaci se bezbedno brišu.</p>
+<h3>7. Bezbednost podataka</h3>
+<p>Primenjujemo razumne tehničke i organizacione mere zaštite podataka od neovlašćenog pristupa, gubitka i zloupotrebe. Lozinke se čuvaju isključivo u zaštićenom obliku, a pristup podacima imaju samo ovlašćena lica.</p>
+<h3>8. Vaša prava</h3>
+<ul>
+<li><strong>Pravo na pristup</strong> – možete zatražiti informaciju o tome koje Vaše lične podatke obrađujemo, u koju svrhu i koliko dugo ih čuvamo.</li>
+<li><strong>Pravo na opoziv saglasnosti</strong> – ako se obrada zasniva na saglasnosti, možete je povući u bilo kom trenutku. To ne utiče na zakonitost obrade izvršene pre povlačenja.</li>
+<li><strong>Pravo na ispravku, dopunu i brisanje</strong> – možete zatražiti ispravku netačnih podataka, dopunu i brisanje kada su za to ispunjeni zakonski uslovi.</li>
+<li><strong>Pravo na ograničenje obrade</strong> – u određenim slučajevima možete zatražiti da se obrada privremeno ograniči.</li>
+<li><strong>Pravo na prenosivost podataka</strong> – u slučajevima predviđenim zakonom možete zatražiti da Vam podatke dostavimo u uobičajenom, elektronskom obliku.</li>
+<li><strong>Pravo na prigovor</strong> – u zakonom predviđenim slučajevima možete uložiti prigovor na obradu.</li>
+<li><strong>Pravo na podnošenje pritužbe</strong> – ako smatrate da se Vaši podaci obrađuju suprotno zakonu, možete podneti pritužbu Povereniku za informacije od javnog značaja i zaštitu podataka o ličnosti Republike Srbije.</li>
+</ul>
+<p>Za ostvarivanje prava možete nam se obratiti na <a href="mailto:ritualstudio99@gmail.com">ritualstudio99@gmail.com</a>.</p>
+<h3>9. Kolačići (cookies)</h3>
+<p>Aplikacija koristi isključivo neophodne kolačiće, bez kojih ne može da radi:</p>
+<ul>
+<li><strong>Kolačić prijave</strong> – čuva Vašu prijavu na nalog (traje najduže 180 dana ili do odjave) i ne koristi se za praćenje.</li>
+<li><strong>Lokalno skladište pregledača</strong> – pamti sitna podešavanja prikaza na Vašem uređaju.</li>
+</ul>
+<p>Ne koristimo analitičke, marketinške niti kolačiće trećih strana. Kolačiće možete obrisati u podešavanjima pregledača; u tom slučaju biće potrebna ponovna prijava.</p>
+<h3>10. Izmene politike</h3>
+<p>O izmenama ove Politike obaveštavamo Vas u Aplikaciji i u Studiju. Nastavkom korišćenja Aplikacije i Usluga prihvatate važeću verziju.</p>
+<h3>11. Stupanje na snagu i primena</h3>
+<p>Ova Politika primenjuje se od dana stupanja na snagu, 1. decembra 2026. godine.</p>
+
+    </article>
+    <div class="doc-foot"><a class="btn ghost" href="#uslovi">Uslovi korišćenja</a><a class="btn ghost" href="#pravilnik">Pravilnik studija</a></div>
+  </section>
+
+  <!-- OBRASCI -->
+  <section data-view="obrasci" hidden>
+    <div>
+      <h2>Obrasci</h2>
+      <p class="lead">Obrazac reklamacije i obrazac odustanka od ugovora, za preuzimanje.</p>
+    </div>
+    <div class="forms-grid">
+      <article class="card form-card">
+        <span class="form-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>
+        <h3>Obrazac reklamacije</h3>
+        <p class="note">Ako smatrate da Usluga nije pružena u skladu sa ugovorom. Popunjen obrazac pošaljite na <a href="mailto:ritualstudio99@gmail.com">ritualstudio99@gmail.com</a> ili ga predajte u Studiju (Uslovi korišćenja, tačka V.3.5).</p>
+        <div class="form-dl"><a class="btn" href="/docs/obrazac-reklamacije.docx" download>Preuzmi (Word)</a><a class="btn ghost" href="/docs/obrazac-reklamacije.pdf" download>PDF</a></div>
+      </article>
+      <article class="card form-card">
+        <span class="form-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>
+        <h3>Obrazac odustanka od ugovora</h3>
+        <p class="note">Za odustanak od ugovora zaključenog na daljinu u roku od 14 dana. Popunjen obrazac pošaljite na <a href="mailto:ritualstudio99@gmail.com">ritualstudio99@gmail.com</a> ili poštom na adresu Studija (Uslovi korišćenja, tačka V.3.1).</p>
+        <div class="form-dl"><a class="btn" href="/docs/obrazac-odustanka.docx" download>Preuzmi (Word)</a><a class="btn ghost" href="/docs/obrazac-odustanka.pdf" download>PDF</a></div>
+      </article>
+    </div>
+    <div class="doc-foot"><a class="btn ghost" href="#uslovi">Uslovi korišćenja</a><a class="btn ghost" href="#privatnost">Politika privatnosti</a></div>
+  </section>
+
   <!-- KONTAKT -->
   <section data-view="kontakt" hidden>
     <div>
@@ -731,7 +1056,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
       <p class="lead">Reformer pilates, grupni, individualni i duo treninzi.</p>
     </div>
     <div class="map-card" data-rise>
-      <div class="map-frame"><iframe id="map" title="Mapa: Ritual Pilates Studio" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+      <div class="map-frame"><div class="map-gate" id="map-gate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.1-7-11.5a7 7 0 0 1 14 0C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><p>Mapa se učitava sa Google Maps, koji pri tome može da postavi svoje kolačiće.</p><button class="btn" type="button" id="map-load">Prikaži mapu</button></div><iframe id="map" title="Mapa: Ritual Pilates Studio" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
       <div class="map-foot">
         <div class="map-name"><b id="map-title"></b><span id="map-addr"></span></div>
         <div class="actions">
@@ -816,6 +1141,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
     <div><h3>Kontakt</h3><div id="foot-contact" class="foot-list"></div></div>
     <div><h3>Radno vreme</h3><div id="foot-hours" class="foot-list"></div></div>
   </div>
+  <div class="foot-legal" role="navigation" aria-label="Pravni dokumenti"><a href="#uslovi">Uslovi korišćenja</a><a href="#privatnost">Politika privatnosti</a><a href="#obrasci">Obrasci</a><a href="#pravilnik">Pravilnik studija</a></div>
   <p class="foot-copy">Ritual Pilates Studio · Skenderbegova 53, Dorćol, Beograd</p>
 </footer>
 <div class="modal-root" id="modal-gen" hidden>
@@ -837,6 +1163,13 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
   </div>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
+<div class="cookie" id="cookie" role="region" aria-label="Obaveštenje o kolačićima" hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01M16 15.5v.01M12 12v.01M11 17v.01M7 14v.01"/></svg>
+  <div>
+    <p><b>Kolačići.</b> Koristimo samo neophodne kolačiće, za prijavu i rad rezervacija. Bez praćenja i reklama. <a class="link-in" href="#privatnost">Politika privatnosti</a></p>
+    <button class="ok" type="button" id="cookie-ok">U redu</button>
+  </div>
+</div>
 
 <script>
 "use strict";
@@ -913,7 +1246,7 @@ function setAuthMode(m) {
 }
 document.addEventListener("click", e => { const a = e.target.closest("[data-auth]"); if (a) setAuthMode(a.dataset.auth); });
 async function afterLogin(me) {
-  S.me = me; renderAccount(); await loadMy(); await loadSlots();
+  S.me = me; renderAccount(); askConsent(); await loadMy(); await loadSlots();
   location.hash = S.selected || S.planDraft ? "#zakazi" : "#moji-termini";
 }
 $("#login-form").addEventListener("submit", async e => {
@@ -923,6 +1256,8 @@ $("#login-form").addEventListener("submit", async e => {
 });
 $("#register-form").addEventListener("submit", async e => {
   e.preventDefault();
+  if (!$("#r-consent").checked) return consentGate({ intro: "Pre otvaranja naloga potrebno je da se upoznate sa Uslovima korišćenja i Politikom privatnosti i da ih prihvatite.",
+    onAccept: () => { $("#r-consent").checked = true; $("#register-form").requestSubmit(); }, onDecline: () => toast("Bez saglasnosti sa Uslovima korišćenja i Politikom privatnosti nalog ne može da se napravi.") });
   const r = await act(() => api("/api/register", { ime: $("#r-ime").value, prezime: $("#r-prezime").value, email: $("#r-email").value, telefon: $("#r-tel").value, pw: $("#r-pw").value, consent: $("#r-consent").checked }));
   if (r) { toast("Nalog je napravljen. Dobro došli!"); afterLogin(r.me); }
 });
@@ -1290,15 +1625,56 @@ function closeModal() { $("#modal-gen").hidden = true; $("#modal-gen-box").class
 /* pravilnik u pop-upu (sa registracije): X za zatvaranje, dugme štiklira saglasnost */
 function openRules() {
   const body = el("div", { class: "rules" }); body.innerHTML = document.querySelector('section[data-view="pravilnik"] .rules').innerHTML;
-  const ok = el("button", { type: "button", class: "btn", onclick: () => { const c = $("#r-consent"); if (c) c.checked = true; closeModal(); toast("Hvala, pravilnik je prihvaćen."); } }, "Pročitao/la sam i prihvatam");
+  const ok = el("button", { type: "button", class: "btn", "data-close": true }, "Pročitao/la sam");
   openModal(el("button", { type: "button", class: "modal-x", "data-close": true, "aria-label": "Zatvori" }, "×"),
     el("div", { class: "mcal-top" }, el("h3", {}, "Pravilnik studija"), el("p", {}, "Ritual Pilates Studio · pročitajte pre registracije")),
-    body, el("div", { class: "actions" }, ok, el("button", { type: "button", class: "btn ghost", "data-close": true }, "Zatvori")));
+    body, el("div", { class: "actions" }, ok));
   $("#modal-gen-box").classList.add("rules-box"); $("#modal-gen-box").scrollTop = 0;
 }
 $("#r-rules").addEventListener("click", e => { e.preventDefault(); openRules(); });
-$("#modal-gen").addEventListener("click", e => { if (e.target.closest("[data-close]")) closeModal(); });
-addEventListener("keydown", e => { if (e.key === "Escape" && !$("#modal-gen").hidden) closeModal(); });
+$("#modal-gen").addEventListener("click", e => { if (e.target.closest("[data-close]") && !S.modalLock) closeModal(); });
+addEventListener("keydown", e => { if (e.key === "Escape" && !$("#modal-gen").hidden && !S.modalLock) closeModal(); });
+
+/* ---------- Uslovi korišćenja i Politika privatnosti: saglasnost pre otvaranja naloga ---------- */
+const DOC_TITLES = { uslovi: "Uslovi korišćenja", privatnost: "Politika privatnosti" };
+// prozor sa oba dokumenta (prekidač između njih) i dugmadima Prihvatam / Ne prihvatam; locked: ne zatvara se klikom pored ni tasterom Esc
+function consentGate({ tab = "uslovi", intro, onAccept, onDecline, locked = false }) {
+  const scroll = el("div", { class: "doc-scroll legal", tabindex: "0" }), sw = el("div", { class: "doc-switch", role: "tablist", "aria-label": "Dokument" });
+  const show = k => { scroll.innerHTML = $("#doc-" + k).innerHTML; scroll.scrollTop = 0; sw.querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.k === k))); };
+  for (const k of ["uslovi", "privatnost"]) sw.append(el("button", { type: "button", role: "tab", "data-k": k, onclick: () => show(k) }, DOC_TITLES[k]));
+  const done = fn => () => { S.modalLock = false; closeModal(); fn && fn(); };
+  S.modalLock = locked;
+  openModal(el("div", { class: "mcal-top" }, el("h3", {}, "Uslovi i privatnost"), el("p", { class: "note" }, intro)), sw, scroll,
+    el("p", { class: "note" }, "Klikom na „Prihvatam” potvrđujete da ste upoznati sa Uslovima korišćenja i Politikom privatnosti (uključujući odeljak o kolačićima) i da ih prihvatate."),
+    el("div", { class: "actions" }, el("button", { type: "button", class: "btn", onclick: done(onAccept) }, "Prihvatam"), el("button", { type: "button", class: "btn ghost", onclick: done(onDecline) }, "Ne prihvatam")));
+  $("#modal-gen-box").classList.add("consent-box"); show(tab);
+}
+// linkovi u kvadratiću za saglasnost na registraciji otvaraju izabrani dokument; „Prihvatam” štiklira kvadratić
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-consent]"); if (!b) return;
+  e.preventDefault();
+  consentGate({ tab: b.dataset.consent, intro: "Pre otvaranja naloga potrebno je da se upoznate sa Uslovima korišćenja i Politikom privatnosti i da ih prihvatite.", onAccept: () => { $("#r-consent").checked = true; } });
+});
+// nalozi napravljeni pre uvođenja dokumenata: saglasnost pri prvoj sledećoj poseti, bez nje odjava
+function askConsent() {
+  if (!S.me || !S.me.needConsent) return;
+  consentGate({ locked: true, intro: "Uveli smo Uslove korišćenja i Politiku privatnosti. Da biste nastavili da koristite svoj nalog, potrebno je da potvrdite da ste upoznati sa njima.",
+    onAccept: async () => { if (await act(() => api("/api/consent", {}))) S.me.needConsent = false; },
+    onDecline: async () => { await logout(); toast("Bez saglasnosti nalog ne može da se koristi, pa ste odjavljeni."); } });
+}
+// sadržaj (prečice do poglavlja) iznad svakog dokumenta
+document.querySelectorAll("[data-toc]").forEach(nav => {
+  $("#" + nav.dataset.toc).querySelectorAll("h3").forEach(h => nav.append(el("button", { type: "button", onclick: () => h.scrollIntoView({ behavior: "smooth", block: "start" }) }, h.textContent)));
+});
+
+/* ---------- obaveštenje o kolačićima (kao u Beauty & Nutrition): prikazuje se dok se ne klikne „U redu” ---------- */
+const COOKIE_OK = "ritual-cookies-ok";
+function initCookie() {
+  let ok = false; try { ok = localStorage.getItem(COOKIE_OK) === "1"; } catch {}
+  if (ok) return;
+  $("#cookie").hidden = false; document.body.classList.add("cookie-on");
+  $("#cookie-ok").onclick = () => { try { localStorage.setItem(COOKIE_OK, "1"); } catch {} $("#cookie").hidden = true; document.body.classList.remove("cookie-on"); };
+}
 
 /* ---------- fiksni termini uz paket 8/12 ---------- */
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
@@ -1497,7 +1873,9 @@ function renderPublic() {
   if (fh) fh.replaceChildren(...hours.map(h => h.cloneNode(true)));
 }
 
-function loadMap() { const m = $("#map"); if (m && S.mapSrc && m.getAttribute("src") !== S.mapSrc) m.src = S.mapSrc; }
+// Google mapa se učitava tek kad posetilac klikne „Prikaži mapu” (Google tada može da postavi svoje kolačiće)
+function loadMap() { const m = $("#map"); if (!S.mapOk) return; $("#map-gate").hidden = true; if (m && S.mapSrc && m.getAttribute("src") !== S.mapSrc) m.src = S.mapSrc; }
+$("#map-load").addEventListener("click", () => { S.mapOk = true; loadMap(); });
 /* kartice se pojavljuju odozdo kada uđu u ekran */
 const riseIO = "IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches
   ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); riseIO.unobserve(e.target); } }), { rootMargin: "0px 0px -6% 0px", threshold: .06 }) : null;
@@ -1715,7 +2093,7 @@ async function loadSettings() {
 }
 
 /* ---------- navigacija ---------- */
-const VIEWS = ["zakazi", "moji-termini", "prijava", "cenovnik", "pravilnik", "kontakt", "raspored", "klijenti", "klijent", "podesavanja"];
+const VIEWS = ["zakazi", "moji-termini", "prijava", "cenovnik", "pravilnik", "uslovi", "privatnost", "obrasci", "kontakt", "raspored", "klijenti", "klijent", "podesavanja"];
 const ADMIN_VIEWS = ["raspored", "klijenti", "klijent", "podesavanja"];
 /* pomeri stranicu tako da sadržaj počne odmah ispod zaglavlja i kartica (tabova) */
 function scrollToContent() {
@@ -1755,6 +2133,9 @@ const PAGES = [
   { name: "Radno vreme", meta: "kad je studio otvoren", view: "kontakt", kw: "radno vreme sati otvoreno zatvoreno vikend subota nedelja jutro prepodne vece" },
   { name: "Kontakt i lokacija", meta: "adresa, mapa, telefon, Instagram", view: "kontakt", kw: "kontakt adresa mapa lokacija gde telefon pozovi instagram dorcol skenderbegova navigacija parking" },
   { name: "Pravilnik studija", meta: "otkazivanje, kašnjenje, pomeranje termina", view: "pravilnik", kw: "pravilnik pravila otkazivanje otkaz otkazati kasnjenje pomeranje promena zamrzavanje produzenje uslovi" },
+  { name: "Uslovi korišćenja", meta: "pravila korišćenja aplikacije i usluga", view: "uslovi", kw: "uslovi koriscenja pravila ugovor odustanak reklamacija povracaj novca refundacija otkazivanje paketi clanarina podaci o studiju pib" },
+  { name: "Politika privatnosti", meta: "lični podaci i kolačići", view: "privatnost", kw: "politika privatnosti privatnost licni podaci podataka kolacici kolacic cookies gdpr brisanje naloga prava" },
+  { name: "Obrasci", meta: "obrazac reklamacije i obrazac odustanka", view: "obrasci", kw: "obrasci obrazac reklamacija reklamacije prigovor zalba odustanak odustanka raskid preuzmi" },
   { name: "Moji termini", meta: "vaše rezervacije i paket", view: "moji-termini", kw: "moji termini moje rezervacije paket preostalo stanje otkazi promeni nalog prijava" }
 ];
 function searchIndex() {
@@ -1805,7 +2186,7 @@ document.addEventListener("click", e => {
   const a = e.target.closest("a[href^='#']"); if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey) return;
   const v = a.getAttribute("href").slice(1), cur = location.hash.slice(1) || "zakazi";
   if (a.closest(".logo-link")) { scrollTo({ top: 0, behavior: "smooth" }); return; }
-  if (!VIEWS.includes(v) || !a.closest("nav.tabs, #adm-tabs, .hero-full, .band")) return;
+  if (!VIEWS.includes(v) || !a.closest("nav.tabs, #adm-tabs, .hero-full, .band, .foot-legal, .cookie, .doc-foot")) return;
   if (v === cur) scrollToContent(); else S.jump = true;
 });
 // Kada se korisnik vrati u aplikaciju, osveži „Moje termine“ (npr. studio je u međuvremenu upisao uplatu).
@@ -1887,7 +2268,7 @@ document.getElementById("heroBook")?.addEventListener("click", e => {
 const fmtShort = s => { if (!s) return ""; const d = parseD(s); return d.getDate() + ". " + MONTHS[d.getMonth()]; };
 /* akcija: pop-up jednom po poseti */
 function showPromo() {
-  const p = S.pub && S.pub.promo; if (!p) return;
+  const p = S.pub && S.pub.promo; if (!p || !$("#modal-gen").hidden) return;
   try { if (sessionStorage.getItem("ritual-promo")) return; sessionStorage.setItem("ritual-promo", "1"); } catch {}
   const go = () => { closeModal(); S.type = "grupni"; S.selected = null; S.plan = "single"; $("#f-trial").checked = true; location.hash = "#zakazi"; loadSlots(); scrollToContent(); };
   openModal(el("button", { type: "button", class: "promo-x", "data-close": true, "aria-label": "Zatvori" }, "×"),
@@ -1899,6 +2280,7 @@ function showPromo() {
 (async function init() {
   try { S.pub = await api("/api/public"); } catch (e) { toast("Server nije dostupan. Osvežite stranicu."); return; }
   S.me = S.pub.me; renderAccount(); renderPublic();
+  initCookie(); askConsent();
   setTimeout(showPromo, 900);
   if (new URLSearchParams(location.search).get("reset")) { setAuthMode("reset"); location.hash = "#prijava"; }
   if (S.me) await loadMy();
