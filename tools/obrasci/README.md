@@ -4,5 +4,6 @@
 
 ```bash
 python3 tools/obrasci/mkform.py tools/obrasci/odustanak.json public/docs/obrazac-odustanka.docx   # treba python-docx
-cd public/docs && soffice --headless --convert-to pdf obrazac-odustanka.docx
+python3 tools/obrasci/mkform.py tools/obrasci/reklamacija.json public/docs/obrazac-reklamacije.docx
+cd public/docs && soffice --headless --convert-to pdf *.docx
 ```

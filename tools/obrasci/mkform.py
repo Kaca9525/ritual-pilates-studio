@@ -58,6 +58,12 @@ for b in spec['blocks']:
             for c in (c0,c1):
                 tcPr=c._tc.get_or_add_tcPr(); va=OxmlElement('w:vAlign'); va.set(qn('w:val'),'center'); tcPr.append(va)
         d.add_paragraph().paragraph_format.space_after=Pt(2)
+    elif t=='bigbox':
+        tb=d.add_table(rows=1,cols=2); tb.alignment=WD_TABLE_ALIGNMENT.CENTER; borders(tb)
+        c0,c1=tb.rows[0].cells; c0.width=Cm(6.2); c1.width=Cm(10.4); shade(c0,'F3EEE3')
+        c0.paragraphs[0].paragraph_format.space_after=Pt(0); run(c0.paragraphs[0],b[1],bold=True,size=9.5,color=OLIVE)
+        trPr=tb.rows[0]._tr.get_or_add_trPr(); h=OxmlElement('w:trHeight'); h.set(qn('w:val'),'3200'); trPr.append(h)
+        d.add_paragraph().paragraph_format.space_after=Pt(2)
     elif t=='studio':
         p=d.add_paragraph(); p.paragraph_format.space_before=Pt(14); p.paragraph_format.keep_with_next=True
         run(p,'POPUNJAVA STUDIO',size=8.5,bold=True,color=SUN)

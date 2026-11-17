@@ -1,26 +1,154 @@
-{"title":"Obrazac za odustanak od ugovora","blocks":[
-["lead","Dragi klijenti, rok za odustanak je 14 dana od dana zaključenja ugovora. Obrazac pošaljite na e-adresu ritualstudio99@gmail.com ili poštom na adresu Studija. Možete dati i bilo koju drugu nedvosmislenu izjavu o odustanku."],
-["h","Primalac obrasca"],
-["table",[["Poslovno ime","MARINA IGNJATOVIĆ PR FITNES-PILATES STUDIO RITUAL PILATES STUDIO BEOGRAD (STARI GRAD)"],["Poslovno ime pod kojim se nastupa","Ritual Pilates Studio"],["Adresa","Skenderbegova broj 53, Stari Grad, 11158 Beograd"],["E-mail","ritualstudio99@gmail.com"],["Telefon","+381 66 428 926"]],"filled"],
-["p","Ovim obrascem obaveštavam pružaoca usluge da odustajem od ugovora zaključenog na daljinu, u meri u kojoj imam pravo na odustanak u skladu sa važećim propisima."],
-["h","1. Podaci o korisniku"],
-["table",["Ime i prezime","Adresa","E-mail adresa","Broj telefona (opciono)"]],
-["h","2. Podaci o ugovoru"],
-["label","Vrsta usluge:"],
-["checks",["Paket treninga (broj treninga: ____)","Pojedinačni Trening (individualni / grupni / probni)","Drugo: ______________________"]],
-["table",["Naziv usluge","Datum zaključenja ugovora odnosno rezervacije","Datum ili vremenski okvir zakazanog termina / paketa termina","Ukupan ugovoreni iznos usluge (RSD)","Uplaćeni iznos (RSD)","Način plaćanja (gotovina / uplata na račun)"]],
-["h","3. Izjava o odustanku"],
-["p","Ovim izjavljujem da odustajem od navedenog ugovora, u skladu sa primenjivim zakonskim uslovima."],
-["table",["Razlog odustanka (opciono)"]],
-["h","4. Podaci za povraćaj novca"],
-["p","Povraćaj novca vrši se istim sredstvom plaćanja kojim je izvršena uplata, bez odlaganja, a najkasnije u roku od 14 dana od prijema ovog obrasca, osim ako se izričito saglasite sa drugim sredstvom plaćanja. Podaci o računu potrebni su samo ako je uplata izvršena na račun."],
-["table",["Ime vlasnika računa","Broj tekućeg računa (ako je potreban)","Iznos čiji se povraćaj traži (RSD)"]],
-["h","5. Dodatne informacije"],
-["label","Da li je usluga već započeta ili izvršena?"],
-["checks",["Ne","Da","Delimično (održano Treninga: ____)"]],
-["p","Ako je usluga započeta u roku za odustanak, popunite i prilog „Zahtev za početak pružanja Usluge u roku za odustanak“ u nastavku, ako to već niste uradili."],
-["table",["Datum podnošenja obrasca","Ime i prezime korisnika","Potpis (samo ako se obrazac dostavlja u papirnoj formi)"]],
-["note","Pravo na odustanak, eventualna naknada za već pruženi deo usluge i povraćaj novca procenjuju se prema vrsti ugovora i važećim zakonskim pravilima. Pojedinačno zakazan i plaćen Termin sa tačno određenim datumom i vremenom nije obuhvaćen pravom na odustanak. Podnošenje obrasca ne znači automatski da su ispunjeni svi uslovi za povraćaj celokupnog iznosa."],
-["studio"],
-["table",["Datum prijema obrasca","Potvrda prijema poslata (datum i način)","Datum povraćaja novca","Vraćeni iznos (RSD)","Napomena"]]
-]}
+{
+"title": "Obrazac za odustanak od ugovora",
+"blocks": [
+[
+"lead",
+"Dragi klijenti, rok za odustanak je 14 dana od dana zaključenja ugovora. Obrazac pošaljite na e-adresu ritualstudio99@gmail.com ili poštom na adresu Studija. Možete dati i bilo koju drugu nedvosmislenu izjavu o odustanku."
+],
+[
+"h",
+"Primalac obrasca"
+],
+[
+"table",
+[
+[
+"Poslovno ime",
+"MARINA IGNJATOVIĆ PR FITNES-PILATES STUDIO RITUAL PILATES STUDIO BEOGRAD (STARI GRAD)"
+],
+[
+"Poslovno ime pod kojim se nastupa",
+"Ritual Pilates Studio"
+],
+[
+"Adresa",
+"Skenderbegova broj 53, Stari Grad, 11158 Beograd"
+],
+[
+"E-mail",
+"ritualstudio99@gmail.com"
+],
+[
+"Telefon",
+"+381 66 428 926"
+]
+],
+"filled"
+],
+[
+"p",
+"Ovim obrascem obaveštavam pružaoca usluge da odustajem od ugovora zaključenog na daljinu, u meri u kojoj imam pravo na odustanak u skladu sa važećim propisima."
+],
+[
+"h",
+"1. Podaci o korisniku"
+],
+[
+"table",
+[
+"Ime i prezime",
+"Adresa",
+"E-mail adresa",
+"Broj telefona (opciono)"
+]
+],
+[
+"h",
+"2. Podaci o ugovoru"
+],
+[
+"label",
+"Vrsta usluge:"
+],
+[
+"checks",
+[
+"Paket treninga (broj treninga: ____)",
+"Pojedinačni Trening (individualni / grupni / probni)",
+"Drugo: ______________________"
+]
+],
+[
+"table",
+[
+"Naziv usluge",
+"Datum zaključenja ugovora odnosno rezervacije",
+"Datum ili vremenski okvir zakazanog termina / paketa termina",
+"Ukupan ugovoreni iznos usluge (RSD)",
+"Uplaćeni iznos (RSD)",
+"Način plaćanja (gotovina / uplata na račun)"
+]
+],
+[
+"h",
+"3. Izjava o odustanku"
+],
+[
+"p",
+"Ovim izjavljujem da odustajem od navedenog ugovora, u skladu sa primenjivim zakonskim uslovima."
+],
+[
+"table",
+[
+"Razlog odustanka (opciono)"
+]
+],
+[
+"h",
+"4. Podaci za povraćaj novca"
+],
+[
+"p",
+"Povraćaj novca vrši se istim sredstvom plaćanja kojim je izvršena uplata, bez odlaganja, a najkasnije u roku od 14 dana od prijema ovog obrasca, osim ako se izričito saglasite sa drugim sredstvom plaćanja. Podaci o računu potrebni su samo ako je uplata izvršena na račun."
+],
+[
+"table",
+[
+"Ime vlasnika računa",
+"Broj tekućeg računa (ako je potreban)",
+"Iznos čiji se povraćaj traži (RSD)"
+]
+],
+[
+"h",
+"5. Dodatne informacije"
+],
+[
+"label",
+"Da li je usluga već započeta ili izvršena?"
+],
+[
+"checks",
+[
+"Ne",
+"Da",
+"Delimično (održano Treninga: ____)"
+]
+],
+[
+"table",
+[
+"Datum podnošenja obrasca",
+"Ime i prezime korisnika",
+"Potpis (samo ako se obrazac dostavlja u papirnoj formi)"
+]
+],
+[
+"note",
+"Pravo na odustanak, eventualna naknada za već pruženi deo usluge i povraćaj novca procenjuju se prema vrsti ugovora i važećim zakonskim pravilima. Pojedinačno zakazan i plaćen Termin sa tačno određenim datumom i vremenom nije obuhvaćen pravom na odustanak. Podnošenje obrasca ne znači automatski da su ispunjeni svi uslovi za povraćaj celokupnog iznosa."
+],
+[
+"studio"
+],
+[
+"table",
+[
+"Datum prijema obrasca",
+"Potvrda prijema poslata (datum i način)",
+"Datum povraćaja novca",
+"Vraćeni iznos (RSD)",
+"Napomena"
+]
+]
+]
+}
