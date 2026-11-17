@@ -312,7 +312,70 @@ h3, .label { font-size: 10px; font-weight: 500; letter-spacing: .3em; text-trans
 .slot.mine { border-style: dashed; border-color: var(--olive); opacity: 1; }
 .slot.mine .t { text-decoration: none; }
 .slots-day { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.slots-day .label { margin: 0; }
+.slots-day .label, .slots-day .step-h { margin: 0; }
+.slots-day { margin-bottom: 14px; }
+/* koraci zakazivanja (1 vrsta, 2 dan, 3 vreme) */
+.step-h { display: flex; align-items: center; gap: 12px; margin: 0 0 14px; font-family: var(--display); font-size: 25px; font-weight: 500; line-height: 1.1; letter-spacing: 0; text-transform: none; color: var(--ink); }
+.step-h .n::before { counter-increment: step; content: counter(step); }
+.step-h .n { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--olive-deep); color: var(--paper); font-family: var(--display); font-size: 16px; font-weight: 600; display: grid; place-items: center; box-shadow: 0 6px 16px -8px rgba(63,69,43,.8); }
+.book-flow { counter-reset: step; display: grid; grid-template-columns: minmax(0, 1fr); gap: 30px; min-width: 0; }
+.book-flow > * { min-width: 0; }
+.book-pick { display: grid; grid-template-columns: minmax(0, 1fr); gap: 30px; align-items: start; }
+@media (min-width: 761px) { .book-pick { grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); gap: 40px; } }
+/* kalendar u zakazivanju (ugrađen, bez dodatnog prozora) */
+.bcal { background: var(--paper); border: 1px solid var(--line-soft); border-radius: 24px; padding: 18px 16px 14px; box-shadow: 0 24px 50px -36px rgba(35,38,28,.55); max-width: 400px; }
+.bcal-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 2px 12px; }
+.bcal-head b { font-family: var(--display); font-size: 24px; font-weight: 500; line-height: 1; }
+.bcal-head b span { color: var(--ink-soft); font-size: 18px; margin-left: 4px; }
+.bcal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.bcal-dow { text-align: center; font-size: 9.5px; font-weight: 600; letter-spacing: .14em; color: var(--ink-soft); padding: 0 0 8px; }
+.bcal-day { position: relative; aspect-ratio: 1; display: grid; place-items: center; border: 1px solid transparent; border-radius: 50%; background: transparent; color: var(--ink); font: inherit; font-family: var(--display); font-size: 19px; font-weight: 500; font-variant-numeric: lining-nums; cursor: pointer; transition: background .2s, border-color .2s, color .2s, transform .15s; -webkit-tap-highlight-color: transparent; }
+.bcal-day:not([disabled]):hover { border-color: var(--olive); }
+.bcal-day:not([disabled]):active { transform: scale(.94); }
+.bcal-day[disabled] { color: var(--ink-mute); opacity: .4; cursor: default; }
+.bcal-day.today { border-color: var(--line); }
+.bcal-day.today::before { content: "danas"; position: absolute; top: 2px; left: 50%; transform: translateX(-50%); font-family: var(--sans, inherit); font-size: 7px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.bcal-day.free::after, .bcal-day.full::after { content: ""; position: absolute; bottom: 5px; left: 50%; width: 5px; height: 5px; border-radius: 50%; background: var(--sun); transform: translateX(-50%); }
+.bcal-day.full::after { background: transparent; border: 1px solid var(--ink-mute); width: 4px; height: 4px; }
+.bcal-day.on { background: var(--olive-deep); border-color: var(--olive-deep); color: var(--paper); box-shadow: 0 10px 22px -10px rgba(63,69,43,.9); }
+.bcal-day.on::before { color: rgba(248,243,232,.7); }
+.bcal-day.on.free::after { background: var(--blush); }
+.bcal-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 4px 0; padding-top: 12px; border-top: 1px solid var(--line-soft); font-size: 11.5px; color: var(--ink-soft); }
+.bcal-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.bcal-legend i { width: 6px; height: 6px; border-radius: 50%; background: var(--sun); }
+.bcal-legend i.full { background: transparent; border: 1px solid var(--ink-mute); width: 5px; height: 5px; }
+.bcal-legend i.sel { background: var(--olive-deep); width: 9px; height: 9px; }
+/* prozor za zakazivanje (dugme „Zakaži“) */
+html.sheet-open { overflow: hidden; }
+.book-sheet { position: fixed; inset: 0; z-index: 36; display: grid; place-items: center; padding: 24px; }
+.book-sheet[hidden] { display: none; }
+.book-bg { position: absolute; inset: 0; background: rgba(35,38,28,.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); animation: fadeIn .3s ease both; }
+.book-panel { position: relative; width: min(100%, 1000px); max-height: calc(100dvh - 48px); display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--bg); border: 1px solid var(--line-soft); border-radius: 32px; overflow: hidden; box-shadow: 0 50px 100px -40px rgba(35,38,28,.7); animation: sheetIn .4s cubic-bezier(.2,.8,.2,1) both; }
+.book-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 24px 30px 20px; background: var(--paper); border-bottom: 1px solid var(--line-soft); }
+.book-eyebrow { margin: 0 0 6px; font-size: 10.5px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--olive); }
+.book-top h2 { margin: 0; font-family: var(--display); font-size: 36px; font-weight: 500; line-height: 1.05; }
+.book-x { flex: none; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-size: 24px; line-height: 1; cursor: pointer; transition: border-color .2s, transform .2s; }
+.book-x:hover { border-color: var(--olive); transform: rotate(90deg); }
+.book-body { overflow: auto; overscroll-behavior: contain; padding: 26px 30px 32px; }
+.book-body .seg.seg-cards .ph { aspect-ratio: 2 / 1; }
+.book-body .seg.seg-cards .tx { padding: 14px 16px; }
+.book-body .seg.seg-cards .tx b { font-size: 24px; }
+@keyframes sheetIn { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes fadeIn { from { opacity: 0; } }
+@media (max-width: 760px) {
+  .book-sheet { padding: 0; place-items: end stretch; }
+  .book-panel { width: 100%; max-height: 94dvh; border-radius: 26px 26px 0 0; border-bottom: 0; animation-name: sheetUp; animation-duration: .45s; }
+  .book-panel::before { content: ""; position: absolute; top: 8px; left: 50%; width: 40px; height: 4px; border-radius: 2px; background: var(--line); transform: translateX(-50%); z-index: 1; }
+  .book-top { padding: 22px 18px 14px; }
+  .book-top h2 { font-size: 28px; }
+  .book-body { padding: 20px 16px calc(28px + env(safe-area-inset-bottom, 0px)); }
+  .book-body .seg.seg-cards button { grid-template-columns: 92px 1fr; }
+  .book-body .seg.seg-cards .ph { aspect-ratio: auto; min-height: 88px; }
+  .bcal { max-width: none; padding: 16px 12px 12px; }
+  .step-h { font-size: 23px; }
+}
+@media (prefers-reduced-motion: reduce) { .book-panel, .book-bg { animation: none; } }
 .slots-day small { font-size: 12px; color: var(--ink-soft); }
 .empty { padding: 28px; text-align: center; color: var(--ink-soft); border: 1px dashed var(--line); border-radius: 18px; font-family: var(--serif); font-size: 19px; font-weight: 500; }
 
@@ -493,11 +556,12 @@ details.card summary::after { content: "+"; float: right; font-family: var(--dis
 details[open].card summary::after { content: "–"; }
 textarea.input { resize: vertical; }
 
-.toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--olive-deep); color: var(--paper); padding: 13px 20px; border-radius: 14px; font-size: 14px; max-width: calc(100% - 32px); z-index: 20; box-shadow: 0 16px 40px -10px rgba(29,28,25,.5); animation: rise .3s ease both; }
+.toast { position: fixed; z-index: 50 !important; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--olive-deep); color: var(--paper); padding: 13px 20px; border-radius: 14px; font-size: 14px; max-width: calc(100% - 32px); z-index: 20; box-shadow: 0 16px 40px -10px rgba(29,28,25,.5); animation: rise .3s ease both; }
 footer { background: var(--olive-deep); color: rgba(248,243,232,.85); padding-block: 48px 28px; margin-top: 20px; }
 .foot-in { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 28px; }
 .foot-brand img { width: 48px; height: 48px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(248,243,232,.25); }
 .foot-brand p { font-family: var(--serif); font-size: 22px; font-weight: 500; letter-spacing: .04em; margin: 12px 0 0; color: var(--paper); }
+.foot-brand .foot-pose { display: block; margin: 14px 0 0 2px; color: var(--paper); opacity: .75; }
 footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 .foot-list { display: grid; gap: 6px; font-size: 13px; }
 .foot-list a { color: var(--paper); }
@@ -673,20 +737,20 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
       <h2>Zakažite svoj termin</h2>
       <p class="lead">Svaki trening traje 55 minuta. Prijava je obavezna kako bi se obezbedilo mesto na reformeru.</p>
     </div>
-    <div class="seg seg-cards" id="type-seg" role="group" aria-label="Vrsta treninga"></div>
+    <div class="book-flow" id="book-flow">
+    <div id="type-block"><h3 class="step-h"><span class="n"></span>Vrsta treninga</h3>
+    <div class="seg seg-cards" id="type-seg" role="group" aria-label="Vrsta treninga"></div></div>
     <div id="move-box" class="banner move-box" hidden></div>
     <div id="plan-block" class="stack" hidden></div>
-    <div id="day-block">
-      <h3 class="label">Dan</h3>
-      <button type="button" class="datebtn" id="day-btn" aria-haspopup="dialog">
-        <span class="datebtn-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
-        <span class="datebtn-txt" id="day-label">Izaberite dan</span>
-        <span class="datebtn-chev" aria-hidden="true">›</span>
-      </button>
-    </div>
-    <div id="slots-block">
-      <div class="slots-day"><h3 class="label" id="slots-title">Termini</h3><small id="slots-hint"></small></div>
-      <div class="slots" id="slots"><div class="empty">Učitavam termine…</div></div>
+    <div class="book-pick">
+      <div id="day-block">
+        <h3 class="step-h"><span class="n"></span>Dan</h3>
+        <div class="bcal" id="bcal"></div>
+      </div>
+      <div id="slots-block">
+        <div class="slots-day"><h3 class="step-h"><span class="n"></span><span id="slots-title">Vreme</span></h3><small id="slots-hint"></small></div>
+        <div class="slots" id="slots"><div class="empty">Učitavam termine…</div></div>
+      </div>
     </div>
     <form class="card" id="confirm" hidden>
       <div class="summary">
@@ -709,6 +773,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
       </div>
       <p class="note">Molimo dođite 5–10 min ranije. U slučaju kašnjenja trening se ne produžava.</p>
     </form>
+    </div>
   </section>
 
   <!-- MOJI TERMINI -->
@@ -1137,7 +1202,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 
 <footer>
   <div class="wrap foot-in">
-    <div class="foot-brand"><img src="/logo.svg" alt="" width="48" height="48"><p>it’s pilates time</p></div>
+    <div class="foot-brand"><img src="/logo.svg" alt="" width="48" height="48"><p>it’s pilates time</p><svg class="foot-pose" viewBox="0 0 40 72" width="32" height="58" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="17.5" r="3.4"/><path d="M13.5 26.5C8.5 19 10.5 8.5 20 2.5c9.5 6 11.5 16.5 6.5 24"/><path d="M13.5 26.5c2.5 1 3.6 3.5 3.4 6.5-.2 2.6-1.3 4.6-2.6 6.8-1.2 2.2-1 4.6.2 7l2.4 13.7 1.1 8M26.5 26.5c-2.5 1-3.6 3.5-3.4 6.5.2 2.6 1.3 4.6 2.6 6.8 1.2 2.2 1 4.6-.2 7l-2.4 13.7-1.1 8"/><path d="M20 49.5v11"/></svg></div>
     <div><h3>Kontakt</h3><div id="foot-contact" class="foot-list"></div></div>
     <div><h3>Radno vreme</h3><div id="foot-hours" class="foot-list"></div></div>
   </div>
@@ -1160,6 +1225,16 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
     <div class="mcal-grid" id="mcal-grid"></div>
     <p class="mcal-foot" id="mcal-foot"></p>
     <button type="button" class="btn ghost" data-close style="justify-self:end">Zatvori</button>
+  </div>
+</div>
+<div class="book-sheet" id="book-sheet" hidden>
+  <div class="book-bg" data-bclose></div>
+  <div class="book-panel" role="dialog" aria-modal="true" aria-labelledby="book-h">
+    <div class="book-top">
+      <div><p class="book-eyebrow">Ritual · reformer pilates · 55 min</p><h2 id="book-h">Zakažite svoj termin</h2></div>
+      <button type="button" class="book-x" data-bclose aria-label="Zatvori">×</button>
+    </div>
+    <div class="book-body" id="book-body"></div>
   </div>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
@@ -1247,7 +1322,7 @@ function setAuthMode(m) {
 document.addEventListener("click", e => { const a = e.target.closest("[data-auth]"); if (a) setAuthMode(a.dataset.auth); });
 async function afterLogin(me) {
   S.me = me; renderAccount(); askConsent(); await loadMy(); await loadSlots();
-  location.hash = S.selected || S.planDraft ? "#zakazi" : "#moji-termini";
+  if (S.selected || S.planDraft) { location.hash = "#zakazi"; openBooking(); } else location.hash = "#moji-termini";
 }
 $("#login-form").addEventListener("submit", async e => {
   e.preventDefault();
@@ -1438,8 +1513,7 @@ function planForm(item) {
 }
 function startMove(b) {
   S.moving = b; S.type = b.type; S.selected = null; S.day = null; S.plan = null;
-  if (location.hash === "#zakazi") loadSlots(); else location.hash = "#zakazi";
-  scrollToContent();
+  openBooking();
 }
 function renderBooking() {
   const seg = $("#type-seg"); seg.replaceChildren();
@@ -1451,7 +1525,7 @@ function renderBooking() {
       photoBox(id), el("span", { class: "tx" }, el("b", {}, t.label), el("span", {}, t.desc(cap)), c ? el("span", { class: "pr" }, fmtRsd(c.price) + " rsd") : null)));
   }
   // promena termina: vrsta treninga ostaje ista, bira se samo novi dan i vreme
-  seg.hidden = !!S.moving;
+  seg.hidden = !!S.moving; $("#type-block").hidden = !!S.moving;
   const mv = $("#move-box"); mv.hidden = !S.moving;
   if (S.moving) {
     const b = S.moving, pk = S.my && S.my.packages.find(p => p.id === b.pkgId);
@@ -1478,11 +1552,11 @@ function renderBooking() {
   if (!single) return;
   const open = d => d.slots.some(s => !s.past);
   if (!S.day || !S.slots.days.some(d => d.date === S.day && open(d))) S.day = (S.slots.days.find(open) || {}).date || null;
-  $("#day-label").textContent = S.day ? fmtDayLong(S.day) : "Izaberite dan";
+  renderDayCal();
   const box = $("#slots"); box.replaceChildren();
   const form = $("#confirm");
   if (!S.day) { box.append(el("div", { class: "empty" }, "Trenutno nema slobodnih termina za ovu vrstu treninga.")); form.hidden = true; return; }
-  $("#slots-title").textContent = "Termini · " + fmtDayLong(S.day);
+  $("#slots-title").textContent = fmtDayLong(S.day).replace(/^./, c => c.toUpperCase());
   const day = S.slots.days.find(d => d.date === S.day);
   const freeN = day.slots.filter(s => !s.past && s.taken < s.cap).length;
   $("#slots-hint").textContent = day.slots.length ? (freeN ? freeN + " slobodn" + (freeN === 1 ? "o" : "ih") + " od " + day.slots.length : "sve popunjeno") : "";
@@ -1545,15 +1619,34 @@ function hoursSummary() {
   for (const i of [1, 2, 3, 4, 5, 6, 0]) { const v = span(i); if (run && run.v === v) run.to = i; else { run = { from: i, to: i, v }; out.push(run); } }
   return out.map(r => (r.from === r.to ? DAYS[r.from] : DAYS[r.from] + "–" + DAYS[r.to]).toLowerCase() + ": " + r.v).join(" · ");
 }
-$("#day-btn").addEventListener("click", () => openCalendar({
-  title: TYPES[S.type].label + " trening", sub: "Trajanje 55 min. Izaberite dan, pa slobodan termin.",
-  selected: S.day, minDate: dstr(new Date()),
-  isFree: date => { const d = S.slots && S.slots.days.find(x => x.date === date); return !!(d && d.slots.some(s => !s.past && s.taken < s.cap)); },
-  isOpen: date => { const d = S.slots && S.slots.days.find(x => x.date === date); return !!(d && d.slots.some(s => !s.past)); },
-  maxDate: (() => { const last = S.slots && S.slots.days.length ? S.slots.days[S.slots.days.length - 1].date : null, pk = S.moving && S.my && S.my.packages.find(p => p.id === S.moving.pkgId); return pk && last && pk.validUntil < last ? pk.validUntil : last; })(),
-  foot: "Radno vreme: " + hoursSummary() + ". Tačkica označava dan sa slobodnim terminima.",
-  onPick: date => { S.day = date; S.selected = null; renderBooking(); }
-}));
+/* ugrađeni mesečni kalendar za izbor dana: tačkica = ima slobodnih mesta, prsten = popunjeno */
+function renderDayCal() {
+  const box = $("#bcal"); if (!box || !S.slots) return;
+  const days = S.slots.days, info = date => days.find(x => x.date === date);
+  const isOpen = d => !!(d && d.slots.some(s => !s.past)), isFree = d => !!(d && d.slots.some(s => !s.past && s.taken < s.cap));
+  const pk = S.moving && S.my && S.my.packages.find(p => p.id === S.moving.pkgId);
+  const last = days.length ? days[days.length - 1].date : dstr(new Date());
+  const maxDate = pk && pk.validUntil < last ? pk.validUntil : last, today = dstr(new Date());
+  const t = new Date(), maxOff = (parseD(maxDate).getFullYear() - t.getFullYear()) * 12 + parseD(maxDate).getMonth() - t.getMonth();
+  if (S.calOff == null || S.calDay !== S.day) { const b = S.day ? parseD(S.day) : t; S.calOff = (b.getFullYear() - t.getFullYear()) * 12 + b.getMonth() - t.getMonth(); S.calDay = S.day; }
+  S.calOff = Math.max(0, Math.min(maxOff, S.calOff));
+  const first = new Date(t.getFullYear(), t.getMonth() + S.calOff, 1), n = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  const nav = (dir, lbl, dis) => el("button", { type: "button", class: "mcal-nav", "aria-label": lbl, disabled: dis, onclick: () => { S.calOff += dir; renderDayCal(); } }, dir < 0 ? "‹" : "›");
+  const grid = el("div", { class: "bcal-grid", role: "grid" }, ...["PON","UTO","SRE","ČET","PET","SUB","NED"].map(x => el("span", { class: "bcal-dow" }, x)));
+  for (let i = 0; i < (first.getDay() + 6) % 7; i++) grid.append(el("span"));
+  for (let d = 1; d <= n; d++) {
+    const key = dstr(new Date(first.getFullYear(), first.getMonth(), d)), di = info(key);
+    const ok = key >= today && key <= maxDate && isOpen(di), free = ok && isFree(di);
+    grid.append(el("button", { type: "button", class: "bcal-day" + (key === today ? " today" : "") + (S.day === key ? " on" : "") + (free ? " free" : ok ? " full" : ""),
+      disabled: !ok, "aria-pressed": String(S.day === key), "aria-label": fmtDayLong(key) + (free ? ", ima slobodnih termina" : ok ? ", popunjeno" : ""),
+      onclick: () => { S.day = key; S.selected = null; renderBooking(); if (matchMedia("(max-width: 760px)").matches) $("#slots-block").scrollIntoView({ behavior: "smooth", block: "start" }); } }, d));
+  }
+  box.replaceChildren(
+    el("div", { class: "bcal-head" }, nav(-1, "Prethodni mesec", S.calOff <= 0), el("b", {}, capM(first.getMonth()), el("span", {}, first.getFullYear())), nav(1, "Sledeći mesec", S.calOff >= maxOff)),
+    grid,
+    el("div", { class: "bcal-legend" }, el("span", {}, el("i"), "slobodni termini"), el("span", {}, el("i", { class: "full" }), "popunjeno"), el("span", {}, el("i", { class: "sel" }), "izabrano")));
+}
+
 
 /* ---------- mesečni kalendar (pop-up) ---------- */
 const MONTHS_LONG = ["januar","februar","mart","april","maj","jun","jul","avgust","septembar","oktobar","novembar","decembar"];
@@ -1611,7 +1704,7 @@ $("#confirm").addEventListener("submit", async e => {
   const r = await act(() => api("/api/bookings", { date, start, type: S.type, trial: $("#f-trial").checked, payMethod: S.pay }));
   btn.disabled = false;
   if (r) {
-    toast("Rezervisano: " + fmtDayLong(date) + " u " + start + ". Vidimo se!");
+    closeBooking(); toast("Rezervisano: " + fmtDayLong(date) + " u " + start + ". Vidimo se!");
     const b = r.booking, pm = S.pay; S.selected = null; S.pay = null; $("#f-trial").checked = false; $("#f-rules").checked = false;
     await Promise.all([loadSlots(), loadMy()]);
     if (!b.pkgId && b.price > 0 && pm === "racun") openPayInfo(b.price, "Podaci za uplatu", "Termin " + fmtDayLong(date) + " u " + start + " · poslali smo ih i na vaš e-mail.");
@@ -1823,7 +1916,7 @@ function bookingRow(b, subParts, right) {
 /* iz cenovnika ili pretrage: otvori zakazivanje sa izabranom vrstom treninga i paketom */
 function bookItem(x) {
   S.type = TYPES[x.cat] ? x.cat : (x.cat === "grupni" ? "grupni" : "individualni"); S.selected = null; S.day = null; $("#f-trial").checked = !!x.trial; S.plan = x.total > 1 ? x.id : "single";
-  if ((location.hash.slice(1) || "zakazi") === "zakazi") { loadSlots(); scrollToContent(); } else { S.jump = true; location.hash = "#zakazi"; }
+  openBooking();
 }
 function renderPrices() {
   const c = S.pub.catalog, cap = S.pub.groupCapacity;
@@ -2106,6 +2199,7 @@ function route() {
   if (!VIEWS.includes(v)) v = "zakazi";
   if (ADMIN_VIEWS.includes(v) && !(S.me && S.me.admin)) v = S.me ? "zakazi" : "prijava";
   if (v === "prijava" && S.me && S.authMode !== "reset") v = "moji-termini";
+  if (v !== "zakazi") closeBooking();
   if (v !== "zakazi" && S.moving) { S.moving = null; S.selected = null; }
   document.querySelectorAll("section[data-view]").forEach(s => s.hidden = s.dataset.view !== v);
   const tab = ADMIN_VIEWS.includes(v) ? "admin" : v;
@@ -2150,7 +2244,28 @@ function searchSite(q) {
   return searchIndex().filter(r => { const h = fold(r.name + " " + r.meta + " " + r.kw); return toks.every(t => h.includes(t)); });
 }
 const nRez = n => n + (n % 10 === 1 && n % 100 !== 11 ? " rezultat" : " rezultata");
-function goView(v) { if ((location.hash.slice(1) || "zakazi") === v) scrollToContent(); else { S.jump = true; location.hash = "#" + v; } }
+/* dugme „Zakaži“: zakazivanje se otvara u prozoru (na telefonu kao list odozdo), na bilo kom delu sajta.
+   Isti blok za zakazivanje se samo premesti u prozor i nazad, pa sva logika ostaje ista. */
+function openBooking() {
+  const body = $("#book-body"), flow = $("#book-flow");
+  if (flow.parentElement !== body) body.append(flow);
+  closeSearch(false);
+  const sheet = $("#book-sheet"), was = !sheet.hidden; sheet.hidden = false; document.documentElement.classList.add("sheet-open");
+  if (!was) body.scrollTop = 0;
+  loadSlots();
+  if (!was) setTimeout(() => $("#book-sheet .book-x").focus({ preventScroll: true }), 50);
+}
+function closeBooking() {
+  const sheet = $("#book-sheet"); if (sheet.hidden) return;
+  sheet.hidden = true; document.documentElement.classList.remove("sheet-open");
+  document.querySelector('section[data-view="zakazi"]').append($("#book-flow"));
+  if (S.moving) { S.moving = null; S.selected = null; }
+  renderBooking();
+}
+$("#book-sheet").addEventListener("click", e => { if (e.target.closest("[data-bclose]")) closeBooking(); });
+// Esc zatvara prozor za zakazivanje samo ako preko njega nije otvoren neki manji prozor (kalendar, članarina…)
+addEventListener("keydown", e => { if (e.key === "Escape" && !$("#book-sheet").hidden && $("#modal-gen").hidden && $("#modal-root").hidden) closeBooking(); }, true);
+function goView(v) { if (v === "zakazi") return openBooking(); if ((location.hash.slice(1) || "zakazi") === v) scrollToContent(); else { S.jump = true; location.hash = "#" + v; } }
 function closeSearch(clear) {
   $("#search-panel").hidden = true;
   if (clear) { $("#site-q").value = ""; $("#site-search").classList.remove("has-q"); }
@@ -2185,7 +2300,8 @@ addEventListener("keydown", e => { if (e.key === "Escape" && !$("#search-panel")
 document.addEventListener("click", e => {
   const a = e.target.closest("a[href^='#']"); if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey) return;
   const v = a.getAttribute("href").slice(1), cur = location.hash.slice(1) || "zakazi";
-  if (a.closest(".logo-link")) { scrollTo({ top: 0, behavior: "smooth" }); return; }
+  if (a.closest(".logo-link")) { closeBooking(); scrollTo({ top: 0, behavior: "smooth" }); return; }
+  if (v === "zakazi") { e.preventDefault(); openBooking(); return; }
   if (!VIEWS.includes(v) || !a.closest("nav.tabs, #adm-tabs, .hero-full, .band, .foot-legal, .cookie, .doc-foot")) return;
   if (v === cur) scrollToContent(); else S.jump = true;
 });
@@ -2206,15 +2322,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden && S.
 })();
 
 /* ---------- „Zakaži termin“ u heru: odmah na zakazivanje ---------- */
-document.getElementById("heroBook")?.addEventListener("click", e => {
-  e.preventDefault();
-  if (location.hash !== "#zakazi") location.hash = "#zakazi"; else route();
-  requestAnimationFrame(() => {
-    const nav = document.querySelector("nav.tabs"), sec = document.querySelector('section[data-view="zakazi"]');
-    const off = nav.getBoundingClientRect().height + (parseFloat(getComputedStyle(nav).top) || 0) + 12;
-    scrollTo({ top: Math.max(0, sec.getBoundingClientRect().top + scrollY - off), behavior: "smooth" });
-  });
-});
+// (hero dugme ide preko opšteg rukovaoca klikova ispod: svi linkovi na #zakazi otvaraju prozor za zakazivanje)
 
 /* ---------- lagano pomeranje zelenila pri skrolu ---------- */
 (function () {
@@ -2270,7 +2378,7 @@ const fmtShort = s => { if (!s) return ""; const d = parseD(s); return d.getDate
 function showPromo() {
   const p = S.pub && S.pub.promo; if (!p || !$("#modal-gen").hidden) return;
   try { if (sessionStorage.getItem("ritual-promo")) return; sessionStorage.setItem("ritual-promo", "1"); } catch {}
-  const go = () => { closeModal(); S.type = "grupni"; S.selected = null; S.plan = "single"; $("#f-trial").checked = true; location.hash = "#zakazi"; loadSlots(); scrollToContent(); };
+  const go = () => { closeModal(); S.type = "grupni"; S.selected = null; S.plan = "single"; $("#f-trial").checked = true; openBooking(); };
   openModal(el("button", { type: "button", class: "promo-x", "data-close": true, "aria-label": "Zatvori" }, "×"),
     el("div", { class: "promo-img" }, el("img", { src: p.image || "/img/p/p8.jpg", alt: "" }), el("span", { class: "promo-tag" }, p.title || "AKCIJA")),
     el("div", { class: "promo-body" }, el("p", {}, p.text), el("div", { class: "actions" }, el("button", { type: "button", class: "btn", onclick: go }, p.button || "Zakaži probni trening"), el("button", { type: "button", class: "btn ghost", "data-close": true }, "Kasnije"))));
