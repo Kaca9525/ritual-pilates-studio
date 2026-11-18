@@ -436,7 +436,8 @@ button.price:hover .go { background: var(--olive); }
 .price-group .pg-body { display: grid; gap: 8px; align-content: start; min-width: 0; }
 @media (max-width: 760px) {
   .price-group.has-photo { grid-template-columns: 1fr; row-gap: 14px; }
-  .price-group .pg-photo { aspect-ratio: 16 / 7; height: auto; min-height: 0; }
+  /* uspravne fotografije: viši okvir da se vidi šta je na slici, a pri skrolovanju slika lagano klizi (parallax) pa se vidi cela */
+  .price-group .pg-photo { aspect-ratio: 4 / 3; height: auto; min-height: 0; }
   .seg.seg-photo button { grid-template-columns: 84px 1fr; }
 }
 .price .dur { font-size: 10px; letter-spacing: .14em; color: var(--ink-mute); text-transform: uppercase; }
@@ -1942,7 +1943,29 @@ function renderPrices() {
   $("#prices").replaceChildren(...blocks.map(([title, list, note, k]) => el("div", { class: "card price-group has-photo", "data-rise": true }, img(BLOCK_PHOTO[S.priceTab][k], "pg-photo"),
     el("div", { class: "pg-body" }, el("h3", {}, title), note ? el("p", { class: "price-note" }, note) : null, el("div", {}, list.map(row))))));
   observeRise(!document.querySelector('section[data-view="cenovnik"]').hidden);
+  pgParallax();
 }
+/* parallax za fotografije u cenovniku: dok kartica prolazi kroz ekran, kadar klizi od vrha do dna fotografije,
+   pa se vidi ceo prizor; bez animacije (prefers-reduced-motion) ostaje ručno podešen kadar */
+const pgParallax = (() => {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return () => {};
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const vh = innerHeight;
+    for (const im of document.querySelectorAll("#prices .pg-photo")) {
+      const r = im.getBoundingClientRect();
+      if (!r.height || r.bottom < -50 || r.top > vh + 50) continue;
+      if (!im.dataset.px) im.dataset.px = (im.style.objectPosition || "50% 50%").split(" ")[0];
+      // 0 kada je donja ivica slike pri dnu ekrana, 1 kada je gornja ivica pri vrhu
+      const t = Math.min(1, Math.max(0, (vh - r.bottom) / Math.max(1, vh - r.height)));
+      im.style.objectPosition = im.dataset.px + " " + (8 + t * 84).toFixed(1) + "%";
+    }
+  };
+  const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+  addEventListener("scroll", req, { passive: true }); addEventListener("resize", req);
+  return req;
+})();
 function renderPublic() {
   const c = S.pub.catalog;
   renderPrices();
