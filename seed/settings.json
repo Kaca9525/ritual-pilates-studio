@@ -77,6 +77,7 @@
     }
   },
   "individualNote": "Individualni i duo treninzi se zakazuju po dogovoru sa studiom.",
+  "individualNoteEn": "Private and duo classes are booked by arrangement with the studio.",
   "payment": {
     "account": "",
     "recipient": "Ritual Pilates Studio",
@@ -89,7 +90,10 @@
     "title": "AKCIJA",
     "text": "U novembru i decembru kod nas u studiju možete probati reformer pilates potpuno besplatno.",
     "image": "/img/p/p8.jpg",
-    "button": "Zakaži besplatni probni trening"
+    "button": "Zakaži besplatni probni trening",
+    "titleEn": "SPECIAL OFFER",
+    "textEn": "In November and December you can try reformer Pilates at our studio completely free of charge.",
+    "buttonEn": "Book a free trial class"
   },
   "catalog": [
     {

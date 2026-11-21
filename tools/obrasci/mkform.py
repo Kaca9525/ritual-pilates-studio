@@ -19,16 +19,17 @@ def run(p, text, bold=False, size=10.5, color=INK, italic=False, font=None):
     if font: r.font.name=font; r._element.rPr.rFonts.set(qn('w:eastAsia'),font)
     return r
 spec=json.load(open(sys.argv[1],encoding='utf8')); out=sys.argv[2]
+EN=spec.get('lang')=='en'  # engleska verzija obrasca: zaglavlje, futer i oznake na engleskom
 d=Document()
 sec=d.sections[0]; sec.page_height=Cm(29.7); sec.page_width=Cm(21); sec.left_margin=sec.right_margin=Cm(2.2); sec.top_margin=Cm(1.8); sec.bottom_margin=Cm(1.8)
 st=d.styles['Normal']; st.font.name='Calibri'; st.font.size=Pt(10.5); st.paragraph_format.space_after=Pt(6)
 st.element.rPr.rFonts.set(qn('w:eastAsia'),'Calibri')
 # zaglavlje
-p=d.add_paragraph(); run(p,'RITUAL',size=11,color=OLIVE,bold=True); run(p,'  ·  PILATES STUDIO  ·  BEOGRAD',size=8,color=MUTE)
+p=d.add_paragraph(); run(p,'RITUAL',size=11,color=OLIVE,bold=True); run(p,'  ·  PILATES STUDIO  ·  '+('BELGRADE' if EN else 'BEOGRAD'),size=8,color=MUTE)
 p.paragraph_format.space_after=Pt(2)
 p=d.add_paragraph(); run(p,spec['title'],size=22,color=OLIVE,italic=True,font='Georgia'); p.paragraph_format.space_after=Pt(8)
 foot=sec.footer.paragraphs[0]; foot.alignment=WD_ALIGN_PARAGRAPH.CENTER
-run(foot,'Ritual Pilates Studio · Skenderbegova broj 53, Stari Grad, 11158 Beograd · ritualstudio99@gmail.com · +381 66 428 926',size=7.5,color=MUTE)
+run(foot,'Ritual Pilates Studio · Skenderbegova broj 53, Stari Grad, 11158 '+('Belgrade' if EN else 'Beograd')+' · ritualstudio99@gmail.com · +381 66 428 926',size=7.5,color=MUTE)
 for b in spec['blocks']:
     t=b[0]
     if t=='h':
@@ -36,7 +37,7 @@ for b in spec['blocks']:
         run(p,b[1],size=13,color=OLIVE,bold=True,font='Georgia')
     elif t=='p' or t=='note' or t=='lead':
         p=d.add_paragraph(); p.alignment=WD_ALIGN_PARAGRAPH.JUSTIFY
-        if t=='note': run(p,'Napomena: ',bold=True,color=OLIVE,size=9.5); run(p,b[1],size=9.5,color=MUTE)
+        if t=='note': run(p,'Note: ' if EN else 'Napomena: ',bold=True,color=OLIVE,size=9.5); run(p,b[1],size=9.5,color=MUTE)
         elif t=='lead': run(p,b[1],size=10.5,italic=True,color=INK)
         else: run(p,b[1])
     elif t=='label':
@@ -66,5 +67,5 @@ for b in spec['blocks']:
         d.add_paragraph().paragraph_format.space_after=Pt(2)
     elif t=='studio':
         p=d.add_paragraph(); p.paragraph_format.space_before=Pt(14); p.paragraph_format.keep_with_next=True
-        run(p,'POPUNJAVA STUDIO',size=8.5,bold=True,color=SUN)
+        run(p,'TO BE COMPLETED BY THE STUDIO' if EN else 'POPUNJAVA STUDIO',size=8.5,bold=True,color=SUN)
 d.save(out)
