@@ -1,0 +1,26 @@
+{
+"lang": "en",
+"title": "Complaint form",
+"blocks": [
+["lead", "Dear clients, you can file your complaint orally at the Studio, by phone, by email or by post. Please enclose the receipt or other proof of the service provided. More information is in the Terms of Use."],
+["h", "To (service provider details)"],
+["table", [["Business name", "MARINA IGNJATOVIĆ PR FITNES-PILATES STUDIO RITUAL PILATES STUDIO BEOGRAD (STARI GRAD)"], ["Address", "Skenderbegova broj 53, Stari Grad, 11158 Belgrade, Serbia"], ["Email", "ritualstudio99@gmail.com"], ["Phone", "+381 66 428 926"]], "filled"],
+["h", "Consumer details"],
+["table", ["First and last name", "Address", "Phone", "Email address"]],
+["h", "Service the complaint concerns"],
+["checks", ["Private Training", "Group Training", "Trial Training", "Training package", "Membership", "Price calculation / receipt", "Other: ______________________"]],
+["table", ["Date the Service was provided (or Appointment)", "Instructor", "Receipt number and date", "Amount paid (RSD)"]],
+["h", "Description of the defect"],
+["p", "Describe what was not in line with the contract (e.g. the Training was not held or was shorter, the price was calculated incorrectly, the Training was not adapted appropriately, the membership or Package was not recorded):"],
+["bigbox", "Description"],
+["h", "Your request"],
+["checks", ["Remedy of the defect (providing the Service again)", "Price reduction", "Termination of the contract with a refund", "Correction of an incorrectly calculated price", "Other: ______________________"]],
+["h", "Attachments"],
+["checks", ["Receipt or other proof of the service provided", "Other: ______________________"]],
+["h", "How would you like to be informed of the reply"],
+["checks", ["Email", "Phone", "Post"]],
+["table", ["Date", "Signature (only if the form is submitted on paper)"]],
+["studio"],
+["table", ["Complaint number in the register", "Date the complaint was received", "Confirmation of receipt issued (date and method)", "Received by (first and last name)"]]
+]
+}

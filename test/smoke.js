@@ -7,8 +7,8 @@ const assert = require("assert");
 const srv = app.listen(0);
 const base = "http://127.0.0.1:" + srv.address().port;
 const jars = {};
-async function call(who, url, body) {
-  const r = await fetch(base + url, { method: body === undefined ? "GET" : "POST", headers: { "Content-Type": "application/json", cookie: jars[who] || "" }, body: body === undefined ? undefined : JSON.stringify(body) });
+async function call(who, url, body, lang) {
+  const r = await fetch(base + url, { method: body === undefined ? "GET" : "POST", headers: { "Content-Type": "application/json", cookie: jars[who] || "", ...(lang ? { "X-Lang": lang } : {}) }, body: body === undefined ? undefined : JSON.stringify(body) });
   const sc = r.headers.get("set-cookie"); if (sc) jars[who] = sc.split(";")[0];
   return { status: r.status, data: await r.json() };
 }
@@ -164,8 +164,26 @@ const hoursUntil = (date, start) => (new Date(date + "T" + start) - Date.now()) 
   // podaci za uplatu iz podešavanja idu u javne podatke
   r = await call("a", "/api/admin/settings", { payment: { account: "160-0000000000000-00", recipient: "Ritual", purpose: "Članarina" } }); assert.equal(r.data.payment.account, "160-0000000000000-00");
   assert.equal((await call("k", "/api/public")).data.payment.account, "160-0000000000000-00"); assert.equal(pubNow.payment, null);
+  // engleski: jezik naloga, poruke o greškama na engleskom, mejlovi (šabloni) na engleskom, engleski pregled linka
+  r = await call("e", "/api/register", { ime: "Emma", prezime: "T", email: "emma@test.rs", telefon: "+44 1", pw: "lozinka1", consent, lang: "en" }, "en");
+  assert.equal(r.status, 200); assert.equal(r.data.me.lang, "en");
+  assert.equal((await call("e", "/api/login", { email: "emma@test.rs", pw: "pogresna" }, "en")).data.error, "Wrong password.");
+  assert.equal((await call("e", "/api/login", { email: "emma@test.rs", pw: "pogresna" })).data.error, "Pogrešna lozinka.");
+  const es = mslots.find(s => !s.past && s.taken < s.cap - 1 && hoursUntil(s.date, s.start) > 13); assert.ok(es);
+  r = await call("e", "/api/bookings", { date: es.date, start: es.start, type: "grupni", payMethod: "racun" }, "en"); assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal((await call("e", "/api/bookings", { date: es.date, start: es.start, type: "grupni" }, "en")).data.error, "You already have a booking in this slot.");
+  assert.equal((await call("e", "/api/bookings/" + r.data.booking.id + "/cancel", {}, "en")).status, 200);
+  r = await call("e", "/api/plans", { catalogId: "g8", slots: [{ d: 2, t: sat }], payMethod: "studio" }, "en"); assert.equal(r.status, 400); assert.match(r.data.error, /^Tuesday has no class at/);
+  r = await call("e", "/api/plans", { catalogId: "g8", slots: [{ d: 6, t: sat }], payMethod: "racun" }, "en"); assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.ok(r.data.pkg.remaining > 0); r = await call("e", "/api/plans", { catalogId: "g12", slots: [{ d: 2, t: tue }], payMethod: "racun" }, "en"); assert.equal(r.status, 409); assert.match(r.data.error, /^You already have the membership "Group · 8 classes"/);
+  assert.equal((await call("e", "/api/lang", { lang: "sr" })).data.me.lang, "sr");
+  assert.equal((await call("e", "/api/me")).data.me.lang, "sr");
+  assert.equal((await call("a", "/api/admin/clients/emma@test.rs")).data.lang, "sr");
+  { const h = await (await fetch(base + "/?lang=en")).text(); assert.ok(h.includes('<html lang="en">') && h.includes("en_US") && h.includes("Booking</title>")); }
+  { const h = await (await fetch(base + "/")).text(); assert.ok(h.includes('<html lang="sr">') && h.includes("sr_RS")); }
   // odjava
   await call("k", "/api/logout", {}); assert.equal((await call("k", "/api/my")).status, 401);
+
   console.log("Svi testovi su prošli.");
   srv.close(); process.exit(0);
 })().catch(e => { console.error("TEST NEUSPEŠAN:", e.message); srv.close(); process.exit(1); });

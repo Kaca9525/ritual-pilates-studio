@@ -1,0 +1,29 @@
+{
+"lang": "en",
+"title": "Contract withdrawal form",
+"blocks": [
+["lead", "Dear clients, the withdrawal period is 14 days from the day the contract was concluded. Send the form to ritualstudio99@gmail.com or by post to the Studio's address. You can also make any other unambiguous statement of withdrawal."],
+["h", "Recipient of the form"],
+["table", [["Business name", "MARINA IGNJATOVIĆ PR FITNES-PILATES STUDIO RITUAL PILATES STUDIO BEOGRAD (STARI GRAD)"], ["Trading name", "Ritual Pilates Studio"], ["Address", "Skenderbegova broj 53, Stari Grad, 11158 Belgrade, Serbia"], ["Email", "ritualstudio99@gmail.com"], ["Phone", "+381 66 428 926"]], "filled"],
+["p", "With this form I notify the service provider that I withdraw from the distance contract, to the extent that I have the right of withdrawal under the applicable regulations."],
+["h", "1. User details"],
+["table", ["First and last name", "Address", "Email address", "Phone number (optional)"]],
+["h", "2. Contract details"],
+["label", "Type of service:"],
+["checks", ["Training package (number of trainings: ____)", "Single Training (private / group / trial)", "Other: ______________________"]],
+["table", ["Name of the service", "Date the contract or booking was concluded", "Date or period of the booked appointment / package of appointments", "Total agreed price of the service (RSD)", "Amount paid (RSD)", "Payment method (cash / bank transfer)"]],
+["h", "3. Statement of withdrawal"],
+["p", "I hereby declare that I withdraw from the above contract, in accordance with the applicable legal conditions."],
+["table", ["Reason for withdrawal (optional)"]],
+["h", "4. Refund details"],
+["p", "The refund is made using the same means of payment that was used for the payment, without delay and no later than 14 days from receipt of this form, unless you expressly agree to another means of payment. Account details are needed only if the payment was made by bank transfer."],
+["table", ["Name of the account holder", "Account number (if needed)", "Amount to be refunded (RSD)"]],
+["h", "5. Additional information"],
+["label", "Has the service already started or been performed?"],
+["checks", ["No", "Yes", "Partly (Trainings held: ____)"]],
+["table", ["Date the form is submitted", "User's first and last name", "Signature (only if the form is submitted on paper)"]],
+["note", "The right of withdrawal, any payment for the part of the service already provided and the refund are assessed according to the type of contract and the applicable legal rules. An individually booked and paid Appointment with a set date and time is not covered by the right of withdrawal. Submitting the form does not automatically mean that all conditions for a refund of the full amount are met."],
+["studio"],
+["table", ["Date the form was received", "Confirmation of receipt sent (date and method)", "Refund date", "Amount refunded (RSD)", "Note"]]
+]
+}

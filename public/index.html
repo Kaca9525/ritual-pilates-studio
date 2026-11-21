@@ -20,6 +20,24 @@
 <meta property="og:locale" content="sr_RS">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="__ORIGIN__/img/og.jpg">
+<link rel="alternate" hreflang="sr" href="__ORIGIN__/?lang=sr">
+<link rel="alternate" hreflang="en" href="__ORIGIN__/?lang=en">
+<link rel="alternate" hreflang="x-default" href="__ORIGIN__/">
+<script>
+/* jezik (srpski / engleski): ?lang=en|sr u adresi, zatim sačuvan izbor, zatim jezik pregledača (strani pregledači dobijaju engleski).
+   Dok se engleski prevod ne primeni, stranica je skrivena, da se ne vidi srpski tekst na trenutak. */
+(function () {
+  var q = (location.search.match(/[?&]lang=(sr|en)\b/) || [])[1], saved = null;
+  try { saved = localStorage.getItem("ritual-lang"); } catch (e) {}
+  var nav = (navigator.languages && navigator.languages[0]) || navigator.language || "sr";
+  var lang = q || saved || (/^(sr|hr|bs|sh|cnr|me)\b/i.test(nav) ? "sr" : "en");
+  if (q) try { localStorage.setItem("ritual-lang", q); } catch (e) {}
+  window.LANG = lang === "en" ? "en" : "sr";
+  document.documentElement.lang = window.LANG;
+  if (window.LANG === "en") { document.documentElement.classList.add("i18n-wait"); document.write('<script src="/i18n-en.js?v=1"><\/script>'); setTimeout(function () { document.documentElement.classList.remove("i18n-wait"); }, 3000); }
+})();
+</script>
+<style>html.i18n-wait body { visibility: hidden; }</style>
 <link rel="manifest" href="/manifest.json?v=2">
 <link rel="icon" href="/icons/favicon.png?v=2">
 <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png?v=2">
@@ -88,9 +106,17 @@ a { color: var(--olive); text-decoration-color: rgba(92,98,62,.35); text-underli
 .logo-word { display: grid; gap: 3px; min-width: 0; overflow: hidden; }
 .logo-word b { font-family: var(--display); font-size: 22px; font-weight: 500; letter-spacing: .22em; line-height: 1; color: #ecd6cb; }
 .logo-word span { font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase; color: rgba(248,243,232,.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-r { display: flex; align-items: center; gap: 18px; flex: none; }
+.lang { display: flex; gap: 6px; }
+.lang button { display: block; width: 26px; height: 18px; padding: 0; border: 0; border-radius: 3px; overflow: hidden; background: none; cursor: pointer; opacity: .5; box-shadow: 0 0 0 1px rgba(248,243,232,.35); transition: opacity .2s, box-shadow .2s, transform .2s; }
+.lang button svg { display: block; width: 100%; height: 100%; }
+.lang button:hover { opacity: .85; }
+.lang button[aria-pressed="true"] { opacity: 1; box-shadow: 0 0 0 2px #ecd6cb; }
+.lang button:focus-visible { outline: 2px solid #ecd6cb; outline-offset: 2px; }
+@media (max-width: 440px) { .top-r { flex-direction: column; align-items: flex-end; gap: 7px !important; } }
 .account { display: flex; gap: 14px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(248,243,232,.7); flex: none; }
 .account a, .account .link { color: var(--paper); background: none; border: 0; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; padding: 0; text-decoration: none; border-bottom: 1px solid rgba(248,243,232,.4); }
-@media (max-width: 560px) { nav.tabs { top: 67px; } .logo-word b { font-size: 18px; } .logo-word span { display: none; } .account { font-size: 10px; gap: 10px; } .top .logo { width: 46px; height: 46px; } }
+@media (max-width: 560px) { nav.tabs { top: 67px; } .logo-word b { font-size: 18px; } .logo-word span { display: none; } .account { font-size: 10px; gap: 10px; } .top-r { gap: 12px; } .lang { gap: 5px; } .lang button { width: 22px; height: 15px; } .top .logo { width: 46px; height: 46px; } }
 
 /* hero preko cele širine */
 .hero-full { position: relative; height: min(82vh, 760px); min-height: 500px; overflow: hidden; background: var(--olive-deep); }
@@ -472,6 +498,7 @@ a .ci-v:hover { color: var(--olive); }
 .hours-t td:last-child { text-align: right; white-space: nowrap; }
 .hours-t tr.today td { color: var(--olive-deep); }
 .hours-t tr.today td:first-child::after { content: "danas"; margin-left: 8px; font-size: 9px; letter-spacing: .14em; color: var(--paper); background: var(--olive); border-radius: 999px; padding: 2px 7px; vertical-align: 1px; }
+html[lang="en"] .bcal-day.today::before, html[lang="en"] .hours-t tr.today td:first-child::after { content: "today"; }
 .hours-t td.closed { color: var(--ink-mute); font-style: italic; font-weight: 400; }
 .foot-list .hrs { display: flex; justify-content: flex-start; gap: 8px; font-variant-numeric: tabular-nums; } .foot-list .hrs b { min-width: 42px; }
 .hours b { font-weight: 500; min-width: 40px; color: var(--ink-soft); font-family: var(--sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding-top: 5px; }
@@ -685,7 +712,13 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 <header class="top">
   <div class="wrap top-in">
     <a href="#zakazi" class="logo-link"><img class="logo" src="/logo.svg" alt="" width="54" height="54"><span class="logo-word"><b>RITUAL</b><span>pilates studio<i> · Dorćol</i></span></span></a>
-    <div class="account" id="account"></div>
+    <div class="top-r">
+      <div class="lang" role="group" aria-label="Jezik / Language">
+        <button type="button" data-lang="sr" lang="sr" aria-label="Srpski" title="Srpski"><svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><rect width="30" height="13.34" fill="#0c4076"/><rect width="30" height="6.67" fill="#c6363c"/></svg></button>
+        <button type="button" data-lang="en" lang="en" aria-label="English" title="English"><svg viewBox="0 0 60 40" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><clipPath id="uk-c"><path d="M0 0v40h60V0z"/></clipPath><clipPath id="uk-t"><path d="M30 20h30v20zv20H0zH0V0zV0h30z"/></clipPath><g clip-path="url(#uk-c)"><path d="M0 0v40h60V0z" fill="#012169"/><path d="M0 0l60 40m0-40L0 40" stroke="#fff" stroke-width="8"/><path d="M0 0l60 40m0-40L0 40" clip-path="url(#uk-t)" stroke="#c8102e" stroke-width="5"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/><path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/></g></svg></button>
+      </div>
+      <div class="account" id="account"></div>
+    </div>
   </div>
 </header>
 <section class="hero-full" aria-label="Studio Ritual">
@@ -772,7 +805,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
         <label class="check"><input type="checkbox" id="f-rules"> Znam da se termin može otkazati najkasnije 12h ranije, a da se kasnije otkazan ili propušten trening računa kao iskorišćen.</label>
         <button class="btn" id="f-submit" type="submit">Potvrdi rezervaciju</button>
       </div>
-      <p class="note">Molimo dođite 5–10 min ranije. U slučaju kašnjenja trening se ne produžava.</p>
+      <p class="note">Molimo dođite najmanje 5 min ranije. U slučaju kašnjenja trening se ne produžava.</p>
     </form>
     </div>
   </section>
@@ -810,7 +843,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
         <label class="f">Telefon <input id="r-tel" type="tel" autocomplete="tel" placeholder="06x xxx xxxx" required></label>
         <label class="f">Lozinka <input id="r-pw" type="password" autocomplete="new-password" minlength="6" required></label>
       </div>
-      <label class="check"><input type="checkbox" id="r-consent"> <span>Potvrđujem da sam upoznat/a sa dokumentima <button type="button" class="link-in" data-consent="uslovi">Uslovi korišćenja</button> i <button type="button" class="link-in" data-consent="privatnost">Politika privatnosti</button> (uključujući odeljak o kolačićima), kao i sa <a href="#pravilnik" id="r-rules">pravilnikom studija</a>, i saglasan/na sam sa obradom podataka radi zakazivanja termina.</span></label>
+      <label class="check"><input type="checkbox" id="r-consent"> <span data-i18n="consent">Potvrđujem da sam upoznat/a sa dokumentima <button type="button" class="link-in" data-consent="uslovi">Uslovi korišćenja</button> i <button type="button" class="link-in" data-consent="privatnost">Politika privatnosti</button> (uključujući odeljak o kolačićima), kao i sa <a href="#pravilnik" id="r-rules">pravilnikom studija</a>, i saglasan/na sam sa obradom podataka radi zakazivanja termina.</span></label>
       <button class="btn" type="submit">Napravi nalog</button>
       <p class="note">Već imate nalog? <a href="#prijava" data-auth="login">Prijavite se</a></p>
     </form>
@@ -841,12 +874,12 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
       <h2>Pravilnik</h2>
       <p class="lead">Ritual Pilates Studio</p>
     </div>
-    <div class="card rules">
+    <div class="card rules" data-doc="pravilnik">
       <div>
         <h3>Trajanje treninga</h3>
         <ul>
           <li>Jedan trening traje <strong>55 min</strong>.</li>
-          <li>Potrebno je doći 5–10 min <strong>ranije</strong> kako biste se za isti pripremili.</li>
+          <li>Potrebno je doći najmanje 5 min <strong>ranije</strong> kako biste se za isti pripremili.</li>
           <li>U slučaju <strong>kašnjenja</strong>, treneri nisu dužni da produže trajanje treninga.</li>
         </ul>
       </div>
@@ -863,7 +896,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
         <ul>
           <li>Prijava za trening je <strong>obavezna</strong> kako bi se obezbedilo mesto na času.</li>
           <li>U slučaju da ne možete da prisustvujete treningu, potrebno je <strong>otkazati</strong> termin na vreme.</li>
-          <li>Otkazivanje ili promena termina moguća je najkasnije <strong>12h</strong> pre zakazanog termina, u aplikaciji.</li>
+          <li>Otkazivanje ili promena termina moguća je najkasnije <strong>12h</strong> pre zakazanog termina, <strong>u aplikaciji ili telefonom</strong>.</li>
           <li>Treninzi koji nisu otkazani na vreme ili na kojima se klijent ne pojavi računaju se kao <strong>iskorišćeni</strong> i ne mogu se nadoknaditi.</li>
         </ul>
       </div>
@@ -877,7 +910,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
       <p class="lead">Ritual Pilates Studio · važe od 1. decembra 2026.</p>
     </div>
     <nav class="doc-toc" data-toc="doc-uslovi" aria-label="Sadržaj: Uslovi korišćenja"></nav>
-    <article class="card legal" id="doc-uslovi">
+    <article class="card legal" id="doc-uslovi" data-doc="uslovi">
 <h3>I. Značenje pojmova</h3>
 <p>U ovim Uslovima korišćenja navedeni pojmovi imaju sledeće značenje:</p>
 <ul>
@@ -889,7 +922,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 <li><strong>„Usluge“</strong> – probni, individualni i grupni Pilates treninzi koji se održavaju u prostorijama Studija, kao i paketi treninga i članarine.</li>
 <li><strong>„Trening“</strong> – pojedinačni individualni ili grupni Pilates trening.</li>
 <li><strong>„Termin“</strong> – dogovoreni datum i vreme održavanja Treninga.</li>
-<li><strong>„Paket“</strong> – unapred uplaćen određen broj Treninga.</li>
+<li><strong>„Paket“</strong> – uplaćen određen broj Treninga.</li>
 <li><strong>„Članarina“</strong> – Usluga koja Korisniku daje pravo na Treninge u okviru jednog ciklusa članarine.</li>
 <li><strong>„Sadržaj Aplikacije“</strong> – tekstovi, fotografije, video zapisi, logotipi, grafika, dizajn i drugi materijali u Aplikaciji.</li>
 <li><strong>„Korisnički sadržaj“</strong> – svaki sadržaj koji Korisnik dostavi Studiju preko Aplikacije ili društvenih mreža (poruke, fotografije, komentari, recenzije).</li>
@@ -927,9 +960,9 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 <p><strong>1.2. Cene i sadržaj Usluga.</strong> Opis, sadržaj i cena pojedinačnih Treninga, Paketa i Članarine objavljeni su u Aplikaciji i dostupni u Studiju i izraženi su u dinarima (RSD). Rezultati vežbanja zavise od individualnih karakteristika, redovnosti i angažovanja Korisnika; opisi rezultata nisu garancija konkretnog ishoda.</p>
 <p><strong>1.3. Zdravstveno stanje i prilagođavanje Treninga.</strong> Korisnik vežba u skladu sa sopstvenim zdravstvenim stanjem i mogućnostima i dužan je da poštuje uputstva instruktora. Korisnik nije dužan da Studiju dostavlja podatke o zdravstvenom stanju. Ukoliko je Trening potrebno prilagoditi zdravstvenom stanju (npr. trudnoća, povreda, operacija, hronično oboljenje, bol u leđima ili zglobovima), Korisnik se poziva da o tome na vreme obavesti instruktora, i to samo u meri u kojoj je to neophodno za bezbedno prilagođavanje vežbi. Ako Korisnik odluči da te podatke ne podeli, Studio ne može da prilagodi Trening zdravstvenom stanju o kome nije obavešten. Preporučuje se da se pre početka vežbanja Korisnik posavetuje sa lekarom, a Studio može zatražiti mišljenje lekara kada proceni da je to neophodno radi bezbednosti. Studio zadržava pravo da odbije ili prekine Trening ukoliko proceni da bi vežbanje moglo ugroziti zdravlje Korisnika ili drugih polaznika.</p>
 <p><strong>1.4. Zakazivanje i dolazak.</strong> Termin se zakazuje preko sistema za online zakazivanje u Aplikaciji, telefonom ili putem društvenih mreža. Molimo da na Trening dođete najmanje 5 minuta ranije. Kod grupnih Treninga ulazak nakon početka časa moguć je najkasnije 5 minuta nakon početka iz bezbednosnih razloga i radi poštovanja ostalih polaznika. Kašnjenje na individualni Trening skraćuje trajanje Treninga bez umanjenja cene.</p>
-<p><strong>1.5. Zakazivanje putem Aplikacije i plaćanje Termina.</strong> Zakazivanje putem Aplikacije vrši se u skladu sa opštim uslovima iz dela III. Termin se plaća unapred, u punom iznosu cene izabrane Usluge, u skladu sa tačkom V.2.2. Korisnik može da izabere da Termin plati i direktno u Studiju, na licu mesta, pre početka Treninga.</p>
+<p><strong>1.5. Zakazivanje putem Aplikacije i plaćanje Termina.</strong> Zakazivanje putem Aplikacije vrši se u skladu sa opštim uslovima iz dela III. Termin se plaća u punom iznosu cene izabrane Usluge, u skladu sa tačkom V.2.2: uplatom na račun nakon zakazivanja u Aplikaciji ili direktno u Studiju, na licu mesta.</p>
 <p><strong>1.6. Otkazivanje i pomeranje Termina.</strong> Termin je moguće otkazati ili pomeriti najkasnije 12 sati pre zakazanog vremena, telefonom ili preko Aplikacije. Ako je Termin otkazan u tom roku, Korisniku se nudi novi Termin ili povraćaj uplaćenog iznosa. Kraći rok ne ostavlja dovoljno vremena da se upražnjeno mesto ponudi drugom Korisniku, što je posebno važno kod grupnih Treninga sa ograničenim brojem mesta. U slučaju otkazivanja nakon navedenog roka ili nedolaska bez obaveštenja, Studio zadržava pravo da: (a) smatra Termin iskorišćenim u okviru Paketa ili Članarine; (b) odbije zakazivanje novih Termina bez prethodne uplate.</p>
-<p><strong>1.7. Paketi treninga.</strong> Paketi (npr. paket od 8 ili 12 Treninga) plaćaju se unapred, u celosti, i koriste se prema dinamici koju dogovore Korisnik i Studio. Rok važenja Paketa je 1 (jedan) mesec od dana uplate. Neiskorišćeni Treninzi nakon isteka roka prestaju da važe. Izuzetno, rok se može produžiti uz dogovor i potvrdu Studija, na primer u slučaju bolesti ili povrede, uz prezentaciju odgovarajuće potvrde. Paket je lične prirode i ne može se ustupiti trećem licu bez saglasnosti Studija.</p>
+<p><strong>1.7. Paketi treninga.</strong> Paketi (npr. paket od 8 ili 12 Treninga) plaćaju se u celosti i koriste se prema dinamici koju dogovore Korisnik i Studio. Paket se smatra kupljenim i može da se koristi tek kada je uplata izvršena. Rok važenja Paketa je 1 (jedan) mesec od datuma početka korišćenja (npr. od 17.11. do 17.12.), bez obzira na broj dana u mesecu. Neiskorišćeni Treninzi nakon isteka roka prestaju da važe. Izuzetno, rok se može produžiti uz dogovor i potvrdu Studija, na primer u slučaju bolesti ili povrede, uz prezentaciju odgovarajuće potvrde. Paket je lične prirode i ne može se ustupiti trećem licu bez saglasnosti Studija.</p>
 <p><strong>1.8. Članarina.</strong> Članarina daje pravo na Treninge u okviru mesečne članarine, u obimu koji je objavljen uz cenu pojedinačnog treninga, ili paketa, u skladu sa izabranom uslugom i u ciklusu od mesec dana. Neiskorišćeni Treninzi iz jednog mesečnog ciklusa prenose se u naredni ciklus u opravdanim slučajevima, u dogovoru sa ovlašćenim licem Studija. Članarina je lične prirode i ne može se ustupiti trećem licu.</p>
 <p><strong>1.9. Grupni Treninzi.</strong> Grupe imaju ograničen broj mesta - 4 mesta po terminu. Studio zadržava pravo da grupni Trening ne održi ukoliko se ne prijavi minimalan broj polaznika, o čemu će Korisnici biti obavešteni najkasnije 2 sata pre početka, uz ponudu novog Termina. Studio zadržava pravo da, iz opravdanih razloga, zameni instruktora ili promeni vreme i sadržaj Treninga.</p>
 <p><strong>1.10. Obaveze Korisnika.</strong> Korisnik je dužan da poštuje ove Uslove, pravila ponašanja u Studiju, uputstva instruktora i higijenske mere; da koristi opremu namenski i pažljivo; da nosi udobnu odeću i čarape sa protivklizačem (ili obuću predviđenu za Studio); da ne pristupa Treningu pod dejstvom alkohola ili psihoaktivnih supstanci; da ne ometa druge polaznike; da prekine vežbanje i obavesti instruktora ukoliko oseti bol, vrtoglavicu ili drugu nelagodnost; i da blagovremeno izmiruje obaveze plaćanja. Korisnik odgovara za štetu koju namerno ili nepažnjom prouzrokuje na opremi i prostorijama Studija. Korisnik koji ima znakove zaraznog oboljenja treba da se uzdrži od dolaska na Trening.</p>
@@ -937,9 +970,9 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 <p><strong>1.12.</strong> Studio zadržava pravo da ukloni sadržaj koji je u suprotnosti sa ovim Uslovima ili zakonom.</p>
 <h4>2. Cene, naplata, članarina i povraćaj sredstava</h4>
 <p><strong>2.1.</strong> Cene su izražene u dinarima (RSD) bez obračunatog PDV-a jer pružalac nije u sistemu PDV-a i važe u trenutku zaključenja ugovora. Studio zadržava pravo izmene cena; izmena ne utiče na već zaključene ugovore i plaćene Usluge.</p>
-<p><strong>2.2. Način plaćanja.</strong> Termini, Paketi i Članarina plaćaju se unapred, u punom iznosu. Plaćanje se može izvršiti uplatom na račun u skladu sa dobijenim instrukcijama, kao i direktno u Studiju, na licu mesta, gotovinom ili platnom karticom, pre početka Treninga.</p>
+<p><strong>2.2. Način plaćanja.</strong> Termini, Paketi i Članarina plaćaju se u punom iznosu, na jedan od dva načina: uplatom na račun u skladu sa instrukcijama dobijenim nakon zakazivanja u Aplikaciji, ili direktno u Studiju, na licu mesta, gotovinom ili platnom karticom. Paket, odnosno Članarina smatra se kupljenim i može da se koristi tek kada je uplata izvršena.</p>
 <p><strong>2.3.</strong> Za sve uplate Studio izdaje fiskalni račun ili drugi dokument u skladu sa propisima o fiskalizaciji.</p>
-<p><strong>2.4. Cena Članarine i njena izmena.</strong> Cena Članarine za svaki ciklus jednaka je ceni važećoj na dan početka tog ciklusa. O izmeni cene Članarine Korisnik će biti obavešten najkasnije 30 dana pre početka ciklusa u kojem se nova cena primenjuje, uz mogućnost da otkaže automatsko obnavljanje u skladu sa tačkom V.1.8.</p>
+<p><strong>2.4. Cena Članarine i njena izmena.</strong> Cena Članarine za svaki ciklus jednaka je ceni važećoj na dan početka tog ciklusa. O izmeni cene Članarine Korisnik će biti obavešten najkasnije 30 dana pre početka ciklusa u kojem se nova cena primenjuje, uz mogućnost da pre početka tog ciklusa odustane od daljeg korišćenja Članarine.</p>
 <p><strong>2.5. Povraćaj sredstava.</strong> Kada Korisnik ima pravo na povraćaj novca (otkazivanje Termina u roku iz tačke V.1.6, otkazivanje Treninga od strane Studija, nemogućnost pružanja Usluge ili opravdan odustanak), povraćaj se vrši istim sredstvom plaćanja kojim je izvršena uplata, bez nepotrebnog odlaganja, a najkasnije u roku od 14 dana od dana prijema izjave o odustanku ili od dana kada je utvrđeno pravo na povraćaj.</p>
 <p><strong>2.6.</strong> Ako Studio iz opravdanih razloga (bolest instruktora, kvar opreme, viša sila) otkaže ili promeni zakazani Termin, Korisniku se nudi novi Termin ili povraćaj uplaćenog iznosa za neiskorišćenu Uslugu.</p>
 <h4>3. Prava potrošača</h4>
@@ -1036,7 +1069,7 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
       <p class="lead">Koje podatke čuvamo, zašto i koja prava imate · od 1. decembra 2026.</p>
     </div>
     <nav class="doc-toc" data-toc="doc-privatnost" aria-label="Sadržaj: Politika privatnosti"></nav>
-    <article class="card legal" id="doc-privatnost">
+    <article class="card legal" id="doc-privatnost" data-doc="privatnost">
 <p class="doc-meta">RITUAL PILATES STUDIO BEOGRAD</p>
 <p>Ovom Politikom privatnosti objašnjavamo koje podatke o ličnosti prikupljamo kada koristite našu web aplikaciju i usluge Ritual Pilates Studija (u daljem tekstu: Studio), zašto ih obrađujemo, koliko dugo ih čuvamo i koja prava imate.</p>
 <h3>1. Rukovalac podacima</h3>
@@ -1249,18 +1282,70 @@ footer h3 { color: rgba(248,243,232,.6); margin-bottom: 12px; }
 
 <script>
 "use strict";
+/* ---------- jezik: srpski (izvorni tekst) i engleski ----------
+   t("srpski tekst", { n: 3 }) vraća engleski prevod iz public/i18n-en.js (EN) kada je izabran engleski;
+   {n} u tekstu se zamenjuje vrednošću. Ako prevod ne postoji, ostaje srpski tekst. */
+if (window.LANG === "en" && !window.EN) window.LANG = "sr"; // prevod nije učitan: ostaje srpski
+const LANG = window.LANG === "en" ? "en" : "sr", EN_ON = LANG === "en";
+const EN = window.EN || {}, EN_HTML = window.EN_HTML || {}, EN_DOCS = window.EN_DOCS || {};
+function t(sr, vars) {
+  let s = EN_ON && EN[sr] != null ? EN[sr] : sr;
+  if (vars) s = s.replace(/\{(\w+)\}/g, (m, k) => vars[k] != null ? vars[k] : m);
+  return s;
+}
+const tr = (sr, en) => EN_ON ? en : sr; // za kratke delove koji se razlikuju po gramatici (množina i sl.)
+/* statični tekst iz HTML-a: tekst, atributi, delovi sa oznakom data-i18n i pravni dokumenti (data-doc) */
+function applyStaticLang() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  if (!EN_ON) return;
+  const norm = x => x.replace(/\s+/g, " ").trim();
+  document.title = t(document.title);
+  document.querySelectorAll('meta[name="description"], meta[property="og:title"], meta[property="og:description"]').forEach(m => m.content = t(m.content));
+  document.querySelectorAll("[data-doc]").forEach(d => { if (EN_DOCS[d.dataset.doc]) d.innerHTML = EN_DOCS[d.dataset.doc]; });
+  document.querySelectorAll("[data-i18n]").forEach(d => { if (EN_HTML[d.dataset.i18n]) d.innerHTML = EN_HTML[d.dataset.i18n]; });
+  const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest("script,style,[data-doc],[data-i18n]") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  for (let n; (n = w.nextNode());) {
+    const k = norm(n.nodeValue); if (!k || EN[k] == null) continue;
+    const lead = /^\s/.test(n.nodeValue) ? " " : "", trail = /\s$/.test(n.nodeValue) ? " " : "";
+    n.nodeValue = lead + EN[k] + trail;
+  }
+  // obrasci za preuzimanje: engleske verzije (obrazac-…-en.pdf / .docx)
+  document.querySelectorAll('a[href^="/docs/obrazac-"]').forEach(a => a.setAttribute("href", a.getAttribute("href").replace(/(\.\w+)$/, "-en$1")));
+  for (const a of ["placeholder", "aria-label", "title", "alt"])
+    document.querySelectorAll("[" + a + "]").forEach(e => { if (e.closest("[data-doc]") || e.closest(".lang")) return; const v = norm(e.getAttribute(a)); if (EN[v] != null) e.setAttribute(a, EN[v]); });
+}
+/* prekidač jezika (zastavice u zaglavlju): izbor se pamti na uređaju i na nalogu (jezik mejlova), pa se stranica ponovo učita */
+document.addEventListener("click", async e => {
+  const b = e.target.closest(".lang [data-lang]"); if (!b || b.dataset.lang === LANG) return;
+  try { localStorage.setItem("ritual-lang", b.dataset.lang); } catch {}
+  if (S.me) await fetch("/api/lang", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lang: b.dataset.lang }) }).catch(() => {});
+  const u = new URL(location.href); u.searchParams.delete("lang"); location.replace(u.pathname + u.search + u.hash);
+});
+
 /* ---------- pomoćne ---------- */
 const $ = s => document.querySelector(s);
-const DAYS = ["Ned","Pon","Uto","Sre","Čet","Pet","Sub"];
-const DAYS_LONG = ["nedelja","ponedeljak","utorak","sreda","četvrtak","petak","subota"];
-const DAYS_ACC = ["nedelju", "ponedeljak", "utorak", "sredu", "četvrtak", "petak", "subotu"];
-const MONTHS = ["jan","feb","mar","apr","maj","jun","jul","avg","sep","okt","nov","dec"];
+const DAYS = tr(["Ned","Pon","Uto","Sre","Čet","Pet","Sub"], ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]);
+const DAYS_LONG = tr(["nedelja","ponedeljak","utorak","sreda","četvrtak","petak","subota"], ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]);
+const DAYS_ACC = tr(["nedelju", "ponedeljak", "utorak", "sredu", "četvrtak", "petak", "subotu"], DAYS_LONG);
+const DOW_HEAD = tr(["PON","UTO","SRE","ČET","PET","SUB","NED"], ["MON","TUE","WED","THU","FRI","SAT","SUN"]);
+const MONTHS = tr(["jan","feb","mar","apr","maj","jun","jul","avg","sep","okt","nov","dec"], ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]);
 const TYPES = {
-  grupni:       { label: "Grupni",       kind: "g", desc: cap => "do " + cap + " osoba na reformerima" },
-  individualni: { label: "Individualni", kind: "p", desc: () => "1 na 1 sa trenerom" },
-  duo:          { label: "Duo",          kind: "p", desc: () => "vas dvoje sa trenerom" }
+  grupni:       { label: t("Grupni"),       kind: "g", desc: cap => t("do {n} osoba na reformerima", { n: cap }) },
+  individualni: { label: t("Individualni"), kind: "p", desc: () => t("1 na 1 sa trenerom") },
+  duo:          { label: t("Duo"),          kind: "p", desc: () => t("vas dvoje sa trenerom") }
 };
-const STATUS = { zakazano: "Zakazano", kasno: "Kasno otkazan", otkazano: "Otkazan" };
+const STATUS = { zakazano: t("Zakazano"), kasno: t("Kasno otkazan"), otkazano: t("Otkazan") };
+/* naziv usluge ili članarine: u bazi i podešavanjima je na srpskom (npr. „Grupni · 8 termina”), na engleskom se slaže iz vrste i broja termina */
+function nameOf(x) {
+  if (!x || !EN_ON) return x ? x.name : "";
+  const it = (S.pub && S.pub.catalog.find(c => c.id === (x.catalogId || x.id))) || x;
+  const cat = { grupni: "Group", individualni: "Private", duo: "Duo" }[it.cat || x.cat] || "";
+  const total = x.total || it.total;
+  if (it.trial) return "Trial " + cat.toLowerCase() + " class";
+  return total > 1 ? cat + " · " + total + " classes" : cat + " class";
+}
+const plural = (n, one, many) => n + " " + (n === 1 ? one : many);
 const pad = n => String(n).padStart(2, "0");
 const dstr = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
 const parseD = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
@@ -1268,9 +1353,10 @@ const addDays = (s, n) => { const d = parseD(s); d.setDate(d.getDate() + n); ret
 const slotTime = (date, start) => { const d = parseD(date); const [h, m] = start.split(":").map(Number); d.setHours(h, m); return d; };
 const hoursUntil = (date, start) => (slotTime(date, start) - Date.now()) / 36e5;
 const endOf = start => { const [h, m] = start.split(":").map(Number); const e = h * 60 + m + (S.pub ? S.pub.minutes : 55); return pad(Math.floor(e / 60)) + ":" + pad(e % 60); };
-const fmtRsd = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-const fmtDayLong = s => { const d = parseD(s); return DAYS_LONG[d.getDay()] + ", " + d.getDate() + ". " + MONTHS[d.getMonth()]; };
-const fmtDate = s => { const d = parseD(s.slice(0, 10)); return d.getDate() + ". " + MONTHS[d.getMonth()] + " " + d.getFullYear() + "."; };
+const fmtRsd = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, EN_ON ? "," : ".");
+const money = n => fmtRsd(n) + tr(" rsd", " RSD");
+const fmtDayLong = s => { const d = parseD(s); return DAYS_LONG[d.getDay()] + ", " + d.getDate() + tr(". ", " ") + MONTHS[d.getMonth()]; };
+const fmtDate = s => { const d = parseD(s.slice(0, 10)); return d.getDate() + tr(". ", " ") + MONTHS[d.getMonth()] + " " + d.getFullYear() + tr(".", ""); };
 const fmtStamp = iso => { const d = new Date(iso); return fmtDate(dstr(d)) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()); };
 function el(tag, attrs = {}, ...kids) {
   const e = document.createElement(tag);
@@ -1285,14 +1371,14 @@ function el(tag, attrs = {}, ...kids) {
 let toastTimer;
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 4200); }
 async function api(url, body) {
-  const r = await fetch(url, body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const r = await fetch(url, body === undefined ? { headers: { "X-Lang": LANG } } : { method: "POST", headers: { "Content-Type": "application/json", "X-Lang": LANG }, body: JSON.stringify(body) });
   let data = {}; try { data = await r.json(); } catch {}
-  if (!r.ok) { const e = new Error(data.error || "Greška na serveru. Pokušajte ponovo."); e.status = r.status; throw e; }
+  if (!r.ok) { const e = new Error(data.error || t("Greška na serveru. Pokušajte ponovo.")); e.status = r.status; throw e; }
   return data;
 }
 async function act(fn, okMsg) { try { const r = await fn(); if (okMsg) toast(okMsg); return r; } catch (e) { toast(e.message); return null; } }
 // Dugme za opasne radnje traži drugi klik.
-function confirmBtn(label, cls, onConfirm, confirmLabel = "Potvrdi") {
+function confirmBtn(label, cls, onConfirm, confirmLabel = t("Potvrdi")) {
   const b = el("button", { class: cls, type: "button" }, label);
   b.addEventListener("click", async () => {
     if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = confirmLabel; setTimeout(() => { b.dataset.armed = ""; b.textContent = label; }, 4000); return; }
@@ -1308,8 +1394,8 @@ const S = { pub: null, me: null, type: "grupni", slots: null, day: null, selecte
 /* ---------- nalog ---------- */
 function renderAccount() {
   const a = $("#account"); a.replaceChildren();
-  if (S.me) a.append(...[el("span", {}, S.me.ime), S.me.admin ? el("a", { href: "#raspored", title: "Admin panel: raspored, klijenti, podešavanja" }, "Admin") : null, el("button", { class: "link", type: "button", onclick: logout }, "Odjava")].filter(Boolean));
-  else a.append(el("a", { href: "#prijava", "data-auth": "login" }, "Prijava"), " · ", el("a", { href: "#prijava", "data-auth": "register" }, "Registracija"));
+  if (S.me) a.append(...[el("span", {}, S.me.ime), S.me.admin ? el("a", { href: "#raspored", title: t("Admin panel: raspored, klijenti, podešavanja") }, "Admin") : null, el("button", { class: "link", type: "button", onclick: logout }, t("Odjava"))].filter(Boolean));
+  else a.append(el("a", { href: "#prijava", "data-auth": "login" }, t("Prijava")), " · ", el("a", { href: "#prijava", "data-auth": "register" }, t("Registracija")));
   document.querySelectorAll(".admin-tab").forEach(t => t.hidden = !(S.me && S.me.admin));
 }
 async function logout() { await act(() => api("/api/logout", {})); S.me = null; S.my = null; renderAccount(); location.hash = "#zakazi"; loadSlots(); }
@@ -1317,8 +1403,8 @@ function setAuthMode(m) {
   S.authMode = m;
   $("#login-form").hidden = m !== "login"; $("#register-form").hidden = m !== "register";
   $("#forgot-form").hidden = m !== "forgot"; $("#reset-form").hidden = m !== "reset";
-  $("#auth-title").textContent = { login: "Prijava", register: "Registracija", forgot: "Nova lozinka", reset: "Nova lozinka" }[m];
-  $("#auth-lead").textContent = { login: "Prijavite se da biste zakazivali termine i pratili svoj paket.", register: "Nalog vam omogućava da zakazujete termine i vidite koliko vam je treninga ostalo u paketu.", forgot: "Poslaćemo vam link za postavljanje nove lozinke.", reset: "Upišite novu lozinku za svoj nalog." }[m];
+  $("#auth-title").textContent = t({ login: "Prijava", register: "Registracija", forgot: "Nova lozinka", reset: "Nova lozinka" }[m]);
+  $("#auth-lead").textContent = t({ login: "Prijavite se da biste zakazivali termine i pratili svoj paket.", register: "Nalog vam omogućava da zakazujete termine i vidite koliko vam je treninga ostalo u paketu.", forgot: "Poslaćemo vam link za postavljanje nove lozinke.", reset: "Upišite novu lozinku za svoj nalog." }[m]);
 }
 document.addEventListener("click", e => { const a = e.target.closest("[data-auth]"); if (a) setAuthMode(a.dataset.auth); });
 async function afterLogin(me) {
@@ -1327,24 +1413,24 @@ async function afterLogin(me) {
 }
 $("#login-form").addEventListener("submit", async e => {
   e.preventDefault();
-  const r = await act(() => api("/api/login", { email: $("#l-email").value, pw: $("#l-pw").value }));
-  if (r) { toast("Dobro došli, " + r.me.ime + "."); afterLogin(r.me); }
+  const r = await act(() => api("/api/login", { email: $("#l-email").value, pw: $("#l-pw").value, lang: LANG }));
+  if (r) { toast(t("Dobro došli, {ime}.", { ime: r.me.ime })); afterLogin(r.me); }
 });
 $("#register-form").addEventListener("submit", async e => {
   e.preventDefault();
-  if (!$("#r-consent").checked) return consentGate({ intro: "Pre otvaranja naloga potrebno je da se upoznate sa Uslovima korišćenja i Politikom privatnosti i da ih prihvatite.",
-    onAccept: () => { $("#r-consent").checked = true; $("#register-form").requestSubmit(); }, onDecline: () => toast("Bez saglasnosti sa Uslovima korišćenja i Politikom privatnosti nalog ne može da se napravi.") });
-  const r = await act(() => api("/api/register", { ime: $("#r-ime").value, prezime: $("#r-prezime").value, email: $("#r-email").value, telefon: $("#r-tel").value, pw: $("#r-pw").value, consent: $("#r-consent").checked }));
-  if (r) { toast("Nalog je napravljen. Dobro došli!"); afterLogin(r.me); }
+  if (!$("#r-consent").checked) return consentGate({ intro: t("Pre otvaranja naloga potrebno je da se upoznate sa Uslovima korišćenja i Politikom privatnosti i da ih prihvatite."),
+    onAccept: () => { $("#r-consent").checked = true; $("#register-form").requestSubmit(); }, onDecline: () => toast(t("Bez saglasnosti sa Uslovima korišćenja i Politikom privatnosti nalog ne može da se napravi.")) });
+  const r = await act(() => api("/api/register", { ime: $("#r-ime").value, prezime: $("#r-prezime").value, email: $("#r-email").value, telefon: $("#r-tel").value, pw: $("#r-pw").value, consent: $("#r-consent").checked, lang: LANG }));
+  if (r) { toast(t("Nalog je napravljen. Dobro došli!")); afterLogin(r.me); }
 });
 $("#forgot-form").addEventListener("submit", async e => {
   e.preventDefault();
-  await act(() => api("/api/forgot", { email: $("#fg-email").value }), "Ako nalog postoji, link za novu lozinku je poslat na e-mail.");
+  await act(() => api("/api/forgot", { email: $("#fg-email").value }), t("Ako nalog postoji, link za novu lozinku je poslat na e-mail."));
 });
 $("#reset-form").addEventListener("submit", async e => {
   e.preventDefault();
   const token = new URLSearchParams(location.search).get("reset");
-  const r = await act(() => api("/api/reset", { token, pw: $("#rs-pw").value }), "Lozinka je promenjena.");
+  const r = await act(() => api("/api/reset", { token, pw: $("#rs-pw").value }), t("Lozinka je promenjena."));
   if (r) { history.replaceState(null, "", "/"); afterLogin(r.me); }
 });
 
@@ -1380,23 +1466,24 @@ function rotatePhotos() {
 setInterval(rotatePhotos, 2600);
 function arrangementCard(kind) {
   const st = S.pub.studio, ig = st.instagram ? st.instagram.replace(/^@/, "") : "";
-  const links = [st.phone ? el("a", { class: "btn ghost", href: "tel:" + st.phone.replace(/\s/g, "") }, "Pozovi " + st.phone) : null,
+  const links = [st.phone ? el("a", { class: "btn ghost", href: "tel:" + st.phone.replace(/\s/g, "") }, t("Pozovi {tel}", { tel: st.phone })) : null,
     ig ? el("a", { class: "btn ghost", href: "https://www.instagram.com/" + ig + "/", target: "_blank", rel: "noopener" }, "Instagram @" + ig) : null].filter(Boolean);
-  const card = el("div", { class: "card arrange" }, el("h3", {}, TYPES[S.type].label + " trening · po dogovoru"),
-    el("p", { class: "note", style: "font-size:15px" }, S.pub.individualNote || "Individualni i duo treninzi se zakazuju po dogovoru sa studiom."),
+  const note = (EN_ON && S.pub.individualNoteEn) || (!EN_ON && S.pub.individualNote) || t("Individualni i duo treninzi se zakazuju po dogovoru sa studiom.");
+  const card = el("div", { class: "card arrange" }, el("h3", {}, t("{vrsta} trening · po dogovoru", { vrsta: TYPES[S.type].label })),
+    el("p", { class: "note", style: "font-size:15px" }, note),
     el("div", { class: "contacts" }, links));
-  if (!S.me) card.append(el("p", { class: "note" }, el("a", { href: "#prijava", "data-auth": "login" }, "Prijavite se"), " ili ", el("a", { href: "#prijava", "data-auth": "register" }, "napravite nalog"), " da biste poslali upit sa željenim terminima."));
+  if (!S.me) card.append(el("p", { class: "note" }, el("a", { href: "#prijava", "data-auth": "login" }, t("Prijavite se")), t(" ili "), el("a", { href: "#prijava", "data-auth": "register" }, t("napravite nalog")), t(" da biste poslali upit sa željenim terminima.")));
   else {
-    const ta = el("textarea", { class: "input", placeholder: "Npr. ponedeljak ili sreda posle 17h, ili subota pre podne" });
-    const btn = el("button", { class: "btn", type: "button" }, "Pošalji upit");
-    btn.onclick = async () => { const r = await act(() => api("/api/inquiry", { type: S.type, message: ta.value }), "Upit je poslat. Studio vam se javlja da dogovorite termin."); if (r) ta.value = ""; };
-    card.append(el("label", { class: "f" }, "Koji dani i vreme vam odgovaraju?", ta), btn);
+    const ta = el("textarea", { class: "input", placeholder: t("Npr. ponedeljak ili sreda posle 17h, ili subota pre podne") });
+    const btn = el("button", { class: "btn", type: "button" }, t("Pošalji upit"));
+    btn.onclick = async () => { const r = await act(() => api("/api/inquiry", { type: S.type, message: ta.value }), t("Upit je poslat. Studio vam se javlja da dogovorite termin.")); if (r) ta.value = ""; };
+    card.append(el("label", { class: "f" }, t("Koji dani i vreme vam odgovaraju?"), ta), btn);
   }
   return card;
 }
-const PAYL = { racun: "uplata na račun", studio: "plaćanje u studiju", akcija: "besplatno (akcija)" };
+const PAYL = { racun: t("uplata na račun"), studio: t("plaćanje u studiju"), akcija: t("besplatno (akcija)") };
 const addMonths = (s, n) => { const [y, m, d] = s.split("-").map(Number); const last = new Date(y, m - 1 + n + 1, 0).getDate(); return dstr(new Date(y, m - 1 + n, Math.min(d, last))); };
-const payState = b => b.paid ? (b.payMethod === "akcija" ? "besplatno (akcija)" : "plaćeno") : "nije plaćeno (" + (PAYL[b.payMethod] || "u studiju") + ")";
+const payState = b => b.paid ? (b.payMethod === "akcija" ? t("besplatno (akcija)") : t("plaćeno")) : t("nije plaćeno ({nacin})", { nacin: PAYL[b.payMethod] || t("u studiju") });
 // neistekla članarina sa preostalim terminima: iz nje se zakazuju pojedinačni termini
 function currentPackage(type) {
   if (!S.my) return null;
@@ -1412,41 +1499,42 @@ function payChoice(onPick) {
   const hasAcc = !!S.pub.payment;
   if (!hasAcc) S.pay = "studio";
   const opt = (id, b, sub) => el("button", { type: "button", "aria-pressed": String(S.pay === id), onclick: () => { S.pay = id; onPick(); } }, el("b", {}, b), el("span", {}, sub));
-  return el("div", { class: "seg seg-2 seg-pay", role: "group", "aria-label": "Način plaćanja" },
-    hasAcc ? opt("racun", "Uplata na račun", "podaci za uplatu stižu na e-mail odmah po rezervaciji") : null,
-    opt("studio", "Plaćanje u studiju", "na licu mesta, pri dolasku na trening"));
+  return el("div", { class: "seg seg-2 seg-pay", role: "group", "aria-label": t("Način plaćanja") },
+    hasAcc ? opt("racun", t("Uplata na račun"), t("podaci za uplatu stižu na e-mail odmah po rezervaciji")) : null,
+    opt("studio", t("Plaćanje u studiju"), t("na licu mesta, pri dolasku na trening")));
 }
 /* podaci za uplatu: primalac, tekući račun, svrha, iznos (sa kopiranjem) */
 function payBox(amount) {
-  const P = S.pub.payment; if (!P) return el("p", { class: "note" }, "Podatke za uplatu na račun dobićete od studija.");
-  const copy = v => el("button", { type: "button", class: "copy", onclick: async e => { const t = e.currentTarget; try { await navigator.clipboard.writeText(v); t.textContent = "Kopirano"; } catch { toast(v); } } }, "Kopiraj");
+  const P = S.pub.payment; if (!P) return el("p", { class: "note" }, t("Podatke za uplatu na račun dobićete od studija."));
+  const copy = v => el("button", { type: "button", class: "copy", onclick: async e => { const b = e.currentTarget; try { await navigator.clipboard.writeText(v); b.textContent = t("Kopirano"); } catch { toast(v); } } }, t("Kopiraj"));
   const row = (k, v, c) => el("div", { class: "pr-row" }, el("span", {}, k), el("span", { style: "display:flex;gap:8px;align-items:center" }, el("b", {}, v), c ? copy(c) : null));
-  return el("div", { class: "paybox" }, row("Primalac", P.recipient), row("Tekući račun", P.account, P.account), row("Svrha uplate", P.purpose),
-    amount ? row("Iznos", fmtRsd(amount) + " rsd", String(amount)) : null,
-    el("p", { class: "note" }, "U svrhu uplate dopišite i svoje ime. Kad studio evidentira uplatu, napomena „nije plaćeno” nestaje."));
+  return el("div", { class: "paybox" }, row(t("Primalac"), P.recipient), row(t("Tekući račun"), P.account, P.account), row(t("Svrha uplate"), P.purpose),
+    amount ? row(t("Iznos"), money(amount), String(amount)) : null,
+    el("p", { class: "note" }, t("U svrhu uplate dopišite i svoje ime. Kad studio evidentira uplatu, napomena „nije plaćeno” nestaje.")));
 }
 function openPayInfo(amount, title, sub) {
-  openModal(el("div", { class: "mcal-head" }, el("b", {}, title || "Podaci za uplatu"), el("button", { type: "button", class: "mcal-nav", "data-close": true, "aria-label": "Zatvori" }, "×")),
+  openModal(el("div", { class: "mcal-head" }, el("b", {}, title || t("Podaci za uplatu")), el("button", { type: "button", class: "mcal-nav", "data-close": true, "aria-label": t("Zatvori") }, "×")),
     sub ? el("p", { class: "note", style: "margin:0" }, sub) : null, payBox(amount),
-    el("div", { class: "actions", style: "justify-content:flex-end" }, el("button", { type: "button", class: "btn", "data-close": true }, "Zatvori")));
+    el("div", { class: "actions", style: "justify-content:flex-end" }, el("button", { type: "button", class: "btn", "data-close": true }, t("Zatvori"))));
 }
 /* korak 2: članarina od 8 ili 12 termina mesečno (podrazumevano) ili pojedinačan termin */
 function planChooser(items) {
   const pick = id => { S.plan = id; S.selected = null; renderBooking(); };
   const single = S.pub.catalog.find(x => x.cat === S.type && x.total === 1 && !x.trial), trialItem = S.pub.catalog.find(x => x.cat === S.type && x.trial);
   const low = single ? Math.min(single.price, trialItem ? trialItem.price : single.price) : null;
-  return el("div", {}, el("h3", { class: "label" }, "Članarina"),
-    el("div", { class: "seg seg-plan", role: "group", "aria-label": "Broj termina" },
+  return el("div", {}, el("h3", { class: "label" }, t("Članarina")),
+    el("div", { class: "seg seg-plan", role: "group", "aria-label": t("Broj termina") },
       items.map(x => el("button", { type: "button", "aria-pressed": String(S.plan === x.id), onclick: () => pick(x.id) },
-        el("b", {}, x.total + " termina"), el("span", {}, "mesečno · dani i vreme po izboru"), el("span", { class: "pr" }, fmtRsd(x.price) + " rsd"))),
+        el("b", {}, t("{n} termina", { n: x.total })), el("span", {}, t("mesečno · dani i vreme po izboru")), el("span", { class: "pr" }, money(x.price)))),
       el("button", { type: "button", "aria-pressed": String(S.plan === "single"), onclick: () => pick("single") },
-        el("b", {}, "Pojedinačno"), el("span", {}, "jedan termin" + (trialItem ? " ili probni trening" : "")),
-        low != null ? el("span", { class: "pr" }, trialItem && S.pub.promo ? "probni besplatno" : "od " + fmtRsd(low) + " rsd") : null)));
+        el("b", {}, t("Pojedinačno")), el("span", {}, trialItem ? t("jedan termin ili probni trening") : t("jedan termin")),
+        low != null ? el("span", { class: "pr" }, trialItem && S.pub.promo ? t("probni besplatno") : t("od {cena}", { cena: money(low) })) : null)));
 }
 /* aktivna članarina: pojedinačni termini se zakazuju iz nje */
 function pkgBanner(p) {
-  const fr = p.fixed ? null : el("button", { type: "button", class: "btn ghost", onclick: () => openFixed(p, async () => { await Promise.all([loadMy(), loadSlots()]); }) }, "Rasporedi sve termine odjednom");
-  return el("div", { class: "banner move-box" }, el("span", {}, el("b", {}, p.name), " · preostalo " + p.remaining + " · važi do " + fmtDate(p.validUntil) + (p.unpaid ? " · nije plaćeno" : "") + ". Izaberite dan i termin."), fr);
+  const fr = p.fixed ? null : el("button", { type: "button", class: "btn ghost", onclick: () => openFixed(p, async () => { await Promise.all([loadMy(), loadSlots()]); }) }, t("Rasporedi sve termine odjednom"));
+  return el("div", { class: "banner move-box" }, el("span", {}, el("b", {}, nameOf(p)), t(" · preostalo {n} · važi do {datum}", { n: p.remaining, datum: fmtDate(p.validUntil) }) + (p.unpaid ? t(" · nije plaćeno") : "") + t(". Izaberite dan i termin.")), fr);
+
 }
 /* korak 3: dani u nedelji i vreme za ceo mesec, pregled termina, plaćanje, potvrda */
 function planForm(item) {
@@ -1461,54 +1549,54 @@ function planForm(item) {
   const planUl = el("ul", { class: "plan" }), sum = el("p", { class: "plan-sum" });
   const payHost = el("div"), drawPay = () => payHost.replaceChildren(payChoice(drawPay)); drawPay();
   const rulesIn = el("input", { type: "checkbox" });
-  const btn = el("button", { class: "btn", type: "button" }, "Potvrdi članarinu i termine");
+  const btn = el("button", { class: "btn", type: "button" }, t("Potvrdi članarinu i termine"));
   let plan = null;
   const chosen = () => Object.entries(st.slots).filter(([, t]) => t).map(([d, t]) => ({ d: +d, t }));
   const preview = () => {
     planUl.replaceChildren();
     const sl0 = chosen(), pendingDay = Object.keys(st.slots).find(d => !st.slots[d]);
-    if (!sl0.length) { plan = null; sum.textContent = pendingDay ? "Izaberite vreme za " + DAYS_ACC[pendingDay] + "." : "Uključite dane u nedelji i za svaki izaberite vreme, pa ćete videti termine za ceo mesec."; return; }
+    if (!sl0.length) { plan = null; sum.textContent = pendingDay ? t("Izaberite vreme za {dan}.", { dan: DAYS_ACC[pendingDay] }) : t("Uključite dane u nedelji i za svaki izaberite vreme, pa ćete videti termine za ceo mesec."); return; }
     const timeOn = d => { const x = sl0.find(y => y.d === parseD(d).getDay()); return x ? x.t : null; };
     let from = st.from; for (let i = 0; i < 7 && !timeOn(from); i++) from = addDays(from, 1);
     const validUntil = addMonths(from, 1), list = []; let need = item.total;
     for (let d = from; d <= validUntil && need > 0; d = addDays(d, 1)) {
-      const t = timeOn(d); if (!t) continue;
-      const day = S.slots.days.find(x => x.date === d), sl = day && day.slots.find(x => x.start === t);
+      const tm = timeOn(d); if (!tm) continue;
+      const day = S.slots.days.find(x => x.date === d), sl = day && day.slots.find(x => x.start === tm);
       const reason = !sl ? "nema termina u rasporedu" : sl.mine ? "već zakazano" : sl.past ? "prošao" : sl.taken >= sl.cap ? "popunjeno" : null;
-      list.push({ date: d, start: t, ok: !reason, reason }); if (!reason || reason === "već zakazano") need--;
+      list.push({ date: d, start: tm, ok: !reason, reason }); if (!reason || reason === "već zakazano") need--;
     }
     plan = { from, validUntil, list };
     const ok = list.filter(x => x.ok).length, full = list.filter(x => x.reason === "popunjeno").length, rest = item.total - ok;
-    planUl.replaceChildren(...list.map(x => el("li", { class: x.ok ? "" : "skip" }, el("span", {}, fmtDayLong(x.date) + " · " + x.start), el("span", {}, x.ok ? "✓" : x.reason))));
-    sum.replaceChildren(el("b", {}, "Zakazuje se " + ok + " od " + item.total + " termina"), " · " + fixedText({ slots: sl0 }) + " · članarina važi od " + fmtDate(from) + " do " + fmtDate(validUntil) +
-      (rest > 0 ? " Još " + rest + (rest === 1 ? " termin" : " termina") + " zakazujete pojedinačno u kalendaru" + (full ? " (" + full + " popunjeno)" : "") + "." : "") +
-      (pendingDay !== undefined ? " Izaberite vreme za " + DAYS_ACC[pendingDay] + "." : ""));
+    planUl.replaceChildren(...list.map(x => el("li", { class: x.ok ? "" : "skip" }, el("span", {}, fmtDayLong(x.date) + " · " + x.start), el("span", {}, x.ok ? "✓" : t(x.reason)))));
+    sum.replaceChildren(el("b", {}, t("Zakazuje se {ok} od {n} termina", { ok, n: item.total })), " · " + fixedText({ slots: sl0 }) + t(" · članarina važi od {od} do {do}", { od: fmtDate(from), do: fmtDate(validUntil) }) +
+      (rest > 0 ? (rest === 1 ? t(" Još 1 termin zakazujete pojedinačno u kalendaru") : t(" Još {n} termina zakazujete pojedinačno u kalendaru", { n: rest })) + (full ? t(" ({n} popunjeno)", { n: full }) : "") + "." : "") +
+      (pendingDay !== undefined ? " " + t("Izaberite vreme za {dan}.", { dan: DAYS_ACC[pendingDay] }) : ""));
   };
   const render = () => { st.from = fromIn.value || tomorrow; preview(); };
   const picker = weekPicker(opts, st, render);
   fromIn.onchange = render;
   btn.onclick = async () => {
-    if (!plan || !plan.list.some(x => x.ok)) { toast("Izaberite dane i vreme za svaki dan, sa slobodnim terminima."); return; }
-    if (!S.pay) { toast("Izaberite način plaćanja."); return; }
-    if (!rulesIn.checked) { toast("Potvrdite da znate pravila otkazivanja."); return; }
+    if (!plan || !plan.list.some(x => x.ok)) { toast(t("Izaberite dane i vreme za svaki dan, sa slobodnim terminima.")); return; }
+    if (!S.pay) { toast(t("Izaberite način plaćanja.")); return; }
+    if (!rulesIn.checked) { toast(t("Potvrdite da znate pravila otkazivanja.")); return; }
     btn.disabled = true;
     const r = await act(() => api("/api/plans", { catalogId: item.id, slots: chosen(), from: st.from, payMethod: S.pay }));
     btn.disabled = false; if (!r) { loadSlots(); return; }
     const pm = S.pay; S.plan = null; S.planDraft = null; S.pay = null;
-    toast("Članarina je izabrana: zakazano " + r.made.length + " termina." + (r.skipped.length ? " " + r.skipped.length + " preskočeno (popunjeno)." : ""));
+    toast(t("Članarina je izabrana: zakazano {n} termina.", { n: r.made.length }) + (r.skipped.length ? " " + t("{n} preskočeno (popunjeno).", { n: r.skipped.length }) : ""));
     await Promise.all([loadMy(), loadSlots()]);
     location.hash = "#moji-termini";
-    if (pm === "racun") openPayInfo(item.price, "Podaci za uplatu", item.name + " · poslali smo ih i na vaš e-mail.");
+    if (pm === "racun") openPayInfo(item.price, t("Podaci za uplatu"), nameOf(item) + t(" · poslali smo ih i na vaš e-mail."));
   };
   const card = el("div", { class: "card plan-form" },
-    el("h3", {}, item.total + " termina mesečno · " + fmtRsd(item.price) + " rsd"),
-    el("p", { class: "note" }, "Uključite dane u koje dolazite i za svaki dan izaberite vreme, npr. utorak i četvrtak u 19:00, subota u 09:00. Isti raspored se ponavlja svake nedelje do kraja članarine. Svaki termin kasnije možete promeniti ili otkazati najkasnije " + S.pub.cancelHours + "h ranije."),
-    el("div", { class: "f" }, el("span", {}, "Dani i vreme"), picker),
-    el("label", { class: "f", style: "max-width:260px" }, "Prvi trening od", fromIn), sum, planUl,
-    ...(S.me ? [el("div", {}, el("h3", { class: "label" }, "Plaćanje"), payHost),
-        el("label", { class: "check" }, rulesIn, " Znam da se svaki termin može promeniti ili otkazati najkasnije " + S.pub.cancelHours + "h ranije, a da se kasnije otkazan ili propušten trening računa kao iskorišćen."), btn]
-      : [el("p", { class: "note" }, "Za potvrdu članarine i termina potreban je nalog; izbor ostaje sačuvan."),
-        el("div", { class: "actions" }, el("a", { class: "btn", href: "#prijava", "data-auth": "login" }, "Prijava"), el("a", { class: "btn ghost", href: "#prijava", "data-auth": "register" }, "Registracija"))]));
+    el("h3", {}, t("{n} termina mesečno", { n: item.total }) + " · " + money(item.price)),
+    el("p", { class: "note" }, t("Uključite dane u koje dolazite i za svaki dan izaberite vreme, npr. utorak i četvrtak u 19:00, subota u 09:00. Isti raspored se ponavlja svake nedelje do kraja članarine. Svaki termin kasnije možete promeniti ili otkazati najkasnije {h}h ranije.", { h: S.pub.cancelHours })),
+    el("div", { class: "f" }, el("span", {}, t("Dani i vreme")), picker),
+    el("label", { class: "f", style: "max-width:260px" }, t("Prvi trening od"), fromIn), sum, planUl,
+    ...(S.me ? [el("div", {}, el("h3", { class: "label" }, t("Plaćanje")), payHost),
+        el("label", { class: "check" }, rulesIn, " " + t("Znam da se svaki termin može promeniti ili otkazati najkasnije {h}h ranije, a da se kasnije otkazan ili propušten trening računa kao iskorišćen.", { h: S.pub.cancelHours })), btn]
+      : [el("p", { class: "note" }, t("Za potvrdu članarine i termina potreban je nalog; izbor ostaje sačuvan.")),
+        el("div", { class: "actions" }, el("a", { class: "btn", href: "#prijava", "data-auth": "login" }, t("Prijava")), el("a", { class: "btn ghost", href: "#prijava", "data-auth": "register" }, t("Registracija")))]));
   render();
   return card;
 }
@@ -1520,18 +1608,18 @@ function renderBooking() {
   const seg = $("#type-seg"); seg.replaceChildren();
   const cap = S.pub ? S.pub.groupCapacity : 4;
   const price = { grupni: "g1", individualni: "i1", duo: "d1" };
-  for (const [id, t] of Object.entries(TYPES)) {
+  for (const [id, ty] of Object.entries(TYPES)) {
     const c = S.pub && S.pub.catalog.find(x => x.id === price[id]);
     seg.append(el("button", { type: "button", "aria-pressed": String(S.type === id), onclick: () => { S.type = id; S.selected = null; S.plan = null; loadSlots(); } },
-      photoBox(id), el("span", { class: "tx" }, el("b", {}, t.label), el("span", {}, t.desc(cap)), c ? el("span", { class: "pr" }, fmtRsd(c.price) + " rsd") : null)));
+      photoBox(id), el("span", { class: "tx" }, el("b", {}, ty.label), el("span", {}, ty.desc(cap)), c ? el("span", { class: "pr" }, money(c.price)) : null)));
   }
   // promena termina: vrsta treninga ostaje ista, bira se samo novi dan i vreme
   seg.hidden = !!S.moving; $("#type-block").hidden = !!S.moving;
   const mv = $("#move-box"); mv.hidden = !S.moving;
   if (S.moving) {
     const b = S.moving, pk = S.my && S.my.packages.find(p => p.id === b.pkgId);
-    mv.replaceChildren(el("span", {}, el("b", {}, "Menjate termin: " + fmtDayLong(b.date) + " u " + b.start + "."), " Izaberite novi dan i vreme" + (pk ? " (članarina važi do " + fmtDate(pk.validUntil) + ")" : "") + "."),
-      el("button", { type: "button", class: "btn ghost", onclick: () => { S.moving = null; S.selected = null; location.hash = "#moji-termini"; } }, "Odustani"));
+    mv.replaceChildren(el("span", {}, el("b", {}, t("Menjate termin: {dan} u {vreme}.", { dan: fmtDayLong(b.date), vreme: b.start })), " " + t("Izaberite novi dan i vreme") + (pk ? t(" (članarina važi do {datum})", { datum: fmtDate(pk.validUntil) }) : "") + "."),
+      el("button", { type: "button", class: "btn ghost", onclick: () => { S.moving = null; S.selected = null; location.hash = "#moji-termini"; } }, t("Odustani")));
   }
   if (!S.slots || S.slots.type !== S.type) return;
   // individualni i duo: ako u rasporedu nema termina, zakazuju se po dogovoru
@@ -1556,45 +1644,46 @@ function renderBooking() {
   renderDayCal();
   const box = $("#slots"); box.replaceChildren();
   const form = $("#confirm");
-  if (!S.day) { box.append(el("div", { class: "empty" }, "Trenutno nema slobodnih termina za ovu vrstu treninga.")); form.hidden = true; return; }
+  if (!S.day) { box.append(el("div", { class: "empty" }, t("Trenutno nema slobodnih termina za ovu vrstu treninga."))); form.hidden = true; return; }
   $("#slots-title").textContent = fmtDayLong(S.day).replace(/^./, c => c.toUpperCase());
   const day = S.slots.days.find(d => d.date === S.day);
   const freeN = day.slots.filter(s => !s.past && s.taken < s.cap).length;
-  $("#slots-hint").textContent = day.slots.length ? (freeN ? freeN + " slobodn" + (freeN === 1 ? "o" : "ih") + " od " + day.slots.length : "sve popunjeno") : "";
+  $("#slots-hint").textContent = day.slots.length ? (freeN ? tr(freeN + " slobodn" + (freeN === 1 ? "o" : "ih") + " od " + day.slots.length, freeN + " of " + day.slots.length + " available") : t("sve popunjeno")) : "";
   const group = TYPES[S.type].kind === "g";
   for (const s of day.slots) {
     const key = S.day + "T" + s.start, full = s.taken >= s.cap;
     const waitable = full && !s.past && !s.mine;
-    const status = s.mine ? "Vaš termin" : s.past ? "Prošao" : waitable ? (s.waiting ? "Na listi čekanja ✓" : "Popunjeno · obavesti me") : group ? (s.cap - s.taken) + " od " + s.cap + " slobodno" : "Slobodno";
+    const status = s.mine ? t("Vaš termin") : s.past ? t("Prošao") : waitable ? (s.waiting ? t("Na listi čekanja ✓") : t("Popunjeno · obavesti me")) : group ? t("{n} od {cap} slobodno", { n: s.cap - s.taken, cap: s.cap }) : t("Slobodno");
     const dots = group ? el("span", { class: "dots", "aria-hidden": "true" }, Array.from({ length: s.cap }, (_, i) => el("i", { class: i < s.taken ? "on" : "" }))) : null;
     const onclick = waitable ? async () => {
-      if (!S.me) { toast("Prijavite se da bismo vas obavestili kad se termin oslobodi."); setAuthMode("login"); location.hash = "#prijava"; return; }
+      if (!S.me) { toast(t("Prijavite se da bismo vas obavestili kad se termin oslobodi.")); setAuthMode("login"); location.hash = "#prijava"; return; }
       const r = await act(() => api("/api/waitlist", { date: S.day, start: s.start, type: S.type }), null);
-      if (r) { toast(r.waiting ? "Javićemo vam mejlom čim se oslobodi mesto." : "Uklonjeni ste sa liste čekanja."); loadSlots(); }
+      if (r) { toast(r.waiting ? t("Javićemo vam mejlom čim se oslobodi mesto.") : t("Uklonjeni ste sa liste čekanja.")); loadSlots(); }
     } : () => { S.selected = key; renderBooking(); form.scrollIntoView({ behavior: "smooth", block: "nearest" }); };
     box.append(el("button", { type: "button", class: "slot" + (s.mine ? " mine" : "") + (waitable ? " full" + (s.waiting ? " waiting" : "") : ""), disabled: s.mine || s.past, "aria-pressed": String(S.selected === key),
-      title: waitable ? "Termin je popunjen. Kliknite da dobijete mejl ako se oslobodi mesto." : null, onclick },
+      title: waitable ? t("Termin je popunjen. Kliknite da dobijete mejl ako se oslobodi mesto.") : null, onclick },
       el("span", { class: "t" }, s.start, el("em", {}, "–" + s.end)), el("span", { class: "meta" }, dots, status)));
   }
-  if (!day.slots.length) box.append(el("div", { class: "empty" }, "Studio ne radi ovog dana."));
+  if (!day.slots.length) box.append(el("div", { class: "empty" }, t("Studio ne radi ovog dana.")));
   form.hidden = !S.selected;
   if (!S.selected) return;
   const [date, start] = S.selected.split("T");
-  $("#sum-main").textContent = (S.moving ? "Novi termin · " : TYPES[S.type].label + " trening · ") + start + "–" + endOf(start);
+  $("#sum-main").textContent = (S.moving ? t("Novi termin · ") : t("{vrsta} trening · ", { vrsta: TYPES[S.type].label })) + start + "–" + endOf(start);
   $("#confirm-guest").hidden = !!S.me; $("#confirm-user").hidden = !S.me;
-  $("#f-submit").textContent = S.moving ? "Potvrdi promenu termina" : "Potvrdi rezervaciju";
+  $("#f-submit").textContent = S.moving ? t("Potvrdi promenu termina") : t("Potvrdi rezervaciju");
   const payRow = $("#pay-row"); payRow.hidden = true; payRow.replaceChildren();
   let pay = "";
-  if (S.moving) { $("#trial-row").hidden = true; pay = "umesto " + fmtDayLong(S.moving.date) + " u " + S.moving.start; }
+  if (S.moving) { $("#trial-row").hidden = true; pay = t("umesto {dan} u {vreme}", { dan: fmtDayLong(S.moving.date), vreme: S.moving.start }); }
   else if (S.me) {
     const pk = activePackage(S.type, date);
     const trialItem = S.pub.catalog.find(x => x.trial && x.cat === S.type);
     $("#trial-row").hidden = !!pk || !trialItem;
-    if (pk) pay = "Troši se iz članarine „" + pk.name + "” (ostaje " + (pk.remaining - 1) + ")" + (pk.unpaid ? " · članarina još nije plaćena" : "");
+    if (pk) pay = t("Troši se iz članarine „{naziv}” (ostaje {n})", { naziv: nameOf(pk), n: pk.remaining - 1 }) + (pk.unpaid ? t(" · članarina još nije plaćena") : "");
     else {
       const trial = $("#f-trial").checked && trialItem, amount = singlePriceOf(S.type, !!trial);
-      if (amount === 0) pay = "Probni trening · besplatno (akcija" + (S.pub.promo.to ? " do " + fmtShort(S.pub.promo.to) : "") + ")";
-      else { pay = (trial ? "Probni trening" : "Pojedinačni čas") + " · " + fmtRsd(amount) + " rsd · " + (S.pay ? PAYL[S.pay] : "izaberite način plaćanja"); payRow.hidden = false; payRow.append(el("h3", { class: "label" }, "Plaćanje"), payChoice(renderBooking)); }
+      if (amount === 0) pay = S.pub.promo.to ? t("Probni trening · besplatno (akcija do {datum})", { datum: fmtShort(S.pub.promo.to) }) : t("Probni trening · besplatno (akcija)");
+      else { pay = (trial ? t("Probni trening") : t("Pojedinačni čas")) + " · " + money(amount) + " · " + (S.pay ? PAYL[S.pay] : t("izaberite način plaćanja")); payRow.hidden = false; payRow.append(el("h3", { class: "label" }, t("Plaćanje")), payChoice(renderBooking)); }
+
     }
   }
   $("#sum-sub").textContent = fmtDayLong(date) + " · 55 min" + (pay ? " · " + pay : "");
@@ -1612,7 +1701,7 @@ function hourBlocks(i) {
   for (const t of all) { const last = out[out.length - 1]; if (last && t <= last.close) last.close = closeOf(t); else out.push({ open: t, close: closeOf(t) }); }
   return out;
 }
-const blocksShort = bl => bl.length ? bl.map(b => b.open.replace(/:00$/, "") + "–" + b.close.replace(/:00$/, "")).join(" i ") : "neradno";
+const blocksShort = bl => bl.length ? bl.map(b => b.open.replace(/:00$/, "") + "–" + b.close.replace(/:00$/, "")).join(tr(" i ", " and ")) : t("neradno");
 function hoursSummary() {
   if (!S.pub) return "";
   const span = i => blocksShort(hourBlocks(i));
@@ -1628,29 +1717,29 @@ function renderDayCal() {
   const pk = S.moving && S.my && S.my.packages.find(p => p.id === S.moving.pkgId);
   const last = days.length ? days[days.length - 1].date : dstr(new Date());
   const maxDate = pk && pk.validUntil < last ? pk.validUntil : last, today = dstr(new Date());
-  const t = new Date(), maxOff = (parseD(maxDate).getFullYear() - t.getFullYear()) * 12 + parseD(maxDate).getMonth() - t.getMonth();
-  if (S.calOff == null || S.calDay !== S.day) { const b = S.day ? parseD(S.day) : t; S.calOff = (b.getFullYear() - t.getFullYear()) * 12 + b.getMonth() - t.getMonth(); S.calDay = S.day; }
+  const now = new Date(), maxOff = (parseD(maxDate).getFullYear() - now.getFullYear()) * 12 + parseD(maxDate).getMonth() - now.getMonth();
+  if (S.calOff == null || S.calDay !== S.day) { const b = S.day ? parseD(S.day) : now; S.calOff = (b.getFullYear() - now.getFullYear()) * 12 + b.getMonth() - now.getMonth(); S.calDay = S.day; }
   S.calOff = Math.max(0, Math.min(maxOff, S.calOff));
-  const first = new Date(t.getFullYear(), t.getMonth() + S.calOff, 1), n = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  const first = new Date(now.getFullYear(), now.getMonth() + S.calOff, 1), n = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
   const nav = (dir, lbl, dis) => el("button", { type: "button", class: "mcal-nav", "aria-label": lbl, disabled: dis, onclick: () => { S.calOff += dir; renderDayCal(); } }, dir < 0 ? "‹" : "›");
-  const grid = el("div", { class: "bcal-grid", role: "grid" }, ...["PON","UTO","SRE","ČET","PET","SUB","NED"].map(x => el("span", { class: "bcal-dow" }, x)));
+  const grid = el("div", { class: "bcal-grid", role: "grid" }, ...DOW_HEAD.map(x => el("span", { class: "bcal-dow" }, x)));
   for (let i = 0; i < (first.getDay() + 6) % 7; i++) grid.append(el("span"));
   for (let d = 1; d <= n; d++) {
     const key = dstr(new Date(first.getFullYear(), first.getMonth(), d)), di = info(key);
     const ok = key >= today && key <= maxDate && isOpen(di), free = ok && isFree(di);
     grid.append(el("button", { type: "button", class: "bcal-day" + (key === today ? " today" : "") + (S.day === key ? " on" : "") + (free ? " free" : ok ? " full" : ""),
-      disabled: !ok, "aria-pressed": String(S.day === key), "aria-label": fmtDayLong(key) + (free ? ", ima slobodnih termina" : ok ? ", popunjeno" : ""),
+      disabled: !ok, "aria-pressed": String(S.day === key), "aria-label": fmtDayLong(key) + (free ? t(", ima slobodnih termina") : ok ? t(", popunjeno") : ""),
       onclick: () => { S.day = key; S.selected = null; renderBooking(); if (matchMedia("(max-width: 760px)").matches) $("#slots-block").scrollIntoView({ behavior: "smooth", block: "start" }); } }, d));
   }
   box.replaceChildren(
-    el("div", { class: "bcal-head" }, nav(-1, "Prethodni mesec", S.calOff <= 0), el("b", {}, capM(first.getMonth()), el("span", {}, first.getFullYear())), nav(1, "Sledeći mesec", S.calOff >= maxOff)),
+    el("div", { class: "bcal-head" }, nav(-1, t("Prethodni mesec"), S.calOff <= 0), el("b", {}, capM(first.getMonth()), el("span", {}, first.getFullYear())), nav(1, t("Sledeći mesec"), S.calOff >= maxOff)),
     grid,
-    el("div", { class: "bcal-legend" }, el("span", {}, el("i"), "slobodni termini"), el("span", {}, el("i", { class: "full" }), "popunjeno"), el("span", {}, el("i", { class: "sel" }), "izabrano")));
+    el("div", { class: "bcal-legend" }, el("span", {}, el("i"), t("slobodni termini")), el("span", {}, el("i", { class: "full" }), t("popunjeno")), el("span", {}, el("i", { class: "sel" }), t("izabrano"))));
 }
 
 
 /* ---------- mesečni kalendar (pop-up) ---------- */
-const MONTHS_LONG = ["januar","februar","mart","april","maj","jun","jul","avgust","septembar","oktobar","novembar","decembar"];
+const MONTHS_LONG = tr(["januar","februar","mart","april","maj","jun","jul","avgust","septembar","oktobar","novembar","decembar"], ["January","February","March","April","May","June","July","August","September","October","November","December"]);
 /* kalendar pokriva celu tekuću i narednu kalendarsku godinu (najranije 2026, tj. 2026. i 2027.);
    klijenti biraju samo dane u periodu zakazivanja, admin može i unazad */
 const CAL_Y0 = 2026;
@@ -1666,15 +1755,15 @@ function openCalendar(opts) {
 }
 function closeCalendar() { $("#modal-root").hidden = true; }
 function renderCalendar() {
-  const o = CAL.opts, t = new Date(), R = calRange(), first = new Date(t.getFullYear(), t.getMonth() + CAL.off, 1);
+  const o = CAL.opts, now = new Date(), R = calRange(), first = new Date(now.getFullYear(), now.getMonth() + CAL.off, 1);
   const sel = $("#mcal-sel"); sel.replaceChildren();
-  for (let off = R.min; off <= R.max; off++) { const d = new Date(t.getFullYear(), t.getMonth() + off, 1); sel.append(el("option", { value: String(off), selected: off === CAL.off }, capM(d.getMonth()) + " " + d.getFullYear() + ".")); }
+  for (let off = R.min; off <= R.max; off++) { const d = new Date(now.getFullYear(), now.getMonth() + off, 1); sel.append(el("option", { value: String(off), selected: off === CAL.off }, capM(d.getMonth()) + " " + d.getFullYear() + tr(".", ""))); }
   $("#mcal-prev").disabled = CAL.off <= R.min; $("#mcal-next").disabled = CAL.off >= R.max;
-  $("#mcal-h").textContent = o.title || "Izaberite dan"; $("#mcal-sub").textContent = o.sub || "";
+  $("#mcal-h").textContent = o.title || t("Izaberite dan"); $("#mcal-sub").textContent = o.sub || "";
   $("#mcal-foot").textContent = o.foot || "";
-  const grid = $("#mcal-grid"); grid.replaceChildren(...["PON","UTO","SRE","ČET","PET","SUB","NED"].map(x => el("span", { class: "mcal-dow" }, x)));
+  const grid = $("#mcal-grid"); grid.replaceChildren(...DOW_HEAD.map(x => el("span", { class: "mcal-dow" }, x)));
   const lead = (first.getDay() + 6) % 7; for (let i = 0; i < lead; i++) grid.append(el("span"));
-  const todayKey = dstr(t), days = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  const todayKey = dstr(now), days = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
   for (let d = 1; d <= days; d++) {
     const key = dstr(new Date(first.getFullYear(), first.getMonth(), d));
     const ok = (!o.minDate || key >= o.minDate) && (!o.maxDate || key <= o.maxDate) && (!o.isOpen || o.isOpen(key));
@@ -1690,25 +1779,25 @@ addEventListener("keydown", e => { if (e.key === "Escape" && !$("#modal-root").h
 $("#confirm").addEventListener("submit", async e => {
   e.preventDefault();
   if (!S.me || !S.selected) return;
-  if (!$("#f-rules").checked) { toast("Potvrdite da znate pravila otkazivanja."); return; }
+  if (!$("#f-rules").checked) { toast(t("Potvrdite da znate pravila otkazivanja.")); return; }
   const [date, start] = S.selected.split("T");
   const btn = $("#f-submit"); btn.disabled = true;
   if (S.moving) {
     const old = S.moving;
     const r = await act(() => api("/api/bookings/" + old.id + "/move", { date, start }));
     btn.disabled = false;
-    if (r) { toast("Termin je promenjen: " + fmtDayLong(date) + " u " + start + "."); S.moving = null; S.selected = null; $("#f-rules").checked = false; await Promise.all([loadSlots(), loadMy()]); location.hash = "#moji-termini"; }
+    if (r) { toast(t("Termin je promenjen: {dan} u {vreme}.", { dan: fmtDayLong(date), vreme: start })); S.moving = null; S.selected = null; $("#f-rules").checked = false; await Promise.all([loadSlots(), loadMy()]); location.hash = "#moji-termini"; }
     else loadSlots();
     return;
   }
-  if (!$("#pay-row").hidden && !S.pay) { btn.disabled = false; toast("Izaberite način plaćanja."); return; }
+  if (!$("#pay-row").hidden && !S.pay) { btn.disabled = false; toast(t("Izaberite način plaćanja.")); return; }
   const r = await act(() => api("/api/bookings", { date, start, type: S.type, trial: $("#f-trial").checked, payMethod: S.pay }));
   btn.disabled = false;
   if (r) {
-    closeBooking(); toast("Rezervisano: " + fmtDayLong(date) + " u " + start + ". Vidimo se!");
+    closeBooking(); toast(t("Rezervisano: {dan} u {vreme}. Vidimo se!", { dan: fmtDayLong(date), vreme: start }));
     const b = r.booking, pm = S.pay; S.selected = null; S.pay = null; $("#f-trial").checked = false; $("#f-rules").checked = false;
     await Promise.all([loadSlots(), loadMy()]);
-    if (!b.pkgId && b.price > 0 && pm === "racun") openPayInfo(b.price, "Podaci za uplatu", "Termin " + fmtDayLong(date) + " u " + start + " · poslali smo ih i na vaš e-mail.");
+    if (!b.pkgId && b.price > 0 && pm === "racun") openPayInfo(b.price, t("Podaci za uplatu"), t("Termin {dan} u {vreme}", { dan: fmtDayLong(date), vreme: start }) + t(" · poslali smo ih i na vaš e-mail."));
   } else loadSlots();
 });
 
@@ -1719,45 +1808,48 @@ function closeModal() { $("#modal-gen").hidden = true; $("#modal-gen-box").class
 /* pravilnik u pop-upu (sa registracije): X za zatvaranje, dugme štiklira saglasnost */
 function openRules() {
   const body = el("div", { class: "rules" }); body.innerHTML = document.querySelector('section[data-view="pravilnik"] .rules').innerHTML;
-  const ok = el("button", { type: "button", class: "btn", "data-close": true }, "Pročitao/la sam");
-  openModal(el("button", { type: "button", class: "modal-x", "data-close": true, "aria-label": "Zatvori" }, "×"),
-    el("div", { class: "mcal-top" }, el("h3", {}, "Pravilnik studija"), el("p", {}, "Ritual Pilates Studio · pročitajte pre registracije")),
+  const ok = el("button", { type: "button", class: "btn", "data-close": true }, t("Pročitao/la sam"));
+  openModal(el("button", { type: "button", class: "modal-x", "data-close": true, "aria-label": t("Zatvori") }, "×"),
+    el("div", { class: "mcal-top" }, el("h3", {}, t("Pravilnik studija")), el("p", {}, t("Ritual Pilates Studio · pročitajte pre registracije"))),
     body, el("div", { class: "actions" }, ok));
   $("#modal-gen-box").classList.add("rules-box"); $("#modal-gen-box").scrollTop = 0;
 }
-$("#r-rules").addEventListener("click", e => { e.preventDefault(); openRules(); });
+document.addEventListener("click", e => { if (e.target.closest("#r-rules")) { e.preventDefault(); openRules(); } });
 $("#modal-gen").addEventListener("click", e => { if (e.target.closest("[data-close]") && !S.modalLock) closeModal(); });
 addEventListener("keydown", e => { if (e.key === "Escape" && !$("#modal-gen").hidden && !S.modalLock) closeModal(); });
 
 /* ---------- Uslovi korišćenja i Politika privatnosti: saglasnost pre otvaranja naloga ---------- */
-const DOC_TITLES = { uslovi: "Uslovi korišćenja", privatnost: "Politika privatnosti" };
+const DOC_TITLES = { uslovi: t("Uslovi korišćenja"), privatnost: t("Politika privatnosti") };
 // prozor sa oba dokumenta (prekidač između njih) i dugmadima Prihvatam / Ne prihvatam; locked: ne zatvara se klikom pored ni tasterom Esc
 function consentGate({ tab = "uslovi", intro, onAccept, onDecline, locked = false }) {
-  const scroll = el("div", { class: "doc-scroll legal", tabindex: "0" }), sw = el("div", { class: "doc-switch", role: "tablist", "aria-label": "Dokument" });
+  const scroll = el("div", { class: "doc-scroll legal", tabindex: "0" }), sw = el("div", { class: "doc-switch", role: "tablist", "aria-label": t("Dokument") });
   const show = k => { scroll.innerHTML = $("#doc-" + k).innerHTML; scroll.scrollTop = 0; sw.querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.k === k))); };
   for (const k of ["uslovi", "privatnost"]) sw.append(el("button", { type: "button", role: "tab", "data-k": k, onclick: () => show(k) }, DOC_TITLES[k]));
   const done = fn => () => { S.modalLock = false; closeModal(); fn && fn(); };
   S.modalLock = locked;
-  openModal(el("div", { class: "mcal-top" }, el("h3", {}, "Uslovi i privatnost"), el("p", { class: "note" }, intro)), sw, scroll,
-    el("p", { class: "note" }, "Klikom na „Prihvatam” potvrđujete da ste upoznati sa Uslovima korišćenja i Politikom privatnosti (uključujući odeljak o kolačićima) i da ih prihvatate."),
-    el("div", { class: "actions" }, el("button", { type: "button", class: "btn", onclick: done(onAccept) }, "Prihvatam"), el("button", { type: "button", class: "btn ghost", onclick: done(onDecline) }, "Ne prihvatam")));
+  openModal(el("div", { class: "mcal-top" }, el("h3", {}, t("Uslovi i privatnost")), el("p", { class: "note" }, intro)), sw, scroll,
+    el("p", { class: "note" }, t("Klikom na „Prihvatam” potvrđujete da ste upoznati sa Uslovima korišćenja i Politikom privatnosti (uključujući odeljak o kolačićima) i da ih prihvatate.")),
+    el("div", { class: "actions" }, el("button", { type: "button", class: "btn", onclick: done(onAccept) }, t("Prihvatam")), el("button", { type: "button", class: "btn ghost", onclick: done(onDecline) }, t("Ne prihvatam"))));
   $("#modal-gen-box").classList.add("consent-box"); show(tab);
 }
 // linkovi u kvadratiću za saglasnost na registraciji otvaraju izabrani dokument; „Prihvatam” štiklira kvadratić
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-consent]"); if (!b) return;
   e.preventDefault();
-  consentGate({ tab: b.dataset.consent, intro: "Pre otvaranja naloga potrebno je da se upoznate sa Uslovima korišćenja i Politikom privatnosti i da ih prihvatite.", onAccept: () => { $("#r-consent").checked = true; } });
+  consentGate({ tab: b.dataset.consent, intro: t("Pre otvaranja naloga potrebno je da se upoznate sa Uslovima korišćenja i Politikom privatnosti i da ih prihvatite."), onAccept: () => { $("#r-consent").checked = true; } });
 });
 // nalozi napravljeni pre uvođenja dokumenata: saglasnost pri prvoj sledećoj poseti, bez nje odjava
 function askConsent() {
   if (!S.me || !S.me.needConsent) return;
-  consentGate({ locked: true, intro: "Uveli smo Uslove korišćenja i Politiku privatnosti. Da biste nastavili da koristite svoj nalog, potrebno je da potvrdite da ste upoznati sa njima.",
+  consentGate({ locked: true, intro: t("Uveli smo Uslove korišćenja i Politiku privatnosti. Da biste nastavili da koristite svoj nalog, potrebno je da potvrdite da ste upoznati sa njima."),
     onAccept: async () => { if (await act(() => api("/api/consent", {}))) S.me.needConsent = false; },
-    onDecline: async () => { await logout(); toast("Bez saglasnosti nalog ne može da se koristi, pa ste odjavljeni."); } });
+    onDecline: async () => { await logout(); toast(t("Bez saglasnosti nalog ne može da se koristi, pa ste odjavljeni.")); } });
 }
-// sadržaj (prečice do poglavlja) iznad svakog dokumenta
+// sadržaj (prečice do poglavlja) iznad svakog dokumenta; prvo se primeni izabrani jezik (engleski dokumenti zamene srpske)
+applyStaticLang();
+document.documentElement.classList.remove("i18n-wait");
 document.querySelectorAll("[data-toc]").forEach(nav => {
+
   $("#" + nav.dataset.toc).querySelectorAll("h3").forEach(h => nav.append(el("button", { type: "button", onclick: () => h.scrollIntoView({ behavior: "smooth", block: "start" }) }, h.textContent)));
 });
 
@@ -1774,7 +1866,7 @@ function initCookie() {
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
 // obrazac: za svaki dan svoje vreme (slots [{d, t}]); stariji zapisi {days, time} se čitaju isto
 const fixedSlots = f => !f ? [] : (Array.isArray(f.slots) ? f.slots : (f.days || []).map(d => ({ d, t: f.time }))).slice().sort((a, b) => DAY_ORDER.indexOf(a.d) - DAY_ORDER.indexOf(b.d));
-const fixedText = f => { const g = []; for (const x of fixedSlots(f)) { const y = g.find(z => z.t === x.t); if (y) y.days.push(x.d); else g.push({ t: x.t, days: [x.d] }); } return g.map(x => x.days.map(d => DAYS[d].toLowerCase()).join(", ") + " u " + x.t).join(" · "); };
+const fixedText = f => { const g = []; for (const x of fixedSlots(f)) { const y = g.find(z => z.t === x.t); if (y) y.days.push(x.d); else g.push({ t: x.t, days: [x.d] }); } return g.map(x => x.days.map(d => EN_ON ? DAYS[d] : DAYS[d].toLowerCase()).join(", ") + tr(" u ", " at ") + x.t).join(" · "); };
 /* nedeljni birač: st.slots = { dan: vreme }; dan bez vremena ("") je uključen ali još bez izbora */
 function weekPicker(opts, st, onChange) {
   const box = el("div", { class: "wk" });
@@ -1785,7 +1877,7 @@ function weekPicker(opts, st, onChange) {
       else { const last = Object.values(st.slots).filter(Boolean).pop(); st.slots[d] = times.includes(last) ? last : (times.length === 1 ? times[0] : ""); }
       draw(); onChange();
     } }, DAYS_LONG[d]);
-    const chips = el("div", { class: "chips" }, !times.length ? [el("span", { class: "wk-hint" }, "nema termina")]
+    const chips = el("div", { class: "chips" }, !times.length ? [el("span", { class: "wk-hint" }, t("nema termina"))]
       : on ? times.map(t => el("button", { type: "button", "aria-pressed": String(st.slots[d] === t), onclick: () => { st.slots[d] = t; draw(); onChange(); } }, t))
       : [el("span", { class: "wk-hint" }, times.map(t => t.replace(/:00$/, "h")).join(" · "))]);
     return el("div", { class: "wk-row" + (on ? " on" : "") }, dayBtn, chips);
@@ -1794,38 +1886,38 @@ function weekPicker(opts, st, onChange) {
 }
 function fixedRow(p, reload) {
   if (p.total < 8 || p.expired) return null;
-  if (p.fixed) return el("div", { class: "fixed-row" }, el("span", { class: "pill" }, "Fiksni termini: " + fixedText(p.fixed)),
-    confirmBtn("Ukini fiksne", "btn ghost danger", async () => {
+  if (p.fixed) return el("div", { class: "fixed-row" }, el("span", { class: "pill" }, t("Fiksni termini: ") + fixedText(p.fixed)),
+    confirmBtn(t("Ukini fiksne"), "btn ghost danger", async () => {
       const r = await act(() => api("/api/packages/" + p.id + "/fixed/clear", {}));
-      if (r) { toast(r.cancelled ? "Otkazano " + r.cancelled + " budućih termina." : "Fiksni raspored je ukinut."); reload(); }
-    }, "Potvrdi ukidanje"));
+      if (r) { toast(r.cancelled ? t("Otkazano {n} budućih termina.", { n: r.cancelled }) : t("Fiksni raspored je ukinut.")); reload(); }
+    }, t("Potvrdi ukidanje")));
   if (p.remaining <= 0) return null;
-  return el("div", { class: "fixed-row" }, el("span", { class: "note" }, "Dolazite uvek u iste dane? Zakažite sve preostale treninge odjednom."),
-    el("button", { class: "btn ghost", type: "button", onclick: () => openFixed(p, reload) }, "Postavi fiksne termine"));
+  return el("div", { class: "fixed-row" }, el("span", { class: "note" }, t("Dolazite uvek u iste dane? Zakažite sve preostale treninge odjednom.")),
+    el("button", { class: "btn ghost", type: "button", onclick: () => openFixed(p, reload) }, t("Postavi fiksne termine")));
 }
 async function openFixed(p, reload) {
   const o = await act(() => api("/api/packages/" + p.id + "/fixed", { preview: true })); if (!o) return;
   const st = { slots: {}, type: p.cat === "grupni" ? "grupni" : "individualni", from: addDays(dstr(new Date()), 1), force: false };
   const picker = weekPicker(o.options, st, () => plan.replaceChildren());
-  const typeSel = p.cat !== "grupni" ? el("select", { class: "input", onchange: e => st.type = e.target.value }, el("option", { value: "individualni" }, "Individualni"), el("option", { value: "duo" }, "Duo")) : null;
+  const typeSel = p.cat !== "grupni" ? el("select", { class: "input", onchange: e => st.type = e.target.value }, el("option", { value: "individualni" }, TYPES.individualni.label), el("option", { value: "duo" }, TYPES.duo.label)) : null;
   const from = el("input", { class: "input", type: "date", value: st.from, min: st.from, max: p.validUntil, onchange: e => { st.from = e.target.value; plan.replaceChildren(); } });
-  const force = S.me && S.me.admin ? el("label", { class: "check" }, el("input", { type: "checkbox", onchange: e => st.force = e.target.checked }), " Upiši i kada je termin popunjen (preko kapaciteta)") : null;
+  const force = S.me && S.me.admin ? el("label", { class: "check" }, el("input", { type: "checkbox", onchange: e => st.force = e.target.checked }), " " + t("Upiši i kada je termin popunjen (preko kapaciteta)")) : null;
   const plan = el("ul", { class: "plan" });
-  const info = el("p", { class: "note" }, "Zakazuje se narednih " + p.remaining + " treninga po ovom obrascu, do isteka paketa (" + fmtDate(p.validUntil) + "). Svaki termin možete posle pojedinačno otkazati po pravilniku.");
+  const info = el("p", { class: "note" }, t("Zakazuje se narednih {n} treninga po ovom obrascu, do isteka paketa ({datum}). Svaki termin možete posle pojedinačno otkazati po pravilniku.", { n: p.remaining, datum: fmtDate(p.validUntil) }));
   const body = () => ({ slots: Object.entries(st.slots).filter(([, t]) => t).map(([d, t]) => ({ d: +d, t })), type: st.type, from: st.from, force: st.force });
   const preview = el("button", { class: "btn ghost", type: "button", onclick: async () => {
     const r = await act(() => api("/api/packages/" + p.id + "/fixed", { ...body(), preview: true })); if (!r) return;
-    plan.replaceChildren(...(r.plan.length ? r.plan.map(x => el("li", { class: x.ok ? "" : "skip" }, el("span", {}, fmtDayLong(x.date) + " · " + x.start), el("span", {}, x.ok ? "✓" : x.reason)))
-      : [el("li", { class: "skip" }, "Nema slobodnih termina po ovom obrascu do isteka paketa.")]));
-  } }, "Prikaži plan");
+    plan.replaceChildren(...(r.plan.length ? r.plan.map(x => el("li", { class: x.ok ? "" : "skip" }, el("span", {}, fmtDayLong(x.date) + " · " + x.start), el("span", {}, x.ok ? "✓" : t(x.reason))))
+      : [el("li", { class: "skip" }, t("Nema slobodnih termina po ovom obrascu do isteka paketa."))]));
+  } }, t("Prikaži plan"));
   const confirm = el("button", { class: "btn", type: "button", onclick: async () => {
     const r = await act(() => api("/api/packages/" + p.id + "/fixed", body())); if (!r) return;
-    closeModal(); toast("Zakazano " + r.made.length + " fiksnih termina" + (r.skipped.length ? ", " + r.skipped.length + " preskočeno (popunjeno)." : ".")); reload();
-  } }, "Potvrdi fiksne termine");
-  openModal(el("div", { class: "mcal-head" }, el("b", {}, "Fiksni termini"), el("button", { type: "button", class: "mcal-nav", "data-close": true, "aria-label": "Zatvori" }, "×")),
-    el("p", { class: "note", style: "margin:0" }, p.name + " · preostalo " + p.remaining),
-    el("div", { class: "f" }, el("span", {}, "Dani i vreme"), picker),
-    el("div", { class: "fields" }, typeSel ? el("label", { class: "f" }, "Vrsta", typeSel) : null, el("label", { class: "f" }, "Od datuma", from)),
+    closeModal(); toast(t("Zakazano {n} fiksnih termina", { n: r.made.length }) + (r.skipped.length ? ", " + t("{n} preskočeno (popunjeno).", { n: r.skipped.length }) : ".")); reload();
+  } }, t("Potvrdi fiksne termine"));
+  openModal(el("div", { class: "mcal-head" }, el("b", {}, t("Fiksni termini")), el("button", { type: "button", class: "mcal-nav", "data-close": true, "aria-label": t("Zatvori") }, "×")),
+    el("p", { class: "note", style: "margin:0" }, nameOf(p) + t(" · preostalo {n}", { n: p.remaining })),
+    el("div", { class: "f" }, el("span", {}, t("Dani i vreme")), picker),
+    el("div", { class: "fields" }, typeSel ? el("label", { class: "f" }, t("Vrsta"), typeSel) : null, el("label", { class: "f" }, t("Od datuma"), from)),
     force, info, plan, el("div", { class: "actions", style: "justify-content:flex-end" }, preview, confirm));
   $("#modal-gen-box").classList.add("wide");
 }
@@ -1835,12 +1927,12 @@ const askedKey = id => "ritual-fixed-asked-" + id;
 function askFixed(p, reload, who) {
   try { if (localStorage.getItem(askedKey(p.id))) return false; } catch {}
   const done = () => { try { localStorage.setItem(askedKey(p.id), "1"); } catch {} };
-  openModal(el("div", { class: "mcal-head" }, el("b", {}, "Fiksni termini?"), el("button", { type: "button", class: "mcal-nav", "data-close": true, "aria-label": "Zatvori", onclick: done }, "×")),
-    el("p", { style: "margin:0" }, (who ? who + " je uplatio/la " : "Uplaćen je ") + p.name.toLowerCase() + ". Želite li automatsku rezervaciju svih uplaćenih termina u tačno određene dane u nedelji, u određeno vreme?"),
-    el("p", { class: "note", style: "margin:0" }, "Na primer: utorak i četvrtak u 19:00, subota u 09:00. Svaki termin se kasnije može pojedinačno otkazati ili pomeriti."),
+  openModal(el("div", { class: "mcal-head" }, el("b", {}, t("Fiksni termini?")), el("button", { type: "button", class: "mcal-nav", "data-close": true, "aria-label": t("Zatvori"), onclick: done }, "×")),
+    el("p", { style: "margin:0" }, (who ? t("{ime} je uplatio/la {naziv}.", { ime: who, naziv: EN_ON ? nameOf(p) : p.name.toLowerCase() }) : t("Uplaćen je {naziv}.", { naziv: EN_ON ? nameOf(p) : p.name.toLowerCase() })) + " " + t("Želite li automatsku rezervaciju svih uplaćenih termina u tačno određene dane u nedelji, u određeno vreme?")),
+    el("p", { class: "note", style: "margin:0" }, t("Na primer: utorak i četvrtak u 19:00, subota u 09:00. Svaki termin se kasnije može pojedinačno otkazati ili pomeriti.")),
     el("div", { class: "actions", style: "justify-content:flex-end" },
-      el("button", { class: "btn ghost", type: "button", onclick: () => { done(); closeModal(); } }, who ? "Ne sada" : "Ne, zakazivaću sam/a"),
-      el("button", { class: "btn", type: "button", onclick: () => { done(); openFixed(p, reload); } }, "Da, izaberi dane")));
+      el("button", { class: "btn ghost", type: "button", onclick: () => { done(); closeModal(); } }, who ? t("Ne sada") : t("Ne, zakazivaću sam/a")),
+      el("button", { class: "btn", type: "button", onclick: () => { done(); openFixed(p, reload); } }, t("Da, izaberi dane"))));
   return true;
 }
 
@@ -1852,24 +1944,24 @@ async function loadMy() {
 function pkgCard(p, adminCtx) {
   const bar = el("div", { class: "bar", "aria-hidden": "true" }, Array.from({ length: Math.min(p.total, 40) }, (_, i) =>
     el("i", { class: i < p.used ? "used" : i < p.used + p.sched ? "sched" : "" })));
-  const status = el("span", { style: "display:flex;gap:6px;flex-wrap:wrap" }, p.expired ? el("span", { class: "pill used" }, "Isteklo " + fmtDate(p.validUntil))
-    : p.remaining === 0 && p.sched === 0 ? el("span", { class: "pill used" }, "Iskorišćen")
-    : el("span", { class: "pill" }, "Važi do " + fmtDate(p.validUntil)),
-    p.unpaid ? el("span", { class: "pill wait" }, "Nije plaćeno") : null);
-  const extra = [p.extendDays ? "produžen " + p.extendDays + " d" : null, p.freezeDays ? "zamrznut " + p.freezeDays + " d" : null,
-    p.adjust ? "ručna korekcija " + (p.adjust > 0 ? "+" : "") + p.adjust : null].filter(Boolean).join(" · ");
+  const status = el("span", { style: "display:flex;gap:6px;flex-wrap:wrap" }, p.expired ? el("span", { class: "pill used" }, t("Isteklo {datum}", { datum: fmtDate(p.validUntil) }))
+    : p.remaining === 0 && p.sched === 0 ? el("span", { class: "pill used" }, t("Iskorišćen"))
+    : el("span", { class: "pill" }, t("Važi do {datum}", { datum: fmtDate(p.validUntil) })),
+    p.unpaid ? el("span", { class: "pill wait" }, t("Nije plaćeno")) : null);
+  const extra = [p.extendDays ? t("produžen {n} d", { n: p.extendDays }) : null, p.freezeDays ? t("zamrznut {n} d", { n: p.freezeDays }) : null,
+    p.adjust ? t("ručna korekcija {n}", { n: (p.adjust > 0 ? "+" : "") + p.adjust }) : null].filter(Boolean).join(" · ");
   const card = el("div", { class: "pkg" },
-    el("div", { class: "pkg-head" }, el("b", {}, p.name), status),
+    el("div", { class: "pkg-head" }, el("b", {}, nameOf(p)), status),
     el("div", { class: "stats" },
-      el("div", {}, el("small", {}, "Ukupno"), el("strong", {}, p.total)),
-      el("div", {}, el("small", {}, "Iskorišćeno"), el("strong", {}, p.used)),
-      el("div", {}, el("small", {}, "Zakazano"), el("strong", {}, p.sched)),
-      el("div", {}, el("small", {}, "Preostalo"), el("strong", {}, p.remaining))),
+      el("div", {}, el("small", {}, t("Ukupno")), el("strong", {}, p.total)),
+      el("div", {}, el("small", {}, t("Iskorišćeno")), el("strong", {}, p.used)),
+      el("div", {}, el("small", {}, t("Zakazano")), el("strong", {}, p.sched)),
+      el("div", {}, el("small", {}, t("Preostalo")), el("strong", {}, p.remaining))),
     bar,
-    el("p", { class: "dates" }, "Važi od " + fmtDate(p.paidAt) + " do " + fmtDate(p.validUntil) + " · " + (p.unpaid ? (p.payMethod === "racun" ? "uplata na račun još nije stigla" : "plaćanje u studiju, još nije plaćeno") : "uplaćeno " + fmtDate(p.paidOn || p.paidAt)) + " · " + (p.firstUse ? "prvi trening " + fmtDate(p.firstUse) : "još nije korišćen") + (extra ? " · " + extra : "")),
-    p.fixed ? el("p", { class: "dates" }, "Termini: " + fixedText(p.fixed)) : null,
-    p.note && adminCtx ? el("p", { class: "dates" }, "Napomena: " + p.note) : null,
-    p.unpaid && p.payMethod === "racun" && !adminCtx ? el("div", { class: "actions" }, el("button", { type: "button", class: "btn ghost", onclick: () => openPayInfo(p.price, "Podaci za uplatu", p.name) }, "Podaci za uplatu")) : null);
+    el("p", { class: "dates" }, t("Važi od {od} do {do}", { od: fmtDate(p.paidAt), do: fmtDate(p.validUntil) }) + " · " + (p.unpaid ? (p.payMethod === "racun" ? t("uplata na račun još nije stigla") : t("plaćanje u studiju, još nije plaćeno")) : t("uplaćeno {datum}", { datum: fmtDate(p.paidOn || p.paidAt) })) + " · " + (p.firstUse ? t("prvi trening {datum}", { datum: fmtDate(p.firstUse) }) : t("još nije korišćen")) + (extra ? " · " + extra : "")),
+    p.fixed ? el("p", { class: "dates" }, t("Termini: ") + fixedText(p.fixed)) : null,
+    p.note && adminCtx ? el("p", { class: "dates" }, t("Napomena: ") + p.note) : null,
+    p.unpaid && p.payMethod === "racun" && !adminCtx ? el("div", { class: "actions" }, el("button", { type: "button", class: "btn ghost", onclick: () => openPayInfo(p.price, t("Podaci za uplatu"), nameOf(p)) }, t("Podaci za uplatu"))) : null);
   const fr = fixedRow(p, adminCtx ? adminCtx.reload : async () => { await Promise.all([loadMy(), loadSlots()]); });
   if (fr) card.append(fr);
   if (adminCtx) card.append(pkgAdminActions(p, adminCtx));
@@ -1878,37 +1970,38 @@ function pkgCard(p, adminCtx) {
 function renderMine() {
   const pk = $("#my-pkg"), list = $("#my-list");
   pk.replaceChildren(); list.replaceChildren();
-  if (!S.me) { pk.append(el("div", { class: "empty" }, el("a", { href: "#prijava", "data-auth": "login" }, "Prijavite se"), " da biste videli svoje termine i paket.")); return; }
+  if (!S.me) { pk.append(el("div", { class: "empty" }, el("a", { href: "#prijava", "data-auth": "login" }, t("Prijavite se")), t(" da biste videli svoje termine i paket."))); return; }
   if (!S.my) return;
   const pkgs = S.my.packages.filter(p => !p.expired || p.paidAt >= addDays(dstr(new Date()), -90));
   if (pkgs.length) pkgs.forEach(p => pk.append(pkgCard(p)));
-  else pk.append(el("div", { class: "banner" }, "Nemate članarinu. ", el("a", { href: "#zakazi" }, "Izaberite je pri zakazivanju"), ": 8 ili 12 termina mesečno, u dane i vreme koje vama odgovaraju."));
+  else pk.append(el("div", { class: "banner" }, t("Nemate članarinu. "), el("a", { href: "#zakazi" }, t("Izaberite je pri zakazivanju")), t(": 8 ili 12 termina mesečno, u dane i vreme koje vama odgovaraju.")));
   const fresh = pkgs.find(p => p.total >= 8 && !p.expired && !p.fixed && p.used === 0 && p.sched === 0 && p.remaining > 0);
   if (fresh && location.hash.startsWith("#moji") && $("#modal-gen").hidden) askFixed(fresh, async () => { await Promise.all([loadMy(), loadSlots()]); });
-  if (!S.my.bookings.length) { list.append(el("div", { class: "empty" }, "Još nemate zakazanih termina. ", el("a", { href: "#zakazi" }, "Zakažite prvi trening."))); return; }
+  if (!S.my.bookings.length) { list.append(el("div", { class: "empty" }, t("Još nemate zakazanih termina. "), el("a", { href: "#zakazi" }, t("Zakažite prvi trening.")))); return; }
   for (const b of S.my.bookings) {
     const h = hoursUntil(b.date, b.start), pkg = S.my.packages.find(p => p.id === b.pkgId);
     let right;
-    if (b.status === "kasno") right = el("span", { class: "pill lock" }, "Kasno otkazan");
-    else if (h <= 0) right = el("span", { class: "pill used" }, "Iskorišćen");
-    else if (h < S.pub.cancelHours) right = el("span", { class: "pill lock" }, "Ne može se menjati");
+    if (b.status === "kasno") right = el("span", { class: "pill lock" }, t("Kasno otkazan"));
+    else if (h <= 0) right = el("span", { class: "pill used" }, t("Iskorišćen"));
+    else if (h < S.pub.cancelHours) right = el("span", { class: "pill lock" }, t("Ne može se menjati"));
     else right = el("div", { class: "actions" },
-      !b.pkgId && !b.paid && b.payMethod === "racun" ? el("button", { type: "button", class: "btn ghost", onclick: () => openPayInfo(b.price, "Podaci za uplatu", fmtDayLong(b.date) + " u " + b.start) }, "Podaci za uplatu") : null,
-      el("button", { type: "button", class: "btn ghost", onclick: () => startMove(b) }, "Promeni"),
-      confirmBtn("Otkaži", "btn ghost danger", async () => {
-        const r = await act(() => api("/api/bookings/" + b.id + "/cancel", {}), "Termin je otkazan" + (pkg ? " i trening je vraćen u članarinu." : "."));
+      !b.pkgId && !b.paid && b.payMethod === "racun" ? el("button", { type: "button", class: "btn ghost", onclick: () => openPayInfo(b.price, t("Podaci za uplatu"), t("{dan} u {vreme}", { dan: fmtDayLong(b.date), vreme: b.start })) }, t("Podaci za uplatu")) : null,
+      el("button", { type: "button", class: "btn ghost", onclick: () => startMove(b) }, t("Promeni")),
+      confirmBtn(t("Otkaži"), "btn ghost danger", async () => {
+        const r = await act(() => api("/api/bookings/" + b.id + "/cancel", {}), pkg ? t("Termin je otkazan i trening je vraćen u članarinu.") : t("Termin je otkazan."));
         if (r) { await Promise.all([loadMy(), loadSlots()]); }
-      }, "Potvrdi otkazivanje"));
-    const payPart = b.pkgId ? (pkg && pkg.unpaid ? "članarina nije plaćena" : null) : payState(b);
-    list.append(bookingRow(b, [b.start + "–" + endOf(b.start), pkg ? "članarina „" + pkg.name + "”" : b.trial ? "probni trening" : "pojedinačni čas", payPart,
-      b.status === "zakazano" && h > 0 && h < S.pub.cancelHours ? "računa se kao iskorišćen ako izostanete" : null], right));
+      }, t("Potvrdi otkazivanje")));
+    const payPart = b.pkgId ? (pkg && pkg.unpaid ? t("članarina nije plaćena") : null) : payState(b);
+    list.append(bookingRow(b, [b.start + "–" + endOf(b.start), pkg ? t("članarina „{naziv}”", { naziv: nameOf(pkg) }) : b.trial ? t("probni trening") : t("pojedinačni čas"), payPart,
+      b.status === "zakazano" && h > 0 && h < S.pub.cancelHours ? t("računa se kao iskorišćen ako izostanete") : null], right));
   }
 }
 function bookingRow(b, subParts, right) {
   const d = parseD(b.date);
   return el("div", { class: "row" },
     el("div", { class: "date" }, el("small", {}, DAYS[d.getDay()]), el("strong", {}, d.getDate()), el("small", {}, MONTHS[d.getMonth()])),
-    el("div", { class: "info" }, el("b", {}, TYPES[b.type].label + " trening"), el("p", {}, subParts.filter(Boolean).join(" · "))),
+    el("div", { class: "info" }, el("b", {}, t("{vrsta} trening", { vrsta: TYPES[b.type].label })), el("p", {}, subParts.filter(Boolean).join(" · "))),
+
     right);
 }
 
@@ -1926,20 +2019,20 @@ function renderPrices() {
   const SEG_PHOTO = { grupni: ["/img/p/s/p3.jpg", "50% 30%"], individualni: ["/img/p/s/p7.jpg", "60% 40%"] };
   const BLOCK_PHOTO = { grupni: [["/img/p/s/p8.jpg", "50% 50%"], ["/img/p/s/p12.jpg", "50% 50%"], ["/img/p/s/p9.jpg", "50% 50%"]], individualni: [["/img/p/s/p2.jpg", "50% 35%"], ["/img/p/s/p10.jpg", "50% 50%"], ["/img/p/s/p5.jpg", "50% 40%"]] };
   const img = ([src, pos], cls) => el("img", { class: cls || "", src, alt: "", loading: "lazy", decoding: "async", style: "object-position:" + pos });
-  for (const [id, label, desc] of [["grupni", "Grupni", "do " + cap + " osoba na reformerima"], ["individualni", "Individualni", "1 na 1 ili duo sa trenerom"]])
+  for (const [id, label, desc] of [["grupni", TYPES.grupni.label, TYPES.grupni.desc(cap)], ["individualni", TYPES.individualni.label, t("1 na 1 ili duo sa trenerom")]])
     seg.append(el("button", { type: "button", role: "tab", "aria-pressed": String(S.priceTab === id), "aria-selected": String(S.priceTab === id), onclick: () => { S.priceTab = id; renderPrices(); } },
       el("span", { class: "ph", "aria-hidden": "true" }, img(SEG_PHOTO[id])), el("span", { class: "tx" }, el("b", {}, label), el("span", {}, desc))));
   const grp = S.priceTab === "grupni";
   const items = c.filter(x => grp ? x.cat === "grupni" : x.cat !== "grupni");
-  const blocks = [["Probni trening", items.filter(x => x.trial), S.pub.promo ? (S.pub.promo.text || "") + " Akcija važi do " + fmtShort(S.pub.promo.to) + "." : "Prvi dolazak, jednokratno.", 0],
-    [grp ? "Pojedinačni grupni čas" : "Pojedinačni čas", items.filter(x => !x.trial && x.total === 1), null, 1],
-    ["Mesečne članarine", items.filter(x => !x.trial && x.total > 1), "Članarina važi mesec dana od prvog treninga (npr. od 17.11. do 17.12.). Pri zakazivanju birate 8 ili 12 termina, dane u nedelji i vreme za ceo mesec; plaćanje uplatom na račun ili u studiju.", 2]].filter(([, l]) => l.length);
+  const blocks = [[t("Probni trening"), items.filter(x => x.trial), S.pub.promo ? (promoText(S.pub.promo) || "") + (S.pub.promo.to ? " " + t("Akcija važi do {datum}.", { datum: fmtShort(S.pub.promo.to) }) : "") : t("Prvi dolazak, jednokratno."), 0],
+    [grp ? t("Pojedinačni grupni čas") : t("Pojedinačni čas"), items.filter(x => !x.trial && x.total === 1), null, 1],
+    [t("Mesečne članarine"), items.filter(x => !x.trial && x.total > 1), t("Članarina važi mesec dana od prvog treninga (npr. od 17.11. do 17.12.). Pri zakazivanju birate 8 ili 12 termina, dane u nedelji i vreme za ceo mesec; plaćanje uplatom na račun ili u studiju."), 2]].filter(([, l]) => l.length);
   const go = bookItem;
-  const row = x => el("button", { type: "button", class: "price", onclick: () => go(x), "aria-label": x.name + ", " + fmtRsd(x.price) + " dinara, zakaži" },
-    el("span", {}, el("span", { class: "nm" }, x.name)),
-    el("span", { class: "dur" }, x.total > 1 ? x.total + " termina" : "55 min"),
-    x.trial && S.pub.promo ? el("span", { class: "amt" }, "besplatno", el("small", {}, "akcija")) : el("span", { class: "amt" }, fmtRsd(x.price), el("small", {}, "rsd")),
-    el("span", { class: "go" }, "Zakaži"));
+  const row = x => el("button", { type: "button", class: "price", onclick: () => go(x), "aria-label": t("{naziv}, {cena} dinara, zakaži", { naziv: nameOf(x), cena: fmtRsd(x.price) }) },
+    el("span", {}, el("span", { class: "nm" }, nameOf(x))),
+    el("span", { class: "dur" }, x.total > 1 ? t("{n} termina", { n: x.total }) : "55 min"),
+    x.trial && S.pub.promo ? el("span", { class: "amt" }, t("besplatno"), el("small", {}, t("akcija"))) : el("span", { class: "amt" }, fmtRsd(x.price), el("small", {}, tr("rsd", "RSD"))),
+    el("span", { class: "go" }, t("Zakaži")));
   $("#prices").replaceChildren(...blocks.map(([title, list, note, k]) => el("div", { class: "card price-group has-photo", "data-rise": true }, img(BLOCK_PHOTO[S.priceTab][k], "pg-photo"),
     el("div", { class: "pg-body" }, el("h3", {}, title), note ? el("p", { class: "price-note" }, note) : null, el("div", {}, list.map(row))))));
   observeRise(!document.querySelector('section[data-view="cenovnik"]').hidden);
@@ -1973,15 +2066,15 @@ function renderPublic() {
   const hoursRows = [1, 2, 3, 4, 5, 6, 0].map(i => ({ i, blocks: hourBlocks(i) }));
   // mapa i navigacija (Google mape), telefon kao u kartici mesta
   const q = encodeURIComponent((st.name || "Ritual Pilates Studio") + ", " + (st.address || "Beograd"));
-  S.mapSrc = "https://www.google.com/maps?q=" + q + "&z=16&hl=sr&output=embed";
+  S.mapSrc = "https://www.google.com/maps?q=" + q + "&z=16&hl=" + LANG + "&output=embed";
   $("#map-title").textContent = st.name || "Ritual Pilates Studio"; $("#map-addr").textContent = st.address || "";
   $("#map-nav").href = "https://www.google.com/maps/dir/?api=1&destination=" + q;
   const tel = $("#map-tel"); tel.hidden = !st.phone; tel.href = "tel:" + (st.phone || "").replace(/[^\d+]/g, ""); tel.lastElementChild.textContent = st.phone || "";
   if (!document.querySelector('section[data-view="kontakt"]').hidden) loadMap();
   const todayI = new Date().getDay();
   $("#hours tbody").replaceChildren(...hoursRows.map(r => el("tr", { class: r.i === todayI ? "today" : "" }, el("td", {}, DAYS_LONG[r.i]),
-    r.blocks.length ? el("td", {}, r.blocks.map(b => el("span", { class: "hb" }, b.open + " – " + b.close))) : el("td", { class: "closed" }, "zatvoreno"))));
-  const hours = hoursRows.map(r => el("div", { class: "hrs" }, el("b", {}, DAYS[r.i] + ":"), r.blocks.length ? r.blocks.map(b => b.open + "–" + b.close).join(" · ") : "zatvoreno"));
+    r.blocks.length ? el("td", {}, r.blocks.map(b => el("span", { class: "hb" }, b.open + " – " + b.close))) : el("td", { class: "closed" }, t("zatvoreno")))));
+  const hours = hoursRows.map(r => el("div", { class: "hrs" }, el("b", {}, DAYS[r.i] + ":"), r.blocks.length ? r.blocks.map(b => b.open + "–" + b.close).join(" · ") : t("zatvoreno")));
   const fc = $("#foot-contact"), fh = $("#foot-hours");
   if (fc) fc.replaceChildren(...[el("div", {}, st.address || ""), st.phone ? el("div", {}, el("a", { href: "tel:" + st.phone.replace(/\s/g, "") }, st.phone)) : null,
     st.email ? el("div", {}, el("a", { href: "mailto:" + st.email }, st.email)) : null,
@@ -2002,35 +2095,35 @@ function observeRise(immediate) {
 
 /* ---------- admin: raspored ---------- */
 async function loadAdminDay() {
-  $("#adm-date-label").textContent = fmtDayLong(S.admDate) + " " + parseD(S.admDate).getFullYear() + ".";
+  $("#adm-date-label").textContent = fmtDayLong(S.admDate) + " " + parseD(S.admDate).getFullYear() + tr(".", "");
   let d; try { d = await api("/api/admin/day?date=" + S.admDate); } catch (e) { toast(e.message); return; }
   $("#ov-g").value = d.g.join(", "); $("#ov-p").value = d.p.join(", ");
   const list = $("#adm-day"); list.replaceChildren();
-  list.append(el("p", { class: "note" }, fmtDayLong(d.date) + (d.overridden ? " · posebno podešen raspored za ovaj dan" : "")));
-  if (!d.slots.length) { list.append(el("div", { class: "empty" }, "Ovog dana nema termina.")); return; }
+  list.append(el("p", { class: "note" }, fmtDayLong(d.date) + (d.overridden ? t(" · posebno podešen raspored za ovaj dan") : "")));
+  if (!d.slots.length) { list.append(el("div", { class: "empty" }, t("Ovog dana nema termina."))); return; }
   if (!S.clients) S.clients = await api("/api/admin/clients").catch(() => []);
   for (const s of d.slots) {
     const active = s.bookings.filter(b => b.status === "zakazano");
-    const label = s.kind === "g" ? "Grupni " + active.length + "/" + s.cap : s.kind === "p" ? (active[0] ? TYPES[active[0].type].label : "Individualni/duo · slobodno") : "Van rasporeda";
+    const label = s.kind === "g" ? TYPES.grupni.label + " " + active.length + "/" + s.cap : s.kind === "p" ? (active[0] ? TYPES[active[0].type].label : t("Individualni/duo · slobodno")) : t("Van rasporeda");
     const box = el("div", { class: "admin-slot" }, el("header", {}, el("b", {}, s.start + "–" + s.end), el("span", { class: "pill" }, label)));
     for (const b of s.bookings) {
       const late = b.status === "kasno";
       box.append(el("div", { class: "person" },
-        el("div", {}, el("a", { href: "#klijent", onclick: () => openClient(b.userEmail) }, (b.ime || "") + " " + (b.prezime || "")), late ? " · kasno otkazan" : "",
-          el("small", {}, [b.telefon, TYPES[b.type].label, b.pkg ? b.pkg.name + " (ostalo " + b.pkg.remaining + ")" + (b.pkg.unpaid ? " · NIJE PLAĆENO" : "") : (b.trial ? "probni" : "pojedinačni") + " · " + payState(b)].filter(Boolean).join(" · "))),
+        el("div", {}, el("a", { href: "#klijent", onclick: () => openClient(b.userEmail) }, (b.ime || "") + " " + (b.prezime || "")), late ? t(" · kasno otkazan") : "",
+          el("small", {}, [b.telefon, TYPES[b.type].label, b.pkg ? nameOf(b.pkg) + t(" (ostalo {n})", { n: b.pkg.remaining }) + (b.pkg.unpaid ? t(" · NIJE PLAĆENO") : "") : (b.trial ? t("probni") : t("pojedinačni")) + " · " + payState(b)].filter(Boolean).join(" · "))),
         el("div", { class: "actions" },
-          !b.pkg && !b.paid && b.price > 0 ? el("button", { class: "btn ghost", type: "button", onclick: async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { paid: true }), "Upisano kao plaćeno.")) loadAdminDay(); } }, "Plaćeno") : null,
-          late ? el("button", { class: "btn ghost", type: "button", onclick: () => setStatus(b, "zakazano") }, "Vrati")
-               : el("button", { class: "btn ghost", type: "button", onclick: () => setStatus(b, "kasno") }, "Kasno otkazao"),
-          el("button", { class: "btn ghost", type: "button", onclick: ev => moveForm(ev.currentTarget, b) }, "Premesti"),
-          confirmBtn("Otkaži", "btn ghost danger", () => setStatus(b, "otkazano"), "Potvrdi"))));
+          !b.pkg && !b.paid && b.price > 0 ? el("button", { class: "btn ghost", type: "button", onclick: async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { paid: true }), t("Upisano kao plaćeno."))) loadAdminDay(); } }, t("Plaćeno")) : null,
+          late ? el("button", { class: "btn ghost", type: "button", onclick: () => setStatus(b, "zakazano") }, t("Vrati"))
+               : el("button", { class: "btn ghost", type: "button", onclick: () => setStatus(b, "kasno") }, t("Kasno otkazao")),
+          el("button", { class: "btn ghost", type: "button", onclick: ev => moveForm(ev.currentTarget, b) }, t("Premesti")),
+          confirmBtn(t("Otkaži"), "btn ghost danger", () => setStatus(b, "otkazano"), t("Potvrdi")))));
     }
     if (s.kind) box.append(addToSlotForm(s));
     list.append(box);
   }
 }
 async function setStatus(b, status) {
-  const msg = { zakazano: "Rezervacija je vraćena.", kasno: "Upisano kao kasno otkazivanje. Trening se računa kao iskorišćen.", otkazano: "Termin je otkazan, trening je vraćen u paket." }[status];
+  const msg = t({ zakazano: "Rezervacija je vraćena.", kasno: "Upisano kao kasno otkazivanje. Trening se računa kao iskorišćen.", otkazano: "Termin je otkazan, trening je vraćen u paket." }[status]);
   if (await act(() => api("/api/admin/bookings/" + b.id, { status }), msg)) { S.clients = null; loadAdminDay(); }
 }
 function moveForm(anchor, b) {
@@ -2040,29 +2133,29 @@ function moveForm(anchor, b) {
   const force = el("input", { type: "checkbox" });
   wrap.after(el("form", { class: "inline-form", onsubmit: async e => {
     e.preventDefault();
-    if (await act(() => api("/api/admin/bookings/" + b.id, { date: date.value, start: time.value, force: force.checked }), "Termin je premešten.")) loadAdminDay();
-  } }, el("label", { class: "f" }, "Novi datum", date), el("label", { class: "f" }, "Vreme", time),
-     el("label", { class: "check" }, force, "ipak upiši i ako je popunjeno"), el("button", { class: "btn", type: "submit" }, "Premesti")));
+    if (await act(() => api("/api/admin/bookings/" + b.id, { date: date.value, start: time.value, force: force.checked }), t("Termin je premešten."))) loadAdminDay();
+  } }, el("label", { class: "f" }, t("Novi datum"), date), el("label", { class: "f" }, t("Vreme"), time),
+     el("label", { class: "check" }, force, t("ipak upiši i ako je popunjeno")), el("button", { class: "btn", type: "submit" }, t("Premesti"))));
 }
 function addToSlotForm(s) {
   const types = s.kind === "g" ? ["grupni"] : ["individualni", "duo"];
-  const sel = el("select", { class: "input" }, el("option", { value: "" }, "Dodaj klijenta u termin…"),
+  const sel = el("select", { class: "input" }, el("option", { value: "" }, t("Dodaj klijenta u termin…")),
     (S.clients || []).map(c => el("option", { value: c.email }, c.ime + " " + c.prezime + " · " + (c.telefon || c.email))));
   const type = el("select", { class: "input" }, types.map(t => el("option", { value: t }, TYPES[t].label)));
   return el("form", { class: "inline-form", onsubmit: async e => {
-    e.preventDefault(); if (!sel.value) { toast("Izaberite klijenta."); return; }
-    if (await act(() => api("/api/admin/bookings", { email: sel.value, date: S.admDate, start: s.start, type: type.value, force: true }), "Klijent je upisan u termin.")) { S.clients = null; loadAdminDay(); }
-  } }, sel, types.length > 1 ? type : null, el("button", { class: "btn ghost", type: "submit" }, "Upiši"));
+    e.preventDefault(); if (!sel.value) { toast(t("Izaberite klijenta.")); return; }
+    if (await act(() => api("/api/admin/bookings", { email: sel.value, date: S.admDate, start: s.start, type: type.value, force: true }), t("Klijent je upisan u termin."))) { S.clients = null; loadAdminDay(); }
+  } }, sel, types.length > 1 ? type : null, el("button", { class: "btn ghost", type: "submit" }, t("Upiši")));
 }
-$("#adm-date-btn").addEventListener("click", () => openCalendar({ title: "Raspored", sub: "Izaberite dan za pregled.", selected: S.admDate, foot: "Radno vreme: " + hoursSummary() + ".", onPick: d => { S.admDate = d; loadAdminDay(); } }));
+$("#adm-date-btn").addEventListener("click", () => openCalendar({ title: t("Raspored"), sub: t("Izaberite dan za pregled."), selected: S.admDate, foot: t("Radno vreme: ") + hoursSummary() + ".", onPick: d => { S.admDate = d; loadAdminDay(); } }));
 $("#adm-prev").addEventListener("click", () => { S.admDate = addDays(S.admDate, -1); loadAdminDay(); });
 $("#adm-next").addEventListener("click", () => { S.admDate = addDays(S.admDate, 1); loadAdminDay(); });
 const times = s => s.split(/[,\s]+/).map(x => x.trim()).filter(Boolean).map(x => /^\d:\d\d$/.test(x) ? "0" + x : x);
 $("#ov-save").addEventListener("click", async () => {
-  if (await act(() => api("/api/admin/day", { date: S.admDate, g: times($("#ov-g").value), p: times($("#ov-p").value) }), "Raspored za ovaj dan je sačuvan.")) { loadAdminDay(); loadSlots(); }
+  if (await act(() => api("/api/admin/day", { date: S.admDate, g: times($("#ov-g").value), p: times($("#ov-p").value) }), t("Raspored za ovaj dan je sačuvan."))) { loadAdminDay(); loadSlots(); }
 });
 $("#ov-reset").addEventListener("click", async () => {
-  if (await act(() => api("/api/admin/day", { date: S.admDate, reset: true }), "Vraćen je nedeljni raspored.")) { loadAdminDay(); loadSlots(); }
+  if (await act(() => api("/api/admin/day", { date: S.admDate, reset: true }), t("Vraćen je nedeljni raspored."))) { loadAdminDay(); loadSlots(); }
 });
 
 /* ---------- admin: klijenti ---------- */
@@ -2074,13 +2167,13 @@ function renderClients() {
   const list = $("#client-list"); list.replaceChildren();
   const q = S.q.toLowerCase();
   const rows = (S.clients || []).filter(c => !q || (c.ime + " " + c.prezime + " " + c.email + " " + (c.telefon || "")).toLowerCase().includes(q));
-  if (!rows.length) { list.append(el("div", { class: "empty" }, q ? "Nema klijenata za tu pretragu." : "Još nema registrovanih klijenata.")); return; }
+  if (!rows.length) { list.append(el("div", { class: "empty" }, q ? t("Nema klijenata za tu pretragu.") : t("Još nema registrovanih klijenata."))); return; }
   for (const c of rows) {
     const active = c.packages.find(p => !p.expired && (p.remaining > 0 || p.sched > 0));
     list.append(el("a", { class: "row client-row", href: "#klijent", onclick: () => openClient(c.email) },
       el("div", { class: "info" }, el("b", {}, c.ime + " " + c.prezime), el("p", {}, [c.telefon, c.email].filter(Boolean).join(" · "))),
-      el("div", { class: "info" }, el("p", {}, active ? active.name + " · ostalo " + active.remaining + " · važi do " + fmtDate(active.validUntil) + (active.unpaid ? " · NIJE PLAĆENO" : "") : "Nema aktivnu članarinu"),
-        el("p", {}, c.upcoming + " zakazano · " + c.visits + " održanih")),
+      el("div", { class: "info" }, el("p", {}, active ? nameOf(active) + t(" · ostalo {n} · važi do {datum}", { n: active.remaining, datum: fmtDate(active.validUntil) }) + (active.unpaid ? t(" · NIJE PLAĆENO") : "") : t("Nema aktivnu članarinu")),
+        el("p", {}, t("{a} zakazano · {b} održanih", { a: c.upcoming, b: c.visits }))),
       el("span", { class: "pill" + (active ? "" : " used") }, active ? active.remaining + " / " + active.total : "—")));
   }
 }
@@ -2092,69 +2185,70 @@ async function loadClient() {
   const box = $("#client-detail"); box.replaceChildren();
   if (!S.client) { location.hash = "#klijenti"; return; }
   let c; try { c = await api("/api/admin/clients/" + encodeURIComponent(S.client)); } catch (e) { toast(e.message); return; }
-  box.append(el("div", {}, el("h2", {}, c.ime + " " + c.prezime), el("p", { class: "lead" }, [c.email, c.telefon, "nalog od " + fmtDate(c.created)].filter(Boolean).join(" · "))));
+  box.append(el("div", {}, el("h2", {}, c.ime + " " + c.prezime), el("p", { class: "lead" }, [c.email, c.telefon, t("nalog od {datum}", { datum: fmtDate(c.created) }), c.lang === "en" ? t("jezik: engleski") : null].filter(Boolean).join(" · "))));
   // paketi
-  const pkgBox = el("div", { class: "stack" }, el("h3", { class: "label" }, "Paketi"));
-  if (!c.packages.length) pkgBox.append(el("div", { class: "empty" }, "Klijent još nema članarinu."));
+  const pkgBox = el("div", { class: "stack" }, el("h3", { class: "label" }, t("Paketi")));
+  if (!c.packages.length) pkgBox.append(el("div", { class: "empty" }, t("Klijent još nema članarinu.")));
   c.packages.forEach(p => pkgBox.append(pkgCard(p, { reload: loadClient })));
-  const cat = el("select", { class: "input" }, S.pub.catalog.map(x => el("option", { value: x.id }, x.name + " · " + fmtRsd(x.price) + " rsd")));
+  const cat = el("select", { class: "input" }, S.pub.catalog.map(x => el("option", { value: x.id }, nameOf(x) + " · " + money(x.price))));
   const paid = el("input", { type: "date", class: "input", value: dstr(new Date()) });
-  const note = el("input", { class: "input", placeholder: "npr. plaćeno gotovinom" });
+  const note = el("input", { class: "input", placeholder: t("npr. plaćeno gotovinom") });
   pkgBox.append(el("form", { class: "card add-form", onsubmit: async e => {
     e.preventDefault();
-    const r = await act(() => api("/api/admin/packages", { email: c.email, catalogId: cat.value, paidAt: paid.value, note: note.value }), "Uplata je evidentirana.");
+    const r = await act(() => api("/api/admin/packages", { email: c.email, catalogId: cat.value, paidAt: paid.value, note: note.value }), t("Uplata je evidentirana."));
     if (r) { await loadClient(); if (r.pkg.total >= 8) askFixed(r.pkg, loadClient, c.ime); }
-  } }, el("h3", { style: "flex-basis:100%" }, "Upiši uplaćenu članarinu"), el("p", { class: "note", style: "flex-basis:100%;margin:-6px 0 0" }, "Za uplatu primljenu u studiju bez izbora u aplikaciji. Članarinu koju je klijent sam izabrao samo označite kao plaćenu na njenoj kartici."),
-     el("label", { class: "f" }, "Paket", cat), el("label", { class: "f" }, "Datum uplate (početak važenja)", paid),
-     el("label", { class: "f" }, "Napomena", note), el("button", { class: "btn", type: "submit" }, "Sačuvaj uplatu")));
+  } }, el("h3", { style: "flex-basis:100%" }, t("Upiši uplaćenu članarinu")), el("p", { class: "note", style: "flex-basis:100%;margin:-6px 0 0" }, t("Za uplatu primljenu u studiju bez izbora u aplikaciji. Članarinu koju je klijent sam izabrao samo označite kao plaćenu na njenoj kartici.")),
+     el("label", { class: "f" }, t("Paket"), cat), el("label", { class: "f" }, t("Datum uplate (početak važenja)"), paid),
+     el("label", { class: "f" }, t("Napomena"), note), el("button", { class: "btn", type: "submit" }, t("Sačuvaj uplatu"))));
   box.append(pkgBox);
   // termini
-  const bk = el("div", { class: "stack" }, el("h3", { class: "label" }, "Termini"));
-  if (!c.bookings.length) bk.append(el("div", { class: "empty" }, "Nema rezervacija."));
+  const bk = el("div", { class: "stack" }, el("h3", { class: "label" }, t("Termini")));
+  if (!c.bookings.length) bk.append(el("div", { class: "empty" }, t("Nema rezervacija.")));
   for (const b of c.bookings.slice(0, 60)) {
     const pkg = c.packages.find(p => p.id === b.pkgId);
-    const pkgSel = el("select", { class: "input small", "aria-label": "Paket za ovaj termin", onchange: async e => {
-      if (await act(() => api("/api/admin/bookings/" + b.id, { pkgId: e.target.value || null }), "Paket za termin je promenjen.")) loadClient();
-    } }, el("option", { value: "" }, "bez paketa"), c.packages.filter(p => p.cat === b.type).map(p => el("option", { value: p.id, selected: p.id === b.pkgId }, p.name + " (" + fmtDate(p.paidAt) + ")")));
+    const pkgSel = el("select", { class: "input small", "aria-label": t("Paket za ovaj termin"), onchange: async e => {
+      if (await act(() => api("/api/admin/bookings/" + b.id, { pkgId: e.target.value || null }), t("Paket za termin je promenjen."))) loadClient();
+    } }, el("option", { value: "" }, t("bez paketa")), c.packages.filter(p => p.cat === b.type).map(p => el("option", { value: p.id, selected: p.id === b.pkgId }, nameOf(p) + " (" + fmtDate(p.paidAt) + ")")));
     const right = el("div", { class: "actions" }, el("span", { class: "pill" + (b.status === "zakazano" ? "" : b.status === "kasno" ? " lock" : " used") }, STATUS[b.status]),
-      !b.pkgId && !b.paid && b.price > 0 && b.status !== "otkazano" ? el("button", { class: "btn ghost", type: "button", onclick: async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { paid: true }), "Upisano kao plaćeno.")) loadClient(); } }, "Plaćeno") : null,
-      b.status === "zakazano" ? el("button", { class: "btn ghost", type: "button", onclick: async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { status: "kasno" }), "Upisano kao kasno otkazivanje.")) loadClient(); } }, "Kasno otkazao") : null,
-      b.status !== "zakazano" ? el("button", { class: "btn ghost", type: "button", onclick: async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { status: "zakazano" }), "Rezervacija je vraćena.")) loadClient(); } }, "Vrati") : null,
-      b.status === "zakazano" ? confirmBtn("Otkaži", "btn ghost danger", async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { status: "otkazano" }), "Termin je otkazan.")) loadClient(); }) : null,
+      !b.pkgId && !b.paid && b.price > 0 && b.status !== "otkazano" ? el("button", { class: "btn ghost", type: "button", onclick: async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { paid: true }), t("Upisano kao plaćeno."))) loadClient(); } }, t("Plaćeno")) : null,
+      b.status === "zakazano" ? el("button", { class: "btn ghost", type: "button", onclick: async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { status: "kasno" }), t("Upisano kao kasno otkazivanje."))) loadClient(); } }, t("Kasno otkazao")) : null,
+      b.status !== "zakazano" ? el("button", { class: "btn ghost", type: "button", onclick: async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { status: "zakazano" }), t("Rezervacija je vraćena."))) loadClient(); } }, t("Vrati")) : null,
+      b.status === "zakazano" ? confirmBtn(t("Otkaži"), "btn ghost danger", async () => { if (await act(() => api("/api/admin/bookings/" + b.id, { status: "otkazano" }), t("Termin je otkazan."))) loadClient(); }) : null,
       b.status !== "otkazano" ? pkgSel : null);
-    bk.append(bookingRow(b, [b.start + "–" + endOf(b.start), pkg ? pkg.name + (pkg.unpaid ? " · nije plaćeno" : "") : (b.trial ? "probni" : "bez članarine") + " · " + payState(b), b.cancelledBy && b.status !== "zakazano" ? "otkazao " + (b.cancelledBy === c.email ? "klijent" : "studio") : null], right));
+    bk.append(bookingRow(b, [b.start + "–" + endOf(b.start), pkg ? nameOf(pkg) + (pkg.unpaid ? t(" · nije plaćeno") : "") : (b.trial ? t("probni") : t("bez članarine")) + " · " + payState(b), b.cancelledBy && b.status !== "zakazano" ? (b.cancelledBy === c.email ? t("otkazao klijent") : t("otkazao studio")) : null], right));
   }
   box.append(bk);
   // profil
-  const tel = el("input", { class: "input", value: c.telefon || "" }), nt = el("textarea", { class: "input", rows: 2 }, c.note || ""), pw = el("input", { class: "input", type: "text", placeholder: "ostavite prazno" });
+  const tel = el("input", { class: "input", value: c.telefon || "" }), nt = el("textarea", { class: "input", rows: 2 }, c.note || ""), pw = el("input", { class: "input", type: "text", placeholder: t("ostavite prazno") });
   box.append(el("form", { class: "card", onsubmit: async e => {
     e.preventDefault();
     const body = { telefon: tel.value, note: nt.value }; if (pw.value) body.newPassword = pw.value;
-    if (await act(() => api("/api/admin/clients/" + encodeURIComponent(c.email), body), pw.value ? "Sačuvano. Javite klijentu novu lozinku." : "Sačuvano.")) loadClient();
-  } }, el("h3", {}, "Podaci klijenta"), el("div", { class: "fields" }, el("label", { class: "f" }, "Telefon", tel), el("label", { class: "f" }, "Nova lozinka", pw)),
-     el("label", { class: "f" }, "Napomena (vidi samo studio)", nt), el("button", { class: "btn", type: "submit" }, "Sačuvaj")));
-  // istorija
-  if (c.log.length) box.append(el("div", { class: "card" }, el("h3", {}, "Istorija izmena"),
+    if (await act(() => api("/api/admin/clients/" + encodeURIComponent(c.email), body), pw.value ? t("Sačuvano. Javite klijentu novu lozinku.") : t("Sačuvano."))) loadClient();
+  } }, el("h3", {}, t("Podaci klijenta")), el("div", { class: "fields" }, el("label", { class: "f" }, t("Telefon"), tel), el("label", { class: "f" }, t("Nova lozinka"), pw)),
+     el("label", { class: "f" }, t("Napomena (vidi samo studio)"), nt), el("button", { class: "btn", type: "submit" }, t("Sačuvaj"))));
+  // istorija (beleži se na srpskom)
+  if (c.log.length) box.append(el("div", { class: "card" }, el("h3", {}, t("Istorija izmena")),
     el("ul", { class: "log" }, c.log.map(l => el("li", {}, el("span", { class: "note" }, fmtStamp(l.at) + " · "), l.action + ": " + l.detail)))));
 }
 function pkgAdminActions(p, ctx) {
-  const reason = el("input", { class: "input", placeholder: "Razlog (upisuje se u istoriju)" });
+  const reason = el("input", { class: "input", placeholder: t("Razlog (upisuje se u istoriju)") });
   const upd = (body, msg) => act(() => api("/api/admin/packages/" + p.id, { ...body, reason: reason.value }), msg).then(r => r && ctx.reload());
-  const ext = el("input", { class: "input small", type: "number", min: 0, max: S.pub.maxExtend, value: p.extendDays || 0, "aria-label": "Dana produženja" });
-  const frz = el("input", { class: "input small", type: "number", min: 0, max: S.pub.maxFreeze, value: p.freezeDays || 0, "aria-label": "Dana zamrzavanja" });
-  const paid = el("input", { class: "input small", type: "date", value: p.paidAt, "aria-label": "Važi od" });
+  const ext = el("input", { class: "input small", type: "number", min: 0, max: S.pub.maxExtend, value: p.extendDays || 0, "aria-label": t("Dana produženja") });
+  const frz = el("input", { class: "input small", type: "number", min: 0, max: S.pub.maxFreeze, value: p.freezeDays || 0, "aria-label": t("Dana zamrzavanja") });
+  const paid = el("input", { class: "input small", type: "date", value: p.paidAt, "aria-label": t("Važi od") });
   return el("div", { class: "stack tight" },
     el("div", { class: "actions" },
-      p.unpaid ? el("button", { class: "btn", type: "button", onclick: () => upd({ paid: true }, "Uplata je evidentirana, napomena „nije plaćeno” je uklonjena.") }, "Evidentiraj uplatu")
-               : el("button", { class: "btn ghost", type: "button", onclick: () => upd({ paid: false }, "Označeno kao neplaćeno.") }, "Označi kao neplaćeno"),
-      el("button", { class: "btn ghost", type: "button", onclick: () => upd({ adjustDelta: 1 }, "Upisan iskorišćen trening.") }, "+1 iskorišćen"),
-      el("button", { class: "btn ghost", type: "button", onclick: () => upd({ adjustDelta: -1 }, "Trening je vraćen u paket.") }, "Vrati 1 trening"),
-      confirmBtn("Obriši paket", "btn ghost danger", () => act(() => api("/api/admin/packages/" + p.id + "/delete", {}), "Paket je obrisan.").then(r => r && ctx.reload()), "Potvrdi brisanje")),
+      p.unpaid ? el("button", { class: "btn", type: "button", onclick: () => upd({ paid: true }, t("Uplata je evidentirana, napomena „nije plaćeno” je uklonjena.")) }, t("Evidentiraj uplatu"))
+               : el("button", { class: "btn ghost", type: "button", onclick: () => upd({ paid: false }, t("Označeno kao neplaćeno.")) }, t("Označi kao neplaćeno")),
+      el("button", { class: "btn ghost", type: "button", onclick: () => upd({ adjustDelta: 1 }, t("Upisan iskorišćen trening.")) }, t("+1 iskorišćen")),
+      el("button", { class: "btn ghost", type: "button", onclick: () => upd({ adjustDelta: -1 }, t("Trening je vraćen u paket.")) }, t("Vrati 1 trening")),
+      confirmBtn(t("Obriši paket"), "btn ghost danger", () => act(() => api("/api/admin/packages/" + p.id + "/delete", {}), t("Paket je obrisan.")).then(r => r && ctx.reload()), t("Potvrdi brisanje"))),
     el("div", { class: "actions" },
-      el("label", { class: "f" }, "Produženje (do " + S.pub.maxExtend + " d)", ext),
-      el("label", { class: "f" }, "Zamrzavanje (do " + S.pub.maxFreeze + " d)", frz),
-      el("label", { class: "f" }, "Važi od", paid),
-      el("button", { class: "btn ghost", type: "button", onclick: () => upd({ extendDays: ext.value, freezeDays: frz.value, paidAt: paid.value }, "Članarina je ažurirana.") }, "Sačuvaj")),
+      el("label", { class: "f" }, t("Produženje (do {n} d)", { n: S.pub.maxExtend }), ext),
+      el("label", { class: "f" }, t("Zamrzavanje (do {n} d)", { n: S.pub.maxFreeze }), frz),
+      el("label", { class: "f" }, t("Važi od"), paid),
+      el("button", { class: "btn ghost", type: "button", onclick: () => upd({ extendDays: ext.value, freezeDays: frz.value, paidAt: paid.value }, t("Članarina je ažurirana.")) }, t("Sačuvaj"))),
+
     reason);
 }
 
@@ -2163,47 +2257,51 @@ async function loadSettings() {
   let c; try { c = await api("/api/admin/settings"); } catch (e) { toast(e.message); return; }
   const f = $("#settings-form"); f.replaceChildren();
   const inp = (label, val, attrs = {}) => { const i = el("input", { class: "input", value: val ?? "", ...attrs }); return [el("label", { class: "f" }, label, i), i]; };
-  const [lAddr, addr] = inp("Adresa", c.studio.address), [lTel, tel] = inp("Telefon", c.studio.phone), [lMail, mail] = inp("E-mail studija", c.studio.email, { type: "email" }),
-    [lIg, ig] = inp("Instagram", c.studio.instagram), [lCap, cap] = inp("Mesta na grupnom času", c.groupCapacity, { type: "number", min: 1, max: 30 }),
-    [lAhead, ahead] = inp("Zakazivanje unapred (dana)", c.bookAheadDays, { type: "number", min: 1, max: 60 }),
-    [lNote, note] = inp("Poruka za individualne/duo (po dogovoru)", c.individualNote || "");
+  const [lAddr, addr] = inp(t("Adresa"), c.studio.address), [lTel, tel] = inp(t("Telefon"), c.studio.phone), [lMail, mail] = inp(t("E-mail studija"), c.studio.email, { type: "email" }),
+    [lIg, ig] = inp("Instagram", c.studio.instagram), [lCap, cap] = inp(t("Mesta na grupnom času"), c.groupCapacity, { type: "number", min: 1, max: 30 }),
+    [lAhead, ahead] = inp(t("Zakazivanje unapred (dana)"), c.bookAheadDays, { type: "number", min: 1, max: 60 }),
+    [lNote, note] = inp(t("Poruka za individualne/duo (po dogovoru)"), c.individualNote || ""),
+    [lNoteEn, noteEn] = inp(t("Ista poruka na engleskom"), c.individualNoteEn || "");
   const pay = c.payment || {};
-  const [lPR, pRec] = inp("Primalac", pay.recipient || ""), [lPA, pAcc] = inp("Tekući račun", pay.account || "", { placeholder: "npr. 160-0000000000000-00" }), [lPP, pPur] = inp("Svrha uplate", pay.purpose || "");
+  const [lPR, pRec] = inp(t("Primalac"), pay.recipient || ""), [lPA, pAcc] = inp(t("Tekući račun"), pay.account || "", { placeholder: t("npr. 160-0000000000000-00") }), [lPP, pPur] = inp(t("Svrha uplate"), pay.purpose || "");
   const pr = c.promo || {};
   const pOn = el("input", { type: "checkbox", checked: !!pr.active });
-  const [lPT, pTitle] = inp("Naslov akcije", pr.title || "AKCIJA"), [lPX, pText] = inp("Tekst akcije", pr.text || ""), [lPB, pBtn] = inp("Tekst dugmeta", pr.button || ""),
-    [lPF, pFrom] = inp("Važi od", pr.from || "", { type: "date" }), [lPTo, pTo] = inp("Važi do", pr.to || "", { type: "date" });
-  const pImg = el("select", { class: "input" }, Array.from({ length: 12 }, (_, i) => el("option", { value: "/img/p/p" + (i + 1) + ".jpg", selected: pr.image === "/img/p/p" + (i + 1) + ".jpg" }, "Fotografija " + (i + 1))));
+  const [lPT, pTitle] = inp(t("Naslov akcije"), pr.title || "AKCIJA"), [lPX, pText] = inp(t("Tekst akcije"), pr.text || ""), [lPB, pBtn] = inp(t("Tekst dugmeta"), pr.button || ""),
+    [lPF, pFrom] = inp(t("Važi od"), pr.from || "", { type: "date" }), [lPTo, pTo] = inp(t("Važi do"), pr.to || "", { type: "date" });
+  const [lPTe, pTitleEn] = inp(t("Naslov akcije (engleski)"), pr.titleEn || ""), [lPXe, pTextEn] = inp(t("Tekst akcije (engleski)"), pr.textEn || ""), [lPBe, pBtnEn] = inp(t("Tekst dugmeta (engleski)"), pr.buttonEn || "");
+  const pImg = el("select", { class: "input" }, Array.from({ length: 12 }, (_, i) => el("option", { value: "/img/p/p" + (i + 1) + ".jpg", selected: pr.image === "/img/p/p" + (i + 1) + ".jpg" }, t("Fotografija {n}", { n: i + 1 }))));
   const pPrev = el("img", { src: pr.image || "/img/p/p8.jpg", alt: "", style: "width:120px;aspect-ratio:4/5;object-fit:cover;border-radius:12px" });
   pImg.onchange = () => { pPrev.src = pImg.value; };
-  const admins = el("textarea", { class: "input", rows: 2, placeholder: "npr. trener@gmail.com" }, (c.adminEmails || []).join("\n"));
+  const admins = el("textarea", { class: "input", rows: 2, placeholder: t("npr. trener@gmail.com") }, (c.adminEmails || []).join("\n"));
   const week = {};
   const weekRows = [1, 2, 3, 4, 5, 6, 0].map(d => {
     const w = c.week[d] || { g: [], p: [] };
-    const g = el("input", { class: "input", value: w.g.join(", "), "aria-label": DAYS_LONG[d] + " grupni" }), p = el("input", { class: "input", value: w.p.join(", "), "aria-label": DAYS_LONG[d] + " individualni" });
+    const g = el("input", { class: "input", value: w.g.join(", "), "aria-label": DAYS_LONG[d] + t(" grupni") }), p = el("input", { class: "input", value: w.p.join(", "), "aria-label": DAYS_LONG[d] + t(" individualni") });
     week[d] = { g, p };
     return el("div", { class: "week-row" }, el("b", {}, DAYS[d]), g, p);
   });
-  const prices = c.catalog.map(x => { const i = el("input", { class: "input small", type: "number", min: 0, value: x.price, "aria-label": x.name }); return { id: x.id, i, row: el("div", { class: "price" }, el("span", {}, x.name), el("span", { class: "dur" }, x.total > 1 ? x.total + " termina" : "55 min"), i) }; });
-  f.append(el("h3", {}, "Studio"), el("div", { class: "fields" }, lAddr, lTel, lMail, lIg, lCap, lAhead, lNote),
-    el("h3", {}, "Podaci za uplatu na račun"), el("p", { class: "note" }, "Klijent pri rezervaciji bira uplatu na račun ili plaćanje u studiju; ovi podaci idu u mejl i u aplikaciju. Dok je račun prazan, nudi se samo plaćanje u studiju."),
+  const prices = c.catalog.map(x => { const i = el("input", { class: "input small", type: "number", min: 0, value: x.price, "aria-label": nameOf(x) }); return { id: x.id, i, row: el("div", { class: "price" }, el("span", {}, nameOf(x)), el("span", { class: "dur" }, x.total > 1 ? t("{n} termina", { n: x.total }) : "55 min"), i) }; });
+  const enNote = el("p", { class: "note" }, t("Engleska polja vide posetioci koji su izabrali engleski jezik. Ako ostanu prazna, prikazuje se srpski tekst."));
+  f.append(el("h3", {}, "Studio"), el("div", { class: "fields" }, lAddr, lTel, lMail, lIg, lCap, lAhead, lNote, lNoteEn),
+    el("h3", {}, t("Podaci za uplatu na račun")), el("p", { class: "note" }, t("Klijent pri rezervaciji bira uplatu na račun ili plaćanje u studiju; ovi podaci idu u mejl i u aplikaciju. Dok je račun prazan, nudi se samo plaćanje u studiju.")),
     el("div", { class: "fields" }, lPR, lPA, lPP),
-    el("h3", {}, "Akcija (pop-up na otvaranju)"), el("label", { class: "check" }, pOn, " Akcija je uključena"),
-    el("div", { class: "fields" }, lPT, lPB, lPF, lPTo), lPX, el("div", { style: "display:flex;gap:14px;align-items:center" }, el("label", { class: "f", style: "flex:1" }, "Fotografija", pImg), pPrev),
-    el("h3", {}, "Pristup adminu"), el("p", { class: "note" }, "Stalni admin: " + ((c.envAdmins || []).join(", ") || "-") + " (podešeno na serveru). Ovde dodajte adrese koje takođe treba da vide admin panel; osoba se registruje tom adresom i odmah dobija pristup."),
-    el("label", { class: "f" }, "Dodatni admin nalozi (po jedna adresa u redu)", admins),
-    el("h3", {}, "Nedeljni raspored"), el("p", { class: "note" }, "Vremena početka odvojena zarezom. Prva kolona su grupni časovi, druga individualni i duo termini."),
-    el("div", { class: "week" }, el("div", { class: "week-row head" }, el("span", {}), el("small", {}, "Grupni"), el("small", {}, "Individualni / duo")), weekRows),
-    el("h3", {}, "Cene"), el("div", {}, prices.map(p => p.row)),
-    el("button", { class: "btn", type: "submit" }, "Sačuvaj podešavanja"),
-    el("p", { class: "note" }, "Rezervna kopija svih podataka: ", el("a", { href: "/api/admin/backup" }, "preuzmi JSON"), "."));
+    el("h3", {}, t("Akcija (pop-up na otvaranju)")), el("label", { class: "check" }, pOn, " " + t("Akcija je uključena")),
+    el("div", { class: "fields" }, lPT, lPB, lPF, lPTo), lPX, el("div", { class: "fields" }, lPTe, lPBe), lPXe, enNote,
+    el("div", { style: "display:flex;gap:14px;align-items:center" }, el("label", { class: "f", style: "flex:1" }, t("Fotografija"), pImg), pPrev),
+    el("h3", {}, t("Pristup adminu")), el("p", { class: "note" }, t("Stalni admin: {lista} (podešeno na serveru). Ovde dodajte adrese koje takođe treba da vide admin panel; osoba se registruje tom adresom i odmah dobija pristup.", { lista: (c.envAdmins || []).join(", ") || "-" })),
+    el("label", { class: "f" }, t("Dodatni admin nalozi (po jedna adresa u redu)"), admins),
+    el("h3", {}, t("Nedeljni raspored")), el("p", { class: "note" }, t("Vremena početka odvojena zarezom. Prva kolona su grupni časovi, druga individualni i duo termini.")),
+    el("div", { class: "week" }, el("div", { class: "week-row head" }, el("span", {}), el("small", {}, TYPES.grupni.label), el("small", {}, t("Individualni / duo"))), weekRows),
+    el("h3", {}, t("Cene")), el("div", {}, prices.map(p => p.row)),
+    el("button", { class: "btn", type: "submit" }, t("Sačuvaj podešavanja")),
+    el("p", { class: "note" }, t("Rezervna kopija svih podataka: "), el("a", { href: "/api/admin/backup" }, t("preuzmi JSON")), "."));
   f.onsubmit = async e => {
     e.preventDefault();
     const wk = {}; for (const d in week) wk[d] = { g: times(week[d].g.value), p: times(week[d].p.value) };
     const r = await act(() => api("/api/admin/settings", { studio: { address: addr.value, phone: tel.value, email: mail.value, instagram: ig.value.replace(/^@/, "") },
-      groupCapacity: cap.value, bookAheadDays: ahead.value, week: wk, catalog: prices.map(p => ({ id: p.id, price: p.i.value })), individualNote: note.value, adminEmails: admins.value.split(/[\s,;]+/).filter(Boolean),
+      groupCapacity: cap.value, bookAheadDays: ahead.value, week: wk, catalog: prices.map(p => ({ id: p.id, price: p.i.value })), individualNote: note.value, individualNoteEn: noteEn.value, adminEmails: admins.value.split(/[\s,;]+/).filter(Boolean),
       payment: { recipient: pRec.value, account: pAcc.value, purpose: pPur.value },
-      promo: { active: pOn.checked, title: pTitle.value, text: pText.value, button: pBtn.value, from: pFrom.value, to: pTo.value, image: pImg.value } }), "Podešavanja su sačuvana.");
+      promo: { active: pOn.checked, title: pTitle.value, text: pText.value, button: pBtn.value, titleEn: pTitleEn.value, textEn: pTextEn.value, buttonEn: pBtnEn.value, from: pFrom.value, to: pTo.value, image: pImg.value } }), t("Podešavanja su sačuvana."));
     if (r) { S.pub = await api("/api/public"); renderPublic(); loadSlots(); loadSettings(); }
   };
 }
@@ -2244,6 +2342,17 @@ window.addEventListener("hashchange", route);
 
 /* ---------- pretraga usluga, vidljiva svima: usluge i paketi iz cenovnika + prečice do delova sajta; bez obzira na kvačice (š=s, č/ć=c, đ=dj), sve reči upita moraju da se nađu ---------- */
 const fold = x => String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "dj");
+const PAGES_EN = [
+  { name: "Book a class", meta: "calendar with available slots", view: "zakazi", kw: "book booking reserve reservation class session slot calendar available free schedule" },
+  { name: "Prices", meta: "class prices, packages and memberships", view: "cenovnik", kw: "price prices pricing cost how much package packages membership memberships discount offer promo" },
+  { name: "Opening hours", meta: "when the studio is open", view: "kontakt", kw: "opening hours time open closed weekend saturday sunday morning evening" },
+  { name: "Contact and location", meta: "address, map, phone, Instagram", view: "kontakt", kw: "contact address map location where phone call instagram dorcol skenderbegova directions parking" },
+  { name: "Studio rules", meta: "cancellation, lateness, rescheduling", view: "pravilnik", kw: "rules policy cancellation cancel late lateness reschedule change freeze extend terms" },
+  { name: "Terms of Use", meta: "rules for using the app and services", view: "uslovi", kw: "terms of use conditions rules contract withdrawal complaint refund cancellation packages membership studio details" },
+  { name: "Privacy Policy", meta: "personal data and cookies", view: "privatnost", kw: "privacy policy personal data cookies cookie gdpr delete account rights" },
+  { name: "Forms", meta: "complaint form and withdrawal form", view: "obrasci", kw: "forms form complaint complaints withdrawal cancel contract download" },
+  { name: "My bookings", meta: "your bookings and package", view: "moji-termini", kw: "my bookings my classes package remaining balance cancel change account login" }
+];
 const PAGES = [
   { name: "Zakazivanje termina", meta: "kalendar sa slobodnim terminima", view: "zakazi", kw: "zakazi zakazivanje rezervacija rezervisi termin termini kalendar slobodni slobodno" },
   { name: "Cenovnik", meta: "cene treninga, paketi i članarine", view: "cenovnik", kw: "cena cene cenovnik kosta kostanje paket paketi clanarina clanarine popust akcija" },
@@ -2257,16 +2366,18 @@ const PAGES = [
 ];
 function searchIndex() {
   const c = S.pub ? S.pub.catalog : [], cap = S.pub ? S.pub.groupCapacity : 4;
-  return c.map(x => ({ name: x.name, item: x,
-    meta: (x.trial ? "probni trening · " : x.total > 1 ? x.total + " treninga · " : "1 trening · ") + (x.trial && S.pub.promo ? "besplatno (akcija)" : fmtRsd(x.price) + " rsd") + (x.total >= 8 ? " · mesečna članarina" : ""),
+  const kwEn = x => EN_ON ? ["class session", x.trial ? "trial first free" : "", x.total > 1 ? "package " + x.total + " classes" : "single drop-in one", x.total >= 8 ? "membership monthly fixed" : "", { grupni: "group", individualni: "private individual 1on1", duo: "duo pair couple" }[x.cat] || ""].join(" ") : "";
+  return c.map(x => ({ name: nameOf(x), item: x,
+    meta: (x.trial ? t("probni trening · ") : x.total > 1 ? t("{n} treninga · ", { n: x.total }) : t("1 trening · ")) + (x.trial && S.pub.promo ? t("besplatno (akcija)") : money(x.price)) + (x.total >= 8 ? t(" · mesečna članarina") : ""),
     kw: [x.cat, TYPES[x.cat] ? TYPES[x.cat].label + " " + TYPES[x.cat].desc(cap) : "", "trening cas reformer pilates", x.trial ? "probni prvi put" + (S.pub.promo ? " besplatno akcija" : "") : "",
-      x.total > 1 ? "paket " + x.total + " termina" : "pojedinacni jedan", x.total >= 8 ? "clanarina mesecna fiksni termini" : ""].join(" ") })).concat(PAGES);
+      x.total > 1 ? "paket " + x.total + " termina" : "pojedinacni jedan", x.total >= 8 ? "clanarina mesecna fiksni termini" : "", kwEn(x)].join(" ") }))
+    .concat(EN_ON ? PAGES_EN.map((p, i) => ({ ...p, kw: p.kw + " " + PAGES[i].kw })) : PAGES);
 }
 function searchSite(q) {
   const toks = fold(q).split(/\s+/).filter(Boolean); if (!toks.length) return [];
   return searchIndex().filter(r => { const h = fold(r.name + " " + r.meta + " " + r.kw); return toks.every(t => h.includes(t)); });
 }
-const nRez = n => n + (n % 10 === 1 && n % 100 !== 11 ? " rezultat" : " rezultata");
+const nRez = n => EN_ON ? plural(n, "result", "results") : n + (n % 10 === 1 && n % 100 !== 11 ? " rezultat" : " rezultata");
 /* dugme „Zakaži“: zakazivanje se otvara u prozoru (na telefonu kao list odozdo), na bilo kom delu sajta.
    Isti blok za zakazivanje se samo premesti u prozor i nazad, pa sva logika ostaje ista. */
 function openBooking() {
@@ -2300,10 +2411,10 @@ function renderSearch() {
   if (!q) { panel.hidden = true; box.replaceChildren(); return; }
   const hits = searchSite(q);
   const row = r => el("button", { type: "button", class: "sr", onclick: () => { closeSearch(true); r.item ? bookItem(r.item) : goView(r.view); } },
-    el("span", { class: "nm" }, r.name), el("span", { class: "act" }, r.item ? "Zakaži" : "Otvori"), el("span", { class: "meta" }, r.meta));
-  box.replaceChildren(el("p", { class: "search-sum" }, hits.length ? nRez(hits.length) + " za „" + q + "”" : "Nema rezultata za „" + q + "”"),
+    el("span", { class: "nm" }, r.name), el("span", { class: "act" }, r.item ? t("Zakaži") : t("Otvori")), el("span", { class: "meta" }, r.meta));
+  box.replaceChildren(el("p", { class: "search-sum" }, hits.length ? t("{n} za „{q}”", { n: nRez(hits.length), q }) : t("Nema rezultata za „{q}”", { q })),
     ...(hits.length ? [...hits.filter(r => r.item).map(row), ...hits.filter(r => r.view).map(row)]
-      : [el("p", { class: "search-empty" }, "Probajte npr. „grupni”, „individualni”, „8 termina”, „probni” ili „radno vreme”.")]));
+      : [el("p", { class: "search-empty" }, t("Probajte npr. „grupni”, „individualni”, „8 termina”, „probni” ili „radno vreme”."))]));
   panel.hidden = false;
 }
 $("#site-q").addEventListener("input", renderSearch);
@@ -2396,21 +2507,26 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden && S.
   addEventListener("resize", update); update();
 })();
 
-const fmtShort = s => { if (!s) return ""; const d = parseD(s); return d.getDate() + ". " + MONTHS[d.getMonth()]; };
+const fmtShort = s => { if (!s) return ""; const d = parseD(s); return d.getDate() + tr(". ", " ") + MONTHS[d.getMonth()]; };
+/* tekst akcije: engleska verzija iz Podešavanja (ako je upisana), inače srpska */
+function promoText(p, k = "text") { return (EN_ON && p[k + "En"]) || p[k]; }
 /* akcija: pop-up jednom po poseti */
 function showPromo() {
   const p = S.pub && S.pub.promo; if (!p || !$("#modal-gen").hidden) return;
   try { if (sessionStorage.getItem("ritual-promo")) return; sessionStorage.setItem("ritual-promo", "1"); } catch {}
   const go = () => { closeModal(); S.type = "grupni"; S.selected = null; S.plan = "single"; $("#f-trial").checked = true; openBooking(); };
-  openModal(el("button", { type: "button", class: "promo-x", "data-close": true, "aria-label": "Zatvori" }, "×"),
-    el("div", { class: "promo-img" }, el("img", { src: p.image || "/img/p/p8.jpg", alt: "" }), el("span", { class: "promo-tag" }, p.title || "AKCIJA")),
-    el("div", { class: "promo-body" }, el("p", {}, p.text), el("div", { class: "actions" }, el("button", { type: "button", class: "btn", onclick: go }, p.button || "Zakaži probni trening"), el("button", { type: "button", class: "btn ghost", "data-close": true }, "Kasnije"))));
+  openModal(el("button", { type: "button", class: "promo-x", "data-close": true, "aria-label": t("Zatvori") }, "×"),
+    el("div", { class: "promo-img" }, el("img", { src: p.image || "/img/p/p8.jpg", alt: "" }), el("span", { class: "promo-tag" }, promoText(p, "title") || t("AKCIJA"))),
+    el("div", { class: "promo-body" }, el("p", {}, promoText(p)), el("div", { class: "actions" }, el("button", { type: "button", class: "btn", onclick: go }, promoText(p, "button") || t("Zakaži probni trening")), el("button", { type: "button", class: "btn ghost", "data-close": true }, t("Kasnije")))));
   $("#modal-gen-box").classList.add("promo");
 }
 
 (async function init() {
-  try { S.pub = await api("/api/public"); } catch (e) { toast("Server nije dostupan. Osvežite stranicu."); return; }
+  try { S.pub = await api("/api/public"); } catch (e) { toast(t("Server nije dostupan. Osvežite stranicu.")); return; }
   S.me = S.pub.me; renderAccount(); renderPublic();
+  // prijavljen korisnik: jezik mejlova prati jezik koji je izabrao u aplikaciji
+  if (S.me && S.me.lang !== LANG) api("/api/lang", { lang: LANG }).catch(() => {});
+
   initCookie(); askConsent();
   setTimeout(showPromo, 900);
   if (new URLSearchParams(location.search).get("reset")) { setAuthMode("reset"); location.hash = "#prijava"; }
