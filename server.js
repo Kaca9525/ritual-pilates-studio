@@ -348,7 +348,7 @@ function notify(b, what) {
       ? `\n\nIzabrali ste uplatu na račun (${fmtRsd(b.price)} RSD). ${paymentText(b.price, c)}`
       : `\n\nPlaćanje u studiju pri dolasku: ${fmtRsd(b.price)} RSD. Do uplate uz termin stoji napomena „nije plaćeno”.`;
     sendMail(u.email, "Rezervacija potvrđena - Ritual Pilates Studio",
-      `Zdravo ${u.ime},\n\nvaš termin je zakazan: ${bookingText(b)}.${pay}\n\nMolimo dođite 5-10 min ranije. Otkazivanje je moguće najkasnije ${c.cancelHours}h pre termina, inače se trening računa kao iskorišćen.\n\nRitual Pilates Studio`);
+      `Zdravo ${u.ime},\n\nvaš termin je zakazan: ${bookingText(b)}.${pay}\n\nMolimo dođite najmanje 5 min ranije. Otkazivanje je moguće najkasnije ${c.cancelHours}h pre termina, inače se trening računa kao iskorišćen.\n\nRitual Pilates Studio`);
     sendMail(studioEmail(), "Nova rezervacija: " + u.ime + " " + u.prezime, `${u.ime} ${u.prezime} (${u.telefon}) je zakazao/la: ${bookingText(b)}.${b.pkgId ? "" : b.price === 0 ? " Besplatan probni (akcija)." : ` ${PAY[b.payMethod] || ""}, ${fmtRsd(b.price)} RSD - nije plaćeno.`}`);
   } else {
     sendMail(u.email, "Termin otkazan - Ritual Pilates Studio", `Zdravo ${u.ime},\n\notkazan je termin: ${bookingText(b)}.\n\nRitual Pilates Studio`);
@@ -789,7 +789,7 @@ async function runReminders() {
   const rows = db.prepare("SELECT * FROM bookings WHERE date=? AND status='zakazano' AND reminderSent=0").all(tomorrow);
   for (const b of rows) {
     const u = db.prepare("SELECT * FROM users WHERE email=?").get(b.userEmail);
-    if (u && await sendMail(u.email, "Podsetnik: sutra trening u Ritualu", `Zdravo ${u.ime},\n\npodsećamo vas na termin: ${bookingText(b)}.\nMolimo dođite 5-10 min ranije.\n\nRitual Pilates Studio`))
+    if (u && await sendMail(u.email, "Podsetnik: sutra trening u Ritualu", `Zdravo ${u.ime},\n\npodsećamo vas na termin: ${bookingText(b)}.\nMolimo dođite najmanje 5 min ranije.\n\nRitual Pilates Studio`))
       db.prepare("UPDATE bookings SET reminderSent=1 WHERE id=?").run(b.id);
   }
 }
